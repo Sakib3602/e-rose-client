@@ -7,7 +7,7 @@ import {
   Package,
   Home,
   Grid3X3,
-  X,
+  
 } from "lucide-react";
 import { useState } from "react";
 
@@ -19,10 +19,10 @@ export default function Nav() {
 
   const navigationItems = [
     { name: "Home", href: "/", icon: Home },
-    { name: "Categories", href: "/categories", icon: Grid3X3 },
-    { name: "Review", href: "/review", icon: Star },
+    { name: "All Products", href: "/allproduct", icon: Grid3X3 },
     { name: "Cart", href: "/cart", icon: ShoppingCart },
     { name: "Order", href: "/order", icon: Package },
+    { name: "Reviews", href: "/review", icon: Star },
   ];
 
   const handleLinkClick = () => {

@@ -1,7 +1,10 @@
 import Regular from "./components/AllProduct/Regular";
 import Tranding from "./components/AllProduct/Trending";
+import FAQ from "./components/FAQ/FAQ";
+import Footer from "./components/Footer/Footer";
 import LandingPage from "./components/LandingPage/LandingPge";
 import Nav from "./components/Nav/Nav";
+import Only_Sm_Show from "./components/Nav/Only_Sm_Show";
 
 function App() {
   return (
@@ -24,7 +27,10 @@ function App() {
         <LandingPage></LandingPage>
         <Tranding></Tranding>
         <Regular></Regular>
+        <FAQ></FAQ>
+        <Only_Sm_Show></Only_Sm_Show>
       </div>
+        <Footer></Footer>
     </>
   );
 }
