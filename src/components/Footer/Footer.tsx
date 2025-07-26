@@ -14,7 +14,7 @@ import {
 
 export default function Footer() {
   return (
-    <footer className="w-full mt-16" style={{ backgroundColor: "#761A24" }}>
+    <footer className="w-full mt-16 pop400" style={{ backgroundColor: "#761A24" }}>
       <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-12 lg:py-16">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 lg:gap-12">
           {/* Company Info */}
@@ -157,9 +157,14 @@ export default function Footer() {
                 If you face any kind of problem while using the website, kindly
                 let us know using the 'Get Help' button
               </p>
-              <Button className="bg-white/20 hover:bg-white/30 text-white border border-white/30">
+             <div className="space-x-2">
+                 <Button className="bg-white/20 hover:bg-white/30 text-white border border-white/30">
                 Get Help
               </Button>
+              <Button className="bg-white/20 hover:bg-white/30 text-white border border-white/30">
+                Contact To Developer
+              </Button>
+             </div>
             </div>
           </div>
         </div>

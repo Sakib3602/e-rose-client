@@ -50,7 +50,7 @@ export default function Only_Sm_Show({ cartCount = 3, wishlistCount = 5 }: Botto
   }
 
   return (
-    <div className="block sm:hidden">
+    <div className=" sm:hidden md:block lg:hidden">
       {/* Bottom Navigation */}
       <div className="fixed bottom-0 left-0 right-0 z-50 bg-white border-t border-gray-200 shadow-lg">
         <div className="grid grid-cols-4 h-16">
