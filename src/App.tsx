@@ -1,3 +1,5 @@
+import Regular from "./components/AllProduct/Regular";
+import Tranding from "./components/AllProduct/Trending";
 import LandingPage from "./components/LandingPage/LandingPge";
 import Nav from "./components/Nav/Nav";
 
@@ -20,6 +22,8 @@ function App() {
       >
         <Nav></Nav>
         <LandingPage></LandingPage>
+        <Tranding></Tranding>
+        <Regular></Regular>
       </div>
     </>
   );
