@@ -27,6 +27,7 @@ export default function Nav() {
     { name: "Cart", href: "/cart", icon: ShoppingCart },
     { name: "Order", href: "/order", icon: Package },
     { name: "Reviews", href: "/review", icon: Star },
+    { name: "DashBord", href: "/dashbord", icon: Star },
   ];
 
   const handleLinkClick = () => {
