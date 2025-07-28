@@ -5,7 +5,12 @@ import { useState } from "react"
 import { Card, CardContent } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
-import { ChevronLeft, ChevronRight, Star, BaggageClaim, ShoppingCart, Truck, Shield, RotateCcw } from "lucide-react"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { Label } from "@/components/ui/label"
+import { ChevronLeft, ChevronRight, BaggageClaim, ShoppingCart, Shield, RotateCcw } from "lucide-react"
+import Nav from "@/components/Nav/Nav"
+import Footer from "@/components/Footer/Footer"
+import Only_Sm_Show from "@/components/Nav/Only_Sm_Show"
 
 interface ProductData {
   name: string
@@ -27,13 +32,11 @@ interface ProductData {
 
 // Sample product data based on our form structure
 const sampleProduct: ProductData = {
-  name: "Premium Cotton T-Shirt",
-  price: 29.99,
- description: `📎 কুর্তি টাঙ্গাইল মসলিন কাপড়ের তৈরি যেটিতে নান্দনিকভাবে সূর্যমুখী প্যাটার্নের এমব্রয়ডারি করা হয়েছে
-📎ওড়না ইন্ডিয়ান সফট টিস্যু কাপড়ের মধ্যে রয়েছে।
-📎ইনার এবং প্যান্ট আরামদায়ক বাটার-সিল্ক কাপড়ের তৈরি।`,
+  name: "SUNFLOWER🌻",
+  price: 1500,
+  description: `📎 কুর্তি টাঙ্গাইল মসলিন কাপড়ের তৈরি যেটিতে নান্দনিকভাবে সূর্যমুখী প্যাটার্নের এমব্রয়ডারি করা হয়েছে📎ওড়না ইন্ডিয়ান সফট টিস্যু কাপড়ের মধ্যে রয়েছে।📎ইনার এবং প্যান্ট আরামদায়ক বাটার-সিল্ক কাপড়ের তৈরি।`,
   category: "T-Shirts",
-  brand: "StyleHub",
+  brand: "RoseWood",
   stock: 150,
   sizes: ["S", "M", "L", "XL"],
   colors: ["Black", "White", "Navy"],
@@ -42,7 +45,7 @@ const sampleProduct: ProductData = {
   season: "All Season",
   pic1: "https://scontent.fdac5-1.fna.fbcdn.net/v/t39.30808-6/505192015_122180901758286011_3674718153322894966_n.jpg?_nc_cat=110&ccb=1-7&_nc_sid=127cfc&_nc_ohc=OhdoMdFID6QQ7kNvwHHbjXO&_nc_oc=Adn9YyCYPrDjhkofgLMwGLmmmamPe-Uxa7etDwKXvlqd7Nk_slqIZrH4RbjXBxo27ew&_nc_zt=23&_nc_ht=scontent.fdac5-1.fna&_nc_gid=NEOb4G1UVtlvV72-fuYAjw&oh=00_AfS4SdMGf6cG8BYok8b1W9B18-ft2pZ_-v0hTLDqRuUNdQ&oe=688D2BD4",
   pic2: "https://scontent.fdac5-2.fna.fbcdn.net/v/t39.30808-6/498145207_122180901806286011_1358885554008606632_n.jpg?_nc_cat=102&ccb=1-7&_nc_sid=127cfc&_nc_ohc=-9OonOK4f5QQ7kNvwEiL6Vg&_nc_oc=AdlLPl1cGHgS9VwzvdmjFAc2p8E4DIq2-a9CVFU9p_6KsKTX9wisk4NrlhCb1ZqrTsI&_nc_zt=23&_nc_ht=scontent.fdac5-2.fna&_nc_gid=sWGEugFWc45dmMAZrujvTw&oh=00_AfQVnPjiSmnMHBAne_8Hf48XDeNSVcymhKSOulUpMjd_lA&oe=688D2910",
-  rating: 4.5,
+  rating: 4.9,
   reviews: 128,
 }
 
@@ -116,9 +119,15 @@ const SingleDetails: React.FC = () => {
   const [currentImageIndex, setCurrentImageIndex] = useState(0)
   const [selectedSize, setSelectedSize] = useState("")
   const [selectedColor, setSelectedColor] = useState("")
+  const [selectedStitchType, setSelectedStitchType] = useState("")
+  const [selectedMake, setSelectedMake] = useState("")
   const [quantity, setQuantity] = useState(1)
 
   const images = [sampleProduct.pic1, sampleProduct.pic2]
+
+  // Dropdown options
+  const stitchTypes = ["Stitched", "Non-Stitched"]
+  const makeOptions = ["Ready Made", "Custom Made", "Semi-Custom"]
 
   const nextImage = () => {
     setCurrentImageIndex((prev) => (prev + 1) % images.length)
@@ -142,6 +151,8 @@ const SingleDetails: React.FC = () => {
   const stockStatus = getStockStatus(sampleProduct.stock)
 
   return (
+    <>
+    <Nav></Nav>
     <div className="max-w-7xl mx-auto p-6">
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
         {/* Image Section */}
@@ -209,26 +220,8 @@ const SingleDetails: React.FC = () => {
             </div>
             <h1 className="text-3xl font-bold text-gray-900 mb-2">{sampleProduct.name}</h1>
             <p className="text-gray-600 mb-2">by {sampleProduct.brand}</p>
-
-            {/* Rating */}
-            <div className="flex items-center space-x-2 mb-4">
-              <div className="flex items-center">
-                {[...Array(5)].map((_, i) => (
-                  <Star
-                    key={i}
-                    className={`h-4 w-4 ${
-                      i < Math.floor(sampleProduct.rating) ? "text-yellow-400 fill-current" : "text-gray-300"
-                    }`}
-                  />
-                ))}
-              </div>
-              <span className="text-sm text-gray-600">
-                {sampleProduct.rating} ({sampleProduct.reviews} reviews)
-              </span>
-            </div>
-
             <div className="text-3xl font-bold text-primary mb-4" style={{ color: "#761A24" }}>
-              ${sampleProduct.price}
+              ৳{sampleProduct.price}
             </div>
           </div>
 
@@ -236,7 +229,7 @@ const SingleDetails: React.FC = () => {
           <div className="space-y-4">
             <div>
               <h3 className="text-lg font-semibold mb-2">Description</h3>
-              <p className="text-gray-600 leading-relaxed">{sampleProduct.description}</p>
+              <p className="text-gray-600 leading-relaxed whitespace-pre-line">{sampleProduct.description}</p>
             </div>
 
             {/* Product Specifications */}
@@ -302,6 +295,62 @@ const SingleDetails: React.FC = () => {
             </div>
           </div>
 
+          {/* New Dropdown Selections */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {/* Stitch Type Dropdown */}
+            <div className="space-y-2">
+              <Label htmlFor="stitch-type">Stitch Type</Label>
+              <Select onValueChange={setSelectedStitchType}>
+                <SelectTrigger id="stitch-type">
+                  <SelectValue placeholder="Select stitch type" />
+                </SelectTrigger>
+                <SelectContent>
+                  {stitchTypes.map((type) => (
+                    <SelectItem key={type} value={type}>
+                      {type}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+
+            {/* Make Type Dropdown */}
+            <div className="space-y-2">
+              <Label htmlFor="make-type">Make Type</Label>
+              <Select onValueChange={setSelectedMake}>
+                <SelectTrigger id="make-type">
+                  <SelectValue placeholder="Select make type" />
+                </SelectTrigger>
+                <SelectContent>
+                  {makeOptions.map((make) => (
+                    <SelectItem key={make} value={make}>
+                      {make}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+          </div>
+
+          {/* Selected Options Display */}
+          {(selectedStitchType || selectedMake) && (
+            <div className="bg-gray-50 p-4 rounded-lg">
+              <h4 className="text-sm font-medium text-gray-700 mb-2">Selected Options:</h4>
+              <div className="flex flex-wrap gap-2">
+                {selectedStitchType && (
+                  <Badge variant="outline" className="bg-white">
+                    Stitch: {selectedStitchType}
+                  </Badge>
+                )}
+                {selectedMake && (
+                  <Badge variant="outline" className="bg-white">
+                    Make: {selectedMake}
+                  </Badge>
+                )}
+              </div>
+            </div>
+          )}
+
           {/* Quantity */}
           <div>
             <h3 className="text-lg font-semibold mb-3">Quantity</h3>
@@ -322,6 +371,39 @@ const SingleDetails: React.FC = () => {
             </div>
           </div>
 
+          {/* Taka Section - Static Display */}
+          <div className="bg-gradient-to-r from-gray-50 to-gray-100 p-4 rounded-lg border">
+            <h3 className="text-lg font-semibold mb-3 text-gray-900">Price Breakdown</h3>
+
+            <div className="space-y-3">
+              {/* Base Price */}
+              <div className="flex justify-between items-center">
+                <span className="text-gray-600">Base Price:</span>
+                <span className="font-medium">৳{sampleProduct.price}</span>
+              </div>
+
+              {/* Quantity Calculation */}
+              <div className="flex justify-between items-center">
+                <span className="text-gray-600">Quantity ({quantity}):</span>
+                <span className="font-medium">৳{sampleProduct.price * quantity}</span>
+              </div>
+
+              {/* Delivery Charge */}
+              <div className="flex justify-between items-center">
+                <span className="text-gray-600">Delivery Charge:</span>
+                <span className="font-medium">৳120</span>
+              </div>
+
+              <hr className="border-gray-300" />
+
+              {/* Total Calculation */}
+              <div className="flex justify-between items-center text-lg font-bold">
+                <span style={{ color: "#761A24" }}>Total Amount:</span>
+                <span style={{ color: "#761A24" }}>৳{sampleProduct.price * quantity + 120}</span>
+              </div>
+            </div>
+          </div>
+
           {/* Action Buttons */}
           <div className="space-y-3">
             <Button className="w-full text-white py-3" style={{ backgroundColor: "#761A24" }}>
@@ -336,24 +418,23 @@ const SingleDetails: React.FC = () => {
 
           {/* Features */}
           <div className="border-t pt-6">
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-              <div className="flex items-center space-x-2">
-                <Truck className="h-5 w-5 text-gray-400" />
-                <span className="text-sm text-gray-600">Free Shipping</span>
-              </div>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div className="flex items-center space-x-2">
                 <RotateCcw className="h-5 w-5 text-gray-400" />
-                <span className="text-sm text-gray-600">30-Day Returns</span>
+                <span className="text-sm text-gray-600">4-Day Returns</span>
               </div>
               <div className="flex items-center space-x-2">
                 <Shield className="h-5 w-5 text-gray-400" />
-                <span className="text-sm text-gray-600">2-Year Warranty</span>
+                <span className="text-sm text-gray-600">1-Year Warranty</span>
               </div>
             </div>
           </div>
         </div>
       </div>
     </div>
+    <Footer></Footer>
+    <Only_Sm_Show></Only_Sm_Show>
+    </>
   )
 }
 
