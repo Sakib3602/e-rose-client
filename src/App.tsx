@@ -1,3 +1,4 @@
+import { Link } from "react-router-dom";
 import Regular from "./components/AllProduct/Regular";
 import Tranding from "./components/AllProduct/Trending";
 import FAQ from "./components/FAQ/FAQ";
@@ -5,12 +6,25 @@ import Footer from "./components/Footer/Footer";
 import LandingPage from "./components/LandingPage/LandingPge";
 import Nav from "./components/Nav/Nav";
 import Only_Sm_Show from "./components/Nav/Only_Sm_Show";
+import { useContext } from "react";
+import { AuthContext } from "./components/loginRegistration_work/AuthProvider/AuthProvider";
 
 function App() {
+  const { person } = useContext(AuthContext);
   return (
     <>
-      <div className=" bg-[#761A24] h-10 w-full flex items-center justify-center text-white">
-        <h1 className="">Flat 10% discount</h1>
+      <div className=" bg-[#761A24] h-8 w-full flex items-center justify-center md:justify-between lg:justify-between text-white pop400 ">
+        {/* <h1 className="">Flat 10% discount</h1> */}
+        {person ? (
+          <h1 className="md:mx-4 lg:mx-4">Phone : +880 1923 4567 123</h1>
+        ) : (
+          <Link to={"/register"}>
+            <h1 className="md:mx-4 lg:mx-4">Free Login / Registration</h1>
+          </Link>
+        )}
+        <h1 className="hidden md:block lg:block md:mx-4 lg:mx-4">
+          Facebook
+        </h1>
       </div>
 
       <div
@@ -30,7 +44,7 @@ function App() {
         <FAQ></FAQ>
         <Only_Sm_Show></Only_Sm_Show>
       </div>
-        <Footer></Footer>
+      <Footer></Footer>
     </>
   );
 }

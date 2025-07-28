@@ -9,13 +9,17 @@ import {
   Grid3X3,
   
 } from "lucide-react";
-import { useState } from "react";
+import { useContext, useState } from "react";
 
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
+import { Link } from "react-router-dom";
+import { AuthContext } from "../loginRegistration_work/AuthProvider/AuthProvider";
 
 export default function Nav() {
   const [isOpen, setIsOpen] = useState(false);
+  const {person} = useContext(AuthContext)
+  console.log("nav", person)
 
   const navigationItems = [
     { name: "Home", href: "/", icon: Home },
@@ -44,9 +48,9 @@ export default function Nav() {
           {navigationItems.map((item) => {
             const Icon = item.icon;
             return (
-              <a
+              <Link
                 key={item.name}
-                href={item.href}
+                to={item.href}
                 className="flex items-center space-x-2 px-4 py-2 rounded-lg text-sm font-medium text-gray-700 dark:text-gray-200 transition-all duration-200 hover:bg-gray-100 dark:hover:bg-gray-800 group"
               >
                 <Icon
@@ -56,7 +60,7 @@ export default function Nav() {
                 <span className="relative font-semibold tracking-wide after:absolute after:left-0 after:-bottom-1 after:h-[2px] after:w-0 after:bg-black after:transition-all after:duration-300 group-hover:after:w-full">
                   {item.name}
                 </span>
-              </a>
+              </Link>
             );
           })}
         </nav>

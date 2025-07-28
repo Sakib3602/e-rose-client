@@ -1,12 +1,18 @@
-"use client"
+"use client";
 
-import { ArrowRight, Star, Heart, ChevronLeft, ChevronRight } from "lucide-react"
-import { Button } from "@/components/ui/button"
-import { useState, useEffect } from "react"
+import {
+  ArrowRight,
+  Star,
+  Heart,
+  ChevronLeft,
+  ChevronRight,
+} from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { useState, useEffect } from "react";
 
 export default function LandingPage() {
-  const [currentImageIndex, setCurrentImageIndex] = useState(0)
-  const [isAutoPlaying, setIsAutoPlaying] = useState(true)
+  const [currentImageIndex, setCurrentImageIndex] = useState(0);
+  const [isAutoPlaying, setIsAutoPlaying] = useState(true);
 
   // Carousel images
   const carouselImages = [
@@ -20,31 +26,40 @@ export default function LandingPage() {
       alt: "Summer fashion collection",
       price: "$39.99",
     },
-    
-  ]
+  ];
 
   // Auto-play functionality
   useEffect(() => {
-    if (!isAutoPlaying) return
+    if (!isAutoPlaying) return;
 
     const interval = setInterval(() => {
-      setCurrentImageIndex((prevIndex) => (prevIndex === carouselImages.length - 1 ? 0 : prevIndex + 1))
-    }, 3500) // Change image every 4 seconds
+      setCurrentImageIndex((prevIndex) =>
+        prevIndex === carouselImages.length - 1 ? 0 : prevIndex + 1
+      );
+    }, 3500); // Change image every 4 seconds
 
-    return () => clearInterval(interval)
-  }, [isAutoPlaying, carouselImages.length])
+    return () => clearInterval(interval);
+  }, [isAutoPlaying, carouselImages.length]);
 
   const goToPrevious = () => {
-    setCurrentImageIndex(currentImageIndex === 0 ? carouselImages.length - 1 : currentImageIndex - 1)
-  }
+    setCurrentImageIndex(
+      currentImageIndex === 0
+        ? carouselImages.length - 1
+        : currentImageIndex - 1
+    );
+  };
 
   const goToNext = () => {
-    setCurrentImageIndex(currentImageIndex === carouselImages.length - 1 ? 0 : currentImageIndex + 1)
-  }
+    setCurrentImageIndex(
+      currentImageIndex === carouselImages.length - 1
+        ? 0
+        : currentImageIndex + 1
+    );
+  };
 
   const goToSlide = (index: number) => {
-    setCurrentImageIndex(index)
-  }
+    setCurrentImageIndex(index);
+  };
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-gray-50 relative overflow-hidden">
@@ -99,12 +114,15 @@ export default function LandingPage() {
                     Discover Your
                   </span>
                   <br />
-                  <span className="text-black dark:text-white drop-shadow-sm pop900">Perfect Style</span>
+                  <span className="text-black dark:text-white drop-shadow-sm pop900">
+                    Perfect Style
+                  </span>
                 </h1>
 
                 <p className="pop400 text-lg md:text-xl text-gray-700 dark:text-gray-300 leading-relaxed max-w-lg mx-auto lg:mx-0 drop-shadow-sm">
-                  Elevate your wardrobe with our curated collection of trendy, comfortable, and affordable fashion
-                  pieces designed for the modern woman.
+                  Elevate your wardrobe with our curated collection of trendy,
+                  comfortable, and affordable fashion pieces designed for the
+                  modern woman.
                 </p>
               </div>
 
@@ -115,15 +133,14 @@ export default function LandingPage() {
                   className="text-white px-8 py-4 text-lg font-semibold rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 group border-0"
                   style={{
                     background: "linear-gradient(135deg, #761A24, #5a1419)",
-                    ":hover": {
-                      background: "linear-gradient(135deg, #5a1419, #4a1115)",
-                    },
                   }}
                   onMouseEnter={(e) => {
-                    e.currentTarget.style.background = "linear-gradient(135deg, #5a1419, #4a1115)"
+                    e.currentTarget.style.background =
+                      "linear-gradient(135deg, #5a1419, #4a1115)";
                   }}
                   onMouseLeave={(e) => {
-                    e.currentTarget.style.background = "linear-gradient(135deg, #761A24, #5a1419)"
+                    e.currentTarget.style.background =
+                      "linear-gradient(135deg, #761A24, #5a1419)";
                   }}
                 >
                   Shop Now
@@ -140,10 +157,12 @@ export default function LandingPage() {
                     borderWidth: "2px",
                   }}
                   onMouseEnter={(e) => {
-                    e.currentTarget.style.backgroundColor = "rgba(118, 26, 36, 0.05)"
+                    e.currentTarget.style.backgroundColor =
+                      "rgba(118, 26, 36, 0.05)";
                   }}
                   onMouseLeave={(e) => {
-                    e.currentTarget.style.backgroundColor = "rgba(255, 255, 255, 0.6)"
+                    e.currentTarget.style.backgroundColor =
+                      "rgba(255, 255, 255, 0.6)";
                   }}
                 >
                   View Collection
@@ -153,20 +172,34 @@ export default function LandingPage() {
               {/* Stats */}
               <div className="grid grid-cols-3 gap-6 pt-8 border-t border-gray-300/60">
                 <div className="text-center lg:text-left">
-                  <div className="text-2xl lg:text-3xl font-bold drop-shadow-sm" style={{ color: "#761A24" }}>
+                  <div
+                    className="text-2xl lg:text-3xl font-bold drop-shadow-sm"
+                    style={{ color: "#761A24" }}
+                  >
                     890+
                   </div>
-                  <div className="text-sm text-gray-600 dark:text-gray-400 font-medium">Happy Customers</div>
+                  <div className="text-sm text-gray-600 dark:text-gray-400 font-medium">
+                    Happy Customers
+                  </div>
                 </div>
                 <div className="text-center lg:text-left">
-                  <div className="text-2xl lg:text-3xl font-bold text-black drop-shadow-sm">1000+</div>
-                  <div className="text-sm text-gray-600 dark:text-gray-400 font-medium">Products</div>
+                  <div className="text-2xl lg:text-3xl font-bold text-black drop-shadow-sm">
+                    1000+
+                  </div>
+                  <div className="text-sm text-gray-600 dark:text-gray-400 font-medium">
+                    Products
+                  </div>
                 </div>
                 <div className="text-center lg:text-left">
-                  <div className="text-2xl lg:text-3xl font-bold drop-shadow-sm" style={{ color: "#761A24" }}>
+                  <div
+                    className="text-2xl lg:text-3xl font-bold drop-shadow-sm"
+                    style={{ color: "#761A24" }}
+                  >
                     4.9★
                   </div>
-                  <div className="text-sm text-gray-600 dark:text-gray-400 font-medium">Rating</div>
+                  <div className="text-sm text-gray-600 dark:text-gray-400 font-medium">
+                    Rating
+                  </div>
                 </div>
               </div>
             </div>
@@ -184,7 +217,9 @@ export default function LandingPage() {
                     <div
                       key={index}
                       className={`absolute inset-0 transition-opacity duration-500 ease-in-out ${
-                        index === currentImageIndex ? "opacity-100" : "opacity-0"
+                        index === currentImageIndex
+                          ? "opacity-100"
+                          : "opacity-0"
                       }`}
                     >
                       <img
@@ -216,8 +251,13 @@ export default function LandingPage() {
                 {/* Floating Elements */}
                 <div className="absolute top-6 right-6 bg-white/90 backdrop-blur-sm rounded-2xl p-4 shadow-lg">
                   <div className="flex items-center space-x-2">
-                    <Heart className="w-5 h-5 fill-current" style={{ color: "#761A24" }} />
-                    <span className="text-sm font-semibold text-gray-800">Trending</span>
+                    <Heart
+                      className="w-5 h-5 fill-current"
+                      style={{ color: "#761A24" }}
+                    />
+                    <span className="text-sm font-semibold text-gray-800">
+                      Trending
+                    </span>
                   </div>
                 </div>
 
@@ -235,7 +275,9 @@ export default function LandingPage() {
                       key={index}
                       onClick={() => goToSlide(index)}
                       className={`w-3 h-3 rounded-full transition-all duration-300 ${
-                        index === currentImageIndex ? "bg-white shadow-lg scale-110" : "bg-white/50 hover:bg-white/80"
+                        index === currentImageIndex
+                          ? "bg-white shadow-lg scale-110"
+                          : "bg-white/50 hover:bg-white/80"
                       }`}
                     />
                   ))}
@@ -245,16 +287,20 @@ export default function LandingPage() {
               {/* Background Decoration */}
               <div
                 className="absolute -top-4 -right-4 w-24 h-24 rounded-full opacity-20 blur-xl"
-                style={{ background: "linear-gradient(135deg, #761A24, #000000)" }}
+                style={{
+                  background: "linear-gradient(135deg, #761A24, #000000)",
+                }}
               ></div>
               <div
                 className="absolute -bottom-8 -left-8 w-32 h-32 rounded-full opacity-20 blur-xl"
-                style={{ background: "linear-gradient(135deg, #000000, #761A24)" }}
+                style={{
+                  background: "linear-gradient(135deg, #000000, #761A24)",
+                }}
               ></div>
             </div>
           </div>
         </section>
       </div>
     </div>
-  )
+  );
 }

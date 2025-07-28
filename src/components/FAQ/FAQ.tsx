@@ -1,8 +1,19 @@
 "use client"
 
-import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion"
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "@/components/ui/accordion"
 import { Badge } from "@/components/ui/badge"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card"
 import { Search, MessageCircle, Phone, Mail } from "lucide-react"
 import { useState } from "react"
 
@@ -90,13 +101,21 @@ const faqData: FAQItem[] = [
   },
 ]
 
-const categories = ["Popular", "All", "Orders", "Shipping", "Returns", "Payment", "Products", "Account"]
+const categories = [
+  "Popular",
+  "All",
+  "Orders",
+  "Shipping",
+  "Returns",
+  "Payment",
+  "Products",
+  "Account",
+]
 
 export default function FAQ() {
   const [searchTerm, setSearchTerm] = useState("")
-  const [selectedCategory, setSelectedCategory] = useState("Popular") // Changed from "All"
+  const [selectedCategory, setSelectedCategory] = useState("Popular")
 
-  // Update the filtering logic
   const filteredFAQs = faqData.filter((faq) => {
     const matchesSearch =
       faq.question.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -114,17 +133,19 @@ export default function FAQ() {
     return matchesSearch && matchesCategory
   })
 
-  const popularFAQs  = faqData.filter((faq) => faq.popular)
-
   return (
     <div className="w-full max-w-4xl mx-auto p-4 sm:p-6 lg:p-8">
       {/* Header Section */}
       <div className="text-center mb-8 sm:mb-12">
-        <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold mb-4 pop600" style={{ color: "#761A24" }}>
+        <h1
+          className="text-3xl sm:text-4xl lg:text-5xl font-bold mb-4 pop600"
+          style={{ color: "#761A24" }}
+        >
           Frequently Asked Questions
         </h1>
         <p className="text-gray-600 text-base sm:text-lg lg:text-xl pop400 max-w-2xl mx-auto">
-          Find answers to common questions about our products, shipping, returns, and more.
+          Find answers to common questions about our products, shipping,
+          returns, and more.
         </p>
       </div>
 
@@ -136,16 +157,37 @@ export default function FAQ() {
               key={category}
               onClick={() => setSelectedCategory(category)}
               className={`px-3 sm:px-4 py-1.5 sm:py-2 rounded-full text-xs sm:text-sm font-medium transition-all duration-300 ${
-                selectedCategory === category ? "text-white shadow-lg" : "bg-gray-100 text-gray-700 hover:bg-gray-200"
+                selectedCategory === category
+                  ? "text-white shadow-lg"
+                  : "bg-gray-100 text-gray-700 hover:bg-gray-200"
               }`}
               style={{
-                backgroundColor: selectedCategory === category ? "#761A24" : undefined,
+                backgroundColor:
+                  selectedCategory === category ? "#761A24" : undefined,
               }}
             >
               {category}
             </button>
           ))}
         </div>
+      </div>
+
+      {/* Search Input */}
+      <div className="relative w-full max-w-md mx-auto mb-6 sm:mb-8">
+        <input
+          type="text"
+          placeholder="Search questions..."
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
+          className="w-full border border-gray-300 rounded-lg pl-10 pr-10 py-2 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
+        />
+        <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+        <button
+          onClick={() => setSearchTerm(searchTerm)}
+          className="absolute right-2 top-1/2 transform -translate-y-1/2 text-gray-500 hover:text-gray-700"
+        >
+          <Search className="h-5 w-5" />
+        </button>
       </div>
 
       {/* All Questions */}
@@ -155,12 +197,14 @@ export default function FAQ() {
             {selectedCategory === "Popular"
               ? "Popular Questions"
               : selectedCategory === "All"
-                ? "All Questions"
-                : `${selectedCategory} Questions`}
+              ? "All Questions"
+              : `${selectedCategory} Questions`}
           </CardTitle>
           <CardDescription>
-            {filteredFAQs.length} question{filteredFAQs.length !== 1 ? "s" : ""} found
-            {selectedCategory === "Popular" && " - Most frequently asked by customers"}
+            {filteredFAQs.length} question
+            {filteredFAQs.length !== 1 ? "s" : ""} found
+            {selectedCategory === "Popular" &&
+              " - Most frequently asked by customers"}
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -179,7 +223,10 @@ export default function FAQ() {
                           <Badge
                             variant="secondary"
                             className="text-xs"
-                            style={{ backgroundColor: "#761A24", color: "white" }}
+                            style={{
+                              backgroundColor: "#761A24",
+                              color: "white",
+                            }}
                           >
                             Popular
                           </Badge>
@@ -198,8 +245,12 @@ export default function FAQ() {
               <div className="text-gray-400 mb-4">
                 <Search className="w-12 h-12 sm:w-16 sm:h-16 mx-auto" />
               </div>
-              <h3 className="text-lg sm:text-xl font-semibold text-gray-600 mb-2">No questions found</h3>
-              <p className="text-gray-500 text-sm sm:text-base">Try adjusting your search terms or category filter</p>
+              <h3 className="text-lg sm:text-xl font-semibold text-gray-600 mb-2">
+                No questions found
+              </h3>
+              <p className="text-gray-500 text-sm sm:text-base">
+                Try adjusting your search terms or category filter
+              </p>
             </div>
           )}
         </CardContent>
@@ -211,24 +262,37 @@ export default function FAQ() {
           <CardTitle className="text-lg sm:text-xl" style={{ color: "#761A24" }}>
             Still have questions?
           </CardTitle>
-          <CardDescription>Our customer support team is here to help</CardDescription>
+          <CardDescription>
+            Our customer support team is here to help
+          </CardDescription>
         </CardHeader>
         <CardContent>
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-6">
             <div className="text-center p-4 rounded-lg bg-gray-50 hover:bg-gray-100 transition-colors">
-              <MessageCircle className="w-8 h-8 mx-auto mb-3" style={{ color: "#761A24" }} />
+              <MessageCircle
+                className="w-8 h-8 mx-auto mb-3"
+                style={{ color: "#761A24" }}
+              />
               <h4 className="font-semibold mb-1 text-sm sm:text-base">Live Chat</h4>
               <p className="text-xs sm:text-sm text-gray-600">Available 24/7</p>
             </div>
             <div className="text-center p-4 rounded-lg bg-gray-50 hover:bg-gray-100 transition-colors">
-              <Phone className="w-8 h-8 mx-auto mb-3" style={{ color: "#761A24" }} />
+              <Phone
+                className="w-8 h-8 mx-auto mb-3"
+                style={{ color: "#761A24" }}
+              />
               <h4 className="font-semibold mb-1 text-sm sm:text-base">Phone Support</h4>
               <p className="text-xs sm:text-sm text-gray-600">Mon-Fri 9AM-6PM</p>
             </div>
             <div className="text-center p-4 rounded-lg bg-gray-50 hover:bg-gray-100 transition-colors">
-              <Mail className="w-8 h-8 mx-auto mb-3" style={{ color: "#761A24" }} />
+              <Mail
+                className="w-8 h-8 mx-auto mb-3"
+                style={{ color: "#761A24" }}
+              />
               <h4 className="font-semibold mb-1 text-sm sm:text-base">Email Support</h4>
-              <p className="text-xs sm:text-sm text-gray-600">Response within 24h</p>
+              <p className="text-xs sm:text-sm text-gray-600">
+                Response within 24h
+              </p>
             </div>
           </div>
         </CardContent>

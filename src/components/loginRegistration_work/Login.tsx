@@ -1,6 +1,7 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
+import { Link } from "react-router-dom"
 import {
   Card,
   CardContent,
@@ -11,7 +12,6 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
-import { Link, useNavigate } from "react-router";
 
 import { Mail, Lock } from "lucide-react";
 import Nav from "@/components/Nav/Nav";
@@ -19,21 +19,20 @@ import Footer from "@/components/Footer/Footer";
 import { useForm, type SubmitHandler } from "react-hook-form";
 import Only_Sm_Show from "@/components/Nav/Only_Sm_Show";
 import { useContext } from "react";
-import { AuthContext } from "../AuthProvider/AuthProvider";
-import { toast } from 'react-toastify';
+import { AuthContext } from "./AuthProvider/AuthProvider";
+import { toast } from "react-toastify";
 
 // ✅ Form field types
 type Inputs = {
   email: string;
   password: string;
-  confirmPassword: string;
+ 
+ 
 };
 
-export default function Register() {
-  const { person, creatPerson, out } = useContext(AuthContext);
-  console.log(person);
-  const navigate = useNavigate();
-
+export default function Login() {
+  const {person,SignNow} = useContext(AuthContext);
+  console.log(person,"login")
   const {
     register,
     handleSubmit,
@@ -41,32 +40,16 @@ export default function Register() {
     formState: { errors },
   } = useForm<Inputs>();
 
-const onSubmit: SubmitHandler<Inputs> = async (data) => {
-  if (data.password !== data.confirmPassword) {
-    toast.warning("Passwords do not match!");
-    return;
-  }
+  // ✅ On submit handler with confirm password check
+  const onSubmit: SubmitHandler<Inputs> = (data) => {
+   
+    console.log("Submitted Data:", data);
+    SignNow(data?.email,data?.password)
+    .then(()=>{
+      toast.success("Loged in Done")
 
-  try {
-    console.log(data.email, data.password);
-
-    await creatPerson(data.email, data.password);
-    await out();
-
-    toast.success("Account created Successfuly!");
-
-    // Wait 1 second before navigating (optional)
-    setTimeout(() => {
-      navigate("/login");
-    }, 1000);
-    
-  } catch (error) {
-    toast.error("Something went wrong!");
-    console.error(error);
-  }
-};
-
-
+    })
+  };
 
   return (
     <>
@@ -79,16 +62,15 @@ const onSubmit: SubmitHandler<Inputs> = async (data) => {
           `,
           backgroundSize: "20px 20px, 40px 40px",
         }}
-        className="w-full max-w-md mx-auto pt-4"
+        className="w-full max-w-md mx-auto p-4"
       >
-       
         <Card>
           <CardHeader className="text-center">
             <CardTitle
               className="text-2xl font-bold"
               style={{ color: "#761A24" }}
             >
-              Create Account
+              Sign in Now
             </CardTitle>
             <CardDescription>
               Join RoseWood and start shopping for amazing products
@@ -96,6 +78,10 @@ const onSubmit: SubmitHandler<Inputs> = async (data) => {
           </CardHeader>
 
           <CardContent className="space-y-6">
+           
+
+           
+
             {/* Registration Form */}
             <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
               {/* Email Field */}
@@ -124,7 +110,7 @@ const onSubmit: SubmitHandler<Inputs> = async (data) => {
                   <Input
                     id="password"
                     type="password"
-                    placeholder="Create a password"
+                    placeholder="Type password"
                     className="pl-10"
                     {...register("password", { required: true })}
                   />
@@ -136,25 +122,8 @@ const onSubmit: SubmitHandler<Inputs> = async (data) => {
                 )}
               </div>
 
-              {/* Confirm Password Field */}
-              <div className="space-y-2">
-                <Label htmlFor="confirmPassword">Confirm Password</Label>
-                <div className="relative flex items-center">
-                  <Lock className="absolute left-3 text-gray-400 w-4 h-4 pointer-events-none" />
-                  <Input
-                    id="confirmPassword"
-                    type="password"
-                    placeholder="Confirm your password"
-                    className="pl-10"
-                    {...register("confirmPassword", { required: true })}
-                  />
-                </div>
-                {errors.confirmPassword && (
-                  <p className="text-red-500 text-sm mt-1">
-                    Please confirm your password
-                  </p>
-                )}
-              </div>
+           
+              
 
               {/* Submit Button */}
               <Button
@@ -162,25 +131,26 @@ const onSubmit: SubmitHandler<Inputs> = async (data) => {
                 className="w-full"
                 style={{ backgroundColor: "#761A24" }}
               >
-                Create Account
+                Sign in
               </Button>
             </form>
 
-            {/* Login Link */}
-            <Link to={"/login"}>
-              <div className="text-center text-sm text-gray-600">
-                Already have an account?{" "}
-                <a
-                  href="#"
-                  className="font-medium underline"
-                  style={{ color: "#761A24" }}
-                >
-                  Sign in here
-                </a>
-              </div>
+            {/*  Link */}
+            <Link to={"/register"}>
+            
+            <div className="text-center text-sm text-gray-600">
+              haven't an account?{" "}
+              <a
+                href="#"
+                className="font-medium underline"
+                style={{ color: "#761A24" }}
+              >
+                Sign up here
+              </a>
+            </div>
             </Link>
 
-            {/* Divider */}
+             {/* Divider */}
             <div className="relative mt-4">
               <div className="absolute inset-0 flex items-center">
                 <Separator className="w-full" />
@@ -191,7 +161,7 @@ const onSubmit: SubmitHandler<Inputs> = async (data) => {
                 </span>
               </div>
             </div>
-            {/* Google Login Button */}
+             {/* Google Login Button */}
             <Button
               type="button"
               variant="outline"
@@ -218,7 +188,9 @@ const onSubmit: SubmitHandler<Inputs> = async (data) => {
               Continue with Google
             </Button>
           </CardContent>
+          
         </Card>
+        
       </div>
       <Footer />
       <Only_Sm_Show></Only_Sm_Show>
