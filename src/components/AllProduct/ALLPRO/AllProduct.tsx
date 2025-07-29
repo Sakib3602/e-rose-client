@@ -4,70 +4,33 @@ import FilterBar from "./FilterBar"
 import SingleCard from "./SingleCard"
 import Footer from "@/components/Footer/Footer"
 import Only_Sm_Show from "@/components/Nav/Only_Sm_Show"
+import { useQuery } from "@tanstack/react-query"
+import useAxiosPub from "@/components/Axios/useAxiosPub"
+import { Link } from "react-router-dom"
 
-const products = [
-  {
-    id: 1,
-    name: "Floral Summer Dress",
-    price: 89.99,
-    originalPrice: 120.0,
-    image: "https://source.unsplash.com/400x600/?summer-dress,floral",
-    hoverImage: "https://source.unsplash.com/400x600/?dress,fashion,summer",
-    category: "Dresses",
-    isOnSale: true,
-    discount: 25,
-  },
-  {
-    id: 2,
-    name: "Elegant Evening Gown",
-    price: 199.99,
-    image: "https://source.unsplash.com/400x600/?evening-dress,elegant",
-    hoverImage: "https://source.unsplash.com/400x600/?gown,formal-dress",
-    category: "Dresses",
-    isOnSale: false,
-  },
-  {
-    id: 3,
-    name: "Casual Denim Jacket",
-    price: 79.99,
-    image: "https://source.unsplash.com/400x600/?denim-jacket,fashion",
-    hoverImage: "https://source.unsplash.com/400x600/?jacket,casual-wear",
-    category: "Outerwear",
-    isOnSale: false,
-  },
-  {
-    id: 4,
-    name: "Silk Blouse",
-    price: 65.99,
-    originalPrice: 85.0,
-    image: "https://source.unsplash.com/400x600/?silk-blouse,fashion",
-    hoverImage: "https://source.unsplash.com/400x600/?blouse,women-fashion",
-    category: "Tops",
-    isOnSale: true,
-    discount: 22,
-  },
-  {
-    id: 5,
-    name: "High-Waisted Jeans",
-    price: 95.99,
-    image: "https://source.unsplash.com/400x600/?jeans,denim,fashion",
-    hoverImage: "https://source.unsplash.com/400x600/?high-waist-jeans,women",
-    category: "Bottoms",
-    isOnSale: false,
-  },
-  {
-    id: 6,
-    name: "Knit Sweater",
-    price: 55.99,
-    image: "https://source.unsplash.com/400x600/?sweater,knitwear",
-    hoverImage: "https://source.unsplash.com/400x600/?knit,cozy-fashion",
-    category: "Tops",
-    isOnSale: false,
-  },
- 
-]
+
 
 export default function AllProduct() {
+  const axisPub = useAxiosPub();
+  const {data} = useQuery({
+    queryKey : ["allBaby"],
+    queryFn : async()=>{
+      const res = await axisPub.get("/allData");
+      return res.data;
+    }
+  })
+  console.log(data,"all data")
+   const products = data?.map((item: any) => ({
+  id: item._id,
+  name: item.name,
+  price: Number(item.price),
+  image: item.pic1,
+  hoverImage: item.pic2,
+  category: "Dresses",
+  isOnSale: true,
+  discount: 25,
+})) || [];
+
   return (
     <div
     style={{
@@ -102,8 +65,11 @@ export default function AllProduct() {
 
       {/* Products Grid */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-        {products.map((product) => (
+        {products.map((product : any) => (
+          <Link to={`details/${product?.id}`}>
+          
           <SingleCard key={product.id} product={product} />
+          </Link>
         ))}
       </div>
     </section>

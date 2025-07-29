@@ -14,18 +14,26 @@ import Orders from "./components/DashBord/Orders/Orders.tsx";
 import DashHome from "./components/DashBord/DashHome/DashHome.tsx";
 import AddItem from "./components/DashBord/AddItem/AddItem.tsx";
 import SingleDetails from "./components/AllProduct/SingleDetail/SingleDetails.tsx";
+import { DbProvider } from "./components/ALL_DBWORK/DbContext.tsx";
+import { QueryClientProvider } from "@tanstack/react-query";
+import { QueryClient } from "@tanstack/react-query";
+
+// ✅ Define the queryClient BEFORE using it
+const queryClient = new QueryClient();
 
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
     <BrowserRouter>
       <AuthProvider>
+        <QueryClientProvider client={queryClient}>
+        <DbProvider>
         <ToastContainer></ToastContainer>
         <Routes>
           <Route index element={<App />} />
           <Route path="register" element={<Register />} />
           <Route path="login" element={<Login />} />
-          <Route path="details" element={<SingleDetails />} />
           <Route path="allproduct" element={<AllProduct />} />
+          <Route path="allproduct/details/:id" element={<SingleDetails />} />
 
           {/* dashbord */}
           <Route path="dashbord" element={<DashOut />}>
@@ -37,6 +45,8 @@ createRoot(document.getElementById("root")!).render(
 
           {/* dashbord  end*/}
         </Routes>
+        </DbProvider>
+         </QueryClientProvider> 
       </AuthProvider>
     </BrowserRouter>
   </StrictMode>
