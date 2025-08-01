@@ -242,7 +242,7 @@ const ProductForm: React.FC = () => {
   const axiosSec = useAxiosSec();
 
   const mutationUp = useMutation({
-    mutationFn: async (Data) => {
+    mutationFn: async (Data : ProductFormData) => {
       const res = await axiosSec.post("/allData", Data);
       return res.data;
     },

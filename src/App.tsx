@@ -10,7 +10,13 @@ import { useContext } from "react";
 import { AuthContext } from "./components/loginRegistration_work/AuthProvider/AuthProvider";
 
 function App() {
-  const { person } = useContext(AuthContext);
+  const auth = useContext(AuthContext);
+
+  if (!auth) {
+    throw new Error("AuthContext must be used inside AuthProvider");
+  }
+
+  const { person } = auth;
   return (
     <>
       <div className=" bg-[#761A24] h-8 w-full flex items-center justify-center md:justify-between lg:justify-between text-white pop400 ">
@@ -22,9 +28,7 @@ function App() {
             <h1 className="md:mx-4 lg:mx-4">Free Login / Registration</h1>
           </Link>
         )}
-        <h1 className="hidden md:block lg:block md:mx-4 lg:mx-4">
-          Facebook
-        </h1>
+        <h1 className="hidden md:block lg:block md:mx-4 lg:mx-4">Facebook</h1>
       </div>
 
       <div

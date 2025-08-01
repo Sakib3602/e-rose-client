@@ -31,7 +31,16 @@ type Inputs = {
 };
 
 export default function Login() {
-  const {person,SignNow} = useContext(AuthContext);
+  // const {person,SignNow} = useContext(AuthContext);
+  
+  
+const auth = useContext(AuthContext);
+
+  if (!auth) {
+    throw new Error("AuthContext must be used within an AuthProvider");
+  }
+
+  const { person, SignNow} = auth;
   console.log(person,"login")
   const {
     register,

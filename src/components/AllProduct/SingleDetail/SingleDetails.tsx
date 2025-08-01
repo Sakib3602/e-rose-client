@@ -32,6 +32,13 @@ interface ProductData {
   reviews: number
 }
 
+// Define a new interface for the full API response data, including addon details
+interface ApiResponse extends ProductData {
+  Stitch?: number // Optional, as it's checked with > 0
+  Sticth_Pent?: number // Optional, as it's used in template literal
+  Orna?: number // Optional, as it's checked with > 0
+}
+
 const ImageMagnifier: React.FC<{ src: string; alt: string }> = ({ src, alt }) => {
   const [isHovered, setIsHovered] = useState(false)
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 })
@@ -118,7 +125,8 @@ const SingleDetails: React.FC = () => {
   const [product, setProduct] = useState<ProductData | null>(null)
   const axisPub = useAxiosPub()
 
-  const { data, isLoading, error } = useQuery({
+  const { data, isLoading, error } = useQuery<ApiResponse>({
+    // Specify ApiResponse type for data
     queryKey: ["allBabySingle", params?.id],
     queryFn: async () => {
       const res = await axisPub.get(`/allData/${params?.id}`)
@@ -135,10 +143,49 @@ const SingleDetails: React.FC = () => {
 
   console.log(data)
 
-  // Dropdown options
-  const stitchTypes = [`Stitched ৳${data?.price} + ৳${data?.Stitch}`, `Non-Stitched ৳${data?.price}`]
-  const makeOptions = [`Stitch Pent ৳${data?.price} + ৳${data?.Sticth_Pent}`, `Non-Stitched-Pent ৳${data?.price}`]
-  const orna = [`Orna ৳${data?.Orna}`]
+  // Show loading state
+  if (isLoading) {
+    return (
+      <>
+        <Nav />
+        <div className="max-w-7xl mx-auto p-4 sm:p-6 flex items-center justify-center min-h-[60vh]">
+          <div className="flex items-center space-x-2">
+            <Loader2 className="h-6 w-6 animate-spin" />
+            <span className="text-sm sm:text-base">Loading product details...</span>
+          </div>
+        </div>
+        <Footer />
+        <Only_Sm_Show />
+      </>
+    )
+  }
+
+  // Show error state or if product data is not available
+  if (error || !product) {
+    return (
+      <>
+        <Nav />
+        <div className="max-w-7xl mx-auto p-4 sm:p-6 flex items-center justify-center min-h-[60vh]">
+          <div className="text-center px-4">
+            <h2 className="text-xl sm:text-2xl font-bold text-gray-900 mb-2">Product Not Found</h2>
+            <p className="text-sm sm:text-base text-gray-600">
+              The product you're looking for doesn't exist or has been removed.
+            </p>
+          </div>
+        </div>
+        <Footer />
+        <Only_Sm_Show />
+      </>
+    )
+  }
+
+  // Dropdown options - defined here after product and data are guaranteed to be available
+  const stitchTypes = [`Stitched ৳${product.price} + ৳${data?.Stitch || 0}`, `Non-Stitched ৳${product.price}`]
+  const makeOptions = [
+    `Stitch Pent ৳${product.price} + ৳${data?.Sticth_Pent || 0}`,
+    `Non-Stitched-Pent ৳${product.price}`,
+  ]
+  const orna = [`Orna ৳${data?.Orna || 0}`]
 
   // Function to extract price from selection string
   const extractPrice = (selection: string): number => {
@@ -169,24 +216,18 @@ const SingleDetails: React.FC = () => {
   }
 
   // Calculate totals
-  let addonTotal = 0
-  let subtotal = 0
-  const deliveryCharge = 0
-  let grandTotal = 0
-
-  if (product) {
-    addonTotal = getStitchPrice() + getMakePrice() + getOrnaPrice()
-    subtotal = product.price * quantity + addonTotal
-    grandTotal = subtotal + deliveryCharge
-  }
+  const addonTotal = getStitchPrice() + getMakePrice() + getOrnaPrice()
+  const subtotal = product.price * quantity + addonTotal
+  const deliveryCharge = 0 // As per the provided code, deliveryCharge is 0
+  const grandTotal = subtotal + deliveryCharge
 
   const validateForm = () => {
     const newErrors = {
-      size: product?.sizes && product?.sizes.length > 0 && !selectedSize,
-      color: product?.colors && product?.colors.length > 0 && !selectedColor,
-      stitchType: data?.Stitch > 0 && !selectedStitchType,
+      size: product.sizes && product.sizes.length > 0 && !selectedSize,
+      color: product.colors && product.colors.length > 0 && !selectedColor,
+      stitchType: (data?.Stitch || 0) > 0 && !selectedStitchType, // Use || 0 for safety
       make: makeOptions.length > 0 && !selectedMake,
-      orna: data?.Orna > 0 && !selectedOrna,
+      orna: (data?.Orna || 0) > 0 && !selectedOrna, // Use || 0 for safety
     }
 
     setErrors(newErrors)
@@ -196,14 +237,14 @@ const SingleDetails: React.FC = () => {
   const handleAddToCart = () => {
     if (validateForm()) {
       const formData = {
-        product: product?.name,
+        product: product.name,
         size: selectedSize,
         color: selectedColor,
         stitchType: selectedStitchType,
         make: selectedMake,
         orna: selectedOrna,
         quantity: quantity,
-        basePrice: product?.price * quantity,
+        basePrice: product.price * quantity,
         stitchPrice: getStitchPrice(),
         makePrice: getMakePrice(),
         ornaPrice: getOrnaPrice(),
@@ -222,14 +263,14 @@ const SingleDetails: React.FC = () => {
   const handleOrderNow = () => {
     if (validateForm()) {
       const formData = {
-        product: product?.name,
+        product: product.name,
         size: selectedSize,
         color: selectedColor,
         stitchType: selectedStitchType,
         make: selectedMake,
         orna: selectedOrna,
         quantity: quantity,
-        basePrice: product?.price * quantity,
+        basePrice: product.price * quantity,
         stitchPrice: getStitchPrice(),
         makePrice: getMakePrice(),
         ornaPrice: getOrnaPrice(),
@@ -245,7 +286,7 @@ const SingleDetails: React.FC = () => {
     }
   }
 
-  const images = [product?.pic1, product?.pic2].filter(Boolean)
+  const images = [product.pic1, product.pic2].filter(Boolean)
 
   const nextImage = () => {
     setCurrentImageIndex((prev) => (prev + 1) % images.length)
@@ -266,56 +307,21 @@ const SingleDetails: React.FC = () => {
     return { text: "Out of Stock", color: "bg-red-100 text-red-800" }
   }
 
-  const stockStatus = product ? getStockStatus(product.stock) : { text: "", color: "" }
-
-  // Show loading state
-  if (isLoading) {
-    return (
-      <>
-        <Nav />
-        <div className="max-w-7xl mx-auto p-4 sm:p-6 flex items-center justify-center min-h-[60vh]">
-          <div className="flex items-center space-x-2">
-            <Loader2 className="h-6 w-6 animate-spin" />
-            <span className="text-sm sm:text-base">Loading product details...</span>
-          </div>
-        </div>
-        <Footer />
-        <Only_Sm_Show />
-      </>
-    )
-  }
-
-  // Show error state
-  if (error || !product) {
-    return (
-      <>
-        <Nav />
-        <div className="max-w-7xl mx-auto p-4 sm:p-6 flex items-center justify-center min-h-[60vh]">
-          <div className="text-center px-4">
-            <h2 className="text-xl sm:text-2xl font-bold text-gray-900 mb-2">Product Not Found</h2>
-            <p className="text-sm sm:text-base text-gray-600">
-              The product you're looking for doesn't exist or has been removed.
-            </p>
-          </div>
-        </div>
-        <Footer />
-        <Only_Sm_Show />
-      </>
-    )
-  }
+  const stockStatus = getStockStatus(product.stock)
 
   return (
     <>
       <Nav />
       <div
-      style={{
+        style={{
           backgroundImage: `
             radial-gradient(circle at 1px 1px, rgba(0,0,0,0.08) 1px, transparent 0),
             radial-gradient(circle at 2px 2px, rgba(0,0,0,0.05) 1px, transparent 0)
           `,
           backgroundSize: "20px 20px, 40px 40px",
         }}
-       className="max-w-7xl mx-auto p-4 sm:p-6">
+        className="max-w-7xl mx-auto p-4 sm:p-6"
+      >
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-8">
           {/* Image Section */}
           <div className="space-y-4">
@@ -476,7 +482,7 @@ const SingleDetails: React.FC = () => {
             {/* New Dropdown Selections */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               {/* Stitch Type Dropdown */}
-              {data?.Stitch > 0 && (
+              {(data?.Stitch || 0) > 0 && (
                 <div className="space-y-2">
                   <Label htmlFor="stitch-type" className="text-sm sm:text-base">
                     Stitch Type <span className="text-red-500">*</span>
@@ -534,7 +540,7 @@ const SingleDetails: React.FC = () => {
                 </div>
               )}
               {/* Orna Dropdown */}
-              {data?.Orna > 0 && (
+              {(data?.Orna || 0) > 0 && (
                 <div className="space-y-2">
                   <Label htmlFor="orna-type" className="text-sm sm:text-base">
                     Addon 2 <span className="text-red-500">*</span>
@@ -703,7 +709,6 @@ const SingleDetails: React.FC = () => {
                   <Car className="h-4 w-4 sm:h-5 sm:w-5 text-gray-400" />
                   <span className="text-xs sm:text-sm text-gray-600">Free Home Delevary</span>
                 </div>
-               
               </div>
             </div>
           </div>

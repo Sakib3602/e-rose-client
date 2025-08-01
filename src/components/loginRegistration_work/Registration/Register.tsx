@@ -20,7 +20,7 @@ import { useForm, type SubmitHandler } from "react-hook-form";
 import Only_Sm_Show from "@/components/Nav/Only_Sm_Show";
 import { useContext } from "react";
 import { AuthContext } from "../AuthProvider/AuthProvider";
-import { toast } from 'react-toastify';
+import { toast } from "react-toastify";
 
 // ✅ Form field types
 type Inputs = {
@@ -30,7 +30,14 @@ type Inputs = {
 };
 
 export default function Register() {
-  const { person, creatPerson, out } = useContext(AuthContext);
+  const auth = useContext(AuthContext);
+
+  if (!auth) {
+    throw new Error("AuthContext must be used within an AuthProvider");
+  }
+
+  const { person, creatPerson, out } = auth;
+
   console.log(person);
   const navigate = useNavigate();
 
@@ -41,32 +48,29 @@ export default function Register() {
     formState: { errors },
   } = useForm<Inputs>();
 
-const onSubmit: SubmitHandler<Inputs> = async (data) => {
-  if (data.password !== data.confirmPassword) {
-    toast.warning("Passwords do not match!");
-    return;
-  }
+  const onSubmit: SubmitHandler<Inputs> = async (data) => {
+    if (data.password !== data.confirmPassword) {
+      toast.warning("Passwords do not match!");
+      return;
+    }
 
-  try {
-    console.log(data.email, data.password);
+    try {
+      console.log(data.email, data.password);
 
-    await creatPerson(data.email, data.password);
-    await out();
+      await creatPerson(data.email, data.password);
+      await out();
 
-    toast.success("Account created Successfuly!");
+      toast.success("Account created Successfuly!");
 
-    // Wait 1 second before navigating (optional)
-    setTimeout(() => {
-      navigate("/login");
-    }, 1000);
-    
-  } catch (error) {
-    toast.error("Something went wrong!");
-    console.error(error);
-  }
-};
-
-
+      // Wait 1 second before navigating (optional)
+      setTimeout(() => {
+        navigate("/login");
+      }, 1000);
+    } catch (error) {
+      toast.error("Something went wrong!");
+      console.error(error);
+    }
+  };
 
   return (
     <>
@@ -81,7 +85,6 @@ const onSubmit: SubmitHandler<Inputs> = async (data) => {
         }}
         className="w-full max-w-md mx-auto pt-4"
       >
-       
         <Card>
           <CardHeader className="text-center">
             <CardTitle

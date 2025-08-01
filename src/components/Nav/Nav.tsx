@@ -18,7 +18,9 @@ import { AuthContext } from "../loginRegistration_work/AuthProvider/AuthProvider
 
 export default function Nav() {
   const [isOpen, setIsOpen] = useState(false);
-  const {person} = useContext(AuthContext)
+  const auth = useContext(AuthContext)
+  if(!auth)  throw new Error("AuthContext must be used within an AuthProvider");
+   const { person} = auth;
   console.log("nav", person)
 
   const navigationItems = [
