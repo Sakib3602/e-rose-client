@@ -2,6 +2,7 @@
 
 import { createContext, useContext} from "react";
 
+
 // 1. Create the context
 const DbContext = createContext<any>(null);
 
@@ -9,7 +10,7 @@ const DbContext = createContext<any>(null);
 export const DbProvider = ({ children }: { children: React.ReactNode }) => {
 
     const s : string = "hell"
-
+   
     const infor = {
        s,
     }

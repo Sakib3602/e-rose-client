@@ -28,6 +28,9 @@ interface ProductFormData {
   brand: string;
   stock: string;
   Stitch: string;
+  Sticth_Pent : string,
+  Un_Sticth_Pent : string,
+  Orna : string,
   Extra: string;
   sizes: string[];
   colors: string[];
@@ -48,6 +51,9 @@ const ProductForm: React.FC = () => {
     stock: "",
     Extra: "",
     Stitch: "",
+    Sticth_Pent: "",
+    Un_Sticth_Pent: "",
+    Orna : "",
     sizes: [],
     colors: [],
     material: "",
@@ -63,20 +69,10 @@ const ProductForm: React.FC = () => {
   const [pic2, setPic2] = useState<File | null>(null);
 
   const categories = [
-    "T-Shirts",
-    "Shirts",
-    "Pants",
-    "Jeans",
-    "Dresses",
-    "Skirts",
-    "Jackets",
-    "Coats",
-    "Sweaters",
-    "Hoodies",
-    "Shorts",
-    "Activewear",
-    "Underwear",
-    "Accessories",
+    "Top",
+    "Trandy",
+    "Regular",
+
   ];
 
   const sizes = ["XS", "S", "M", "L", "XL", "XXL", "XXXL"];
@@ -221,6 +217,9 @@ const ProductForm: React.FC = () => {
         stock: "",
         Extra: "",
         Stitch: "",
+        Sticth_Pent : "",
+        Un_Sticth_Pent : "",
+        Orna: "",
         sizes: [],
         colors: [],
         material: "",
@@ -326,26 +325,48 @@ const ProductForm: React.FC = () => {
                 onChange={(e) => handleInputChange("stock", e.target.value)}
               />
             </div>
+            
             <div className="space-y-2">
               <Label htmlFor="Stitch">Stitch</Label>
               <Input
                 id="Stitch"
-                type="text"
-                placeholder="write Like : apple 50,bannana 80"
+                type="number"
+                placeholder="Stitch price...."
                 value={formData?.Stitch}
                 onChange={(e) => handleInputChange("Stitch", e.target.value)}
               />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="Stitch">Extra Things</Label>
+              <Label htmlFor="Sticth_Pent">Sticth Pent Price</Label>
               <Input
-                id="Extra"
-                type="text"
-                placeholder="write Like : apple 50,bannana 80"
-                value={formData?.Extra}
-                onChange={(e) => handleInputChange("Extra", e.target.value)}
+                id="Sticth_Pent"
+                type="number"
+                placeholder="Stitch pent price...."
+                value={formData?.Sticth_Pent}
+                onChange={(e) => handleInputChange("Sticth_Pent", e.target.value)}
               />
             </div>
+            <div className="space-y-2">
+              <Label htmlFor="Un_Sticth_Pent">Non Sticth Pent Price</Label>
+              <Input
+                id="Un_Sticth_Pent"
+                type="number"
+                placeholder="Non stitch pent price...."
+                value={formData?.Un_Sticth_Pent}
+                onChange={(e) => handleInputChange("Un_Sticth_Pent", e.target.value)}
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="Orna">Orna Price</Label>
+              <Input
+                id="Orna"
+                type="number"
+                placeholder="Orna price here...."
+                value={formData?.Orna}
+                onChange={(e) => handleInputChange("Orna", e.target.value)}
+              />
+            </div>
+            
           </div>
 
           {/* Description */}

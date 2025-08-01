@@ -15,7 +15,7 @@ import {
   Shirt,
   FilePlus2
 } from "lucide-react";
-import { NavLink, Outlet } from "react-router-dom";
+import { Link, NavLink, Outlet } from "react-router-dom";
 
 const DashOut: React.FC = () => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -39,6 +39,7 @@ const DashOut: React.FC = () => {
         } transition-transform duration-300 ease-in-out sm:translate-x-0 sm:static sm:inset-0`}
       >
         {/* Sidebar Header */}
+        <Link to={"/"}>
         <div className="flex items-center justify-between h-16 px-6 border-b border-gray-200">
           <div className="flex items-center space-x-3">
             <div
@@ -58,6 +59,8 @@ const DashOut: React.FC = () => {
             <X className="h-5 w-5" />
           </Button>
         </div>
+        </Link>
+        
 
 
         {/* Navigation Menu */}
