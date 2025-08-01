@@ -13,8 +13,7 @@ import Only_Sm_Show from "@/components/Nav/Only_Sm_Show"
 import { useParams } from "react-router-dom"
 import { useQuery } from "@tanstack/react-query"
 import useAxiosPub from "@/components/Axios/useAxiosPub"
-
-import Size from "./Size"
+import Size from "./Size" // Assuming Size component is still needed elsewhere
 
 interface ProductData {
   name: string
@@ -23,8 +22,8 @@ interface ProductData {
   category: string
   brand: string
   stock: number
-  sizes: string[]
-  colors: string[]
+  sizes: string[] // Still in interface, but not used in component
+  colors: string[] // Still in interface, but not used in component
   material: string
   gender: string
   season: string
@@ -67,7 +66,6 @@ const ImageMagnifier: React.FC<{ src: string; alt: string }> = ({ src, alt }) =>
           transform: isHovered ? "scale(1.05)" : "scale(1)",
         }}
       />
-
       {/* Magnified overlay */}
       {isHovered && (
         <div
@@ -82,7 +80,6 @@ const ImageMagnifier: React.FC<{ src: string; alt: string }> = ({ src, alt }) =>
           }}
         />
       )}
-
       {/* Magnifier lens indicator */}
       {isHovered && (
         <div
@@ -96,7 +93,6 @@ const ImageMagnifier: React.FC<{ src: string; alt: string }> = ({ src, alt }) =>
           }}
         />
       )}
-
       {/* Zoom hint */}
       {!isHovered && (
         <div className="absolute top-2 right-2 sm:top-4 sm:right-4 bg-black/80 text-white px-2 py-1 sm:px-3 sm:py-2 rounded-full text-xs sm:text-sm font-medium shadow-lg">
@@ -109,18 +105,12 @@ const ImageMagnifier: React.FC<{ src: string; alt: string }> = ({ src, alt }) =>
 
 const SingleDetails: React.FC = () => {
   const [currentImageIndex, setCurrentImageIndex] = useState(0)
-  const [selectedSize, setSelectedSize] = useState("")
-  const [selectedColor, setSelectedColor] = useState("")
-  const [selectedStitchType, setSelectedStitchType] = useState("")
+  const [selectedDressSize, setSelectedDressSize] = useState("")
   const [selectedMake, setSelectedMake] = useState("")
   const [quantity, setQuantity] = useState(1)
   const [selectedOrna, setSelectedOrna] = useState("")
   const [errors, setErrors] = useState({
-    size: false,
-    color: false,
-    stitchType: false,
-    make: false,
-    orna: false,
+    dressSize: false,
   })
 
   const params = useParams()
@@ -128,7 +118,6 @@ const SingleDetails: React.FC = () => {
   const axisPub = useAxiosPub()
 
   const { data, isLoading, error } = useQuery<ApiResponse>({
-    // Specify ApiResponse type for data
     queryKey: ["allBabySingle", params?.id],
     queryFn: async () => {
       const res = await axisPub.get(`/allData/${params?.id}`)
@@ -182,12 +171,7 @@ const SingleDetails: React.FC = () => {
   }
 
   // Dropdown options - defined here after product and data are guaranteed to be available
-  const stitchTypes = [`Stitched ৳${product.price} + ৳${data?.Stitch || 0}`, `Non-Stitched ৳${product.price}`]
-  const makeOptions = [
-    `Stitch Pent ৳${product.price} + ৳${data?.Sticth_Pent || 0}`,
-    `Non-Stitched-Pent ৳${product.price}`,
-  ]
-  const orna = [`Orna ৳${data?.Orna || 0}`]
+  const dressSizes = ["UnStitched", ...Array.from({ length: (48 - 30) / 2 + 1 }, (_, i) => (30 + i * 2).toString())]
 
   // Function to extract price from selection string
   const extractPrice = (selection: string): number => {
@@ -195,43 +179,51 @@ const SingleDetails: React.FC = () => {
     return match ? Number.parseInt(match[1]) : 0
   }
 
+  // Correctly construct makeOptions and ornaOptions with prices as ADDONS
+  const makeOptions = [
+    "Non-Stitched-Pent", // Option with no addon price
+    ...(data?.Sticth_Pent && Number(data.Sticth_Pent) > 0 ? [`Stitch Pent ৳${Number(data.Sticth_Pent)}`] : []),
+  ]
+  const ornaOptions = [...(data?.Orna && Number(data.Orna) > 0 ? [`Orna ৳${Number(data.Orna)}`] : [])]
+
   // Calculate addon prices
-  const getStitchPrice = (): number => {
-    if (!selectedStitchType) return 0
-    if (selectedStitchType.includes("Stitched") && selectedStitchType.includes("+")) {
-      return extractPrice(selectedStitchType.split("+")[1])
+  const getDressSizePrice = (): number => {
+    if (!selectedDressSize || selectedDressSize === "UnStitched") {
+      return 0
     }
-    return 0
+    // Ensure data.Stitch is treated as a number
+    return Number(data?.Stitch || 0)
   }
 
   const getMakePrice = (): number => {
     if (!selectedMake) return 0
-    if (selectedMake.includes("Stitch Pent") && selectedMake.includes("+")) {
-      return extractPrice(selectedMake.split("+")[1])
+    if (selectedMake.includes("Stitch Pent")) {
+      // extractPrice already returns a number, but explicitly convert for safety
+      return Number(extractPrice(selectedMake))
     }
     return 0
   }
 
   const getOrnaPrice = (): number => {
     if (!selectedOrna) return 0
-    return extractPrice(selectedOrna)
+    if (selectedOrna.includes("Orna")) {
+      // extractPrice already returns a number, but explicitly convert for safety
+      return Number(extractPrice(selectedOrna))
+    }
+    return 0
   }
 
   // Calculate totals
-  const addonTotal = getStitchPrice() + getMakePrice() + getOrnaPrice()
+  const addonTotal = getDressSizePrice() + getMakePrice() + getOrnaPrice()
+  const deliveryCharge = 0 // Delivery charge is 0 as per current implementation.
+  // If you need it to be dynamic (e.g., ৳400), please provide the conditions for when it should apply.
   const subtotal = product.price * quantity + addonTotal
-  const deliveryCharge = 0 // As per the provided code, deliveryCharge is 0
   const grandTotal = subtotal + deliveryCharge
 
   const validateForm = () => {
     const newErrors = {
-      size: product.sizes && product.sizes.length > 0 && !selectedSize,
-      color: product.colors && product.colors.length > 0 && !selectedColor,
-      stitchType: (data?.Stitch || 0) > 0 && !selectedStitchType, // Use || 0 for safety
-      make: makeOptions.length > 0 && !selectedMake,
-      orna: (data?.Orna || 0) > 0 && !selectedOrna, // Use || 0 for safety
+      dressSize: (Number(data?.Stitch) || 0) > 0 && !selectedDressSize, // Dress size is required if Stitch addon exists
     }
-
     setErrors(newErrors)
     return !Object.values(newErrors).some((error) => error)
   }
@@ -240,14 +232,12 @@ const SingleDetails: React.FC = () => {
     if (validateForm()) {
       const formData = {
         product: product.name,
-        size: selectedSize,
-        color: selectedColor,
-        stitchType: selectedStitchType,
+        dressSize: selectedDressSize,
         make: selectedMake,
         orna: selectedOrna,
         quantity: quantity,
         basePrice: product.price * quantity,
-        stitchPrice: getStitchPrice(),
+        dressSizePrice: getDressSizePrice(),
         makePrice: getMakePrice(),
         ornaPrice: getOrnaPrice(),
         addonTotal: addonTotal,
@@ -266,14 +256,12 @@ const SingleDetails: React.FC = () => {
     if (validateForm()) {
       const formData = {
         product: product.name,
-        size: selectedSize,
-        color: selectedColor,
-        stitchType: selectedStitchType,
+        dressSize: selectedDressSize,
         make: selectedMake,
         orna: selectedOrna,
         quantity: quantity,
         basePrice: product.price * quantity,
-        stitchPrice: getStitchPrice(),
+        dressSizePrice: getDressSizePrice(),
         makePrice: getMakePrice(),
         ornaPrice: getOrnaPrice(),
         addonTotal: addonTotal,
@@ -317,9 +305,9 @@ const SingleDetails: React.FC = () => {
       <div
         style={{
           backgroundImage: `
-            radial-gradient(circle at 1px 1px, rgba(0,0,0,0.08) 1px, transparent 0),
-            radial-gradient(circle at 2px 2px, rgba(0,0,0,0.05) 1px, transparent 0)
-          `,
+          radial-gradient(circle at 1px 1px, rgba(0,0,0,0.08) 1px, transparent 0),
+          radial-gradient(circle at 2px 2px, rgba(0,0,0,0.05) 1px, transparent 0)
+        `,
           backgroundSize: "20px 20px, 40px 40px",
         }}
         className="max-w-7xl mx-auto p-4 sm:p-6"
@@ -413,7 +401,7 @@ const SingleDetails: React.FC = () => {
                 </div>
                 <div>
                   <span className="text-xs sm:text-sm font-medium text-gray-500">Season:</span>
-                  <p className="text-sm sm:text-base text-gray-900">{product.season}</p>
+                  <p className="text-sm sm:text-base text-gray-900">{product?.season}</p>
                 </div>
                 <div>
                   <span className="text-xs sm:text-sm font-medium text-gray-500">Stock:</span>
@@ -421,113 +409,49 @@ const SingleDetails: React.FC = () => {
                 </div>
               </div>
             </div>
-            {/* Size Selection */}
-            {product.sizes && product.sizes.length > 0 && (
-              <div>
-                <h3 className="text-base sm:text-lg font-semibold mb-3">
-                  Size <span className="text-red-500">*</span>
-                </h3>
-                <div className="flex flex-wrap gap-2">
-                  {product.sizes.map((size) => (
-                    <button
-                      key={size}
-                      onClick={() => {
-                        setSelectedSize(size)
-                        setErrors((prev) => ({ ...prev, size: false }))
-                      }}
-                      className={`px-3 py-2 sm:px-4 sm:py-2 border rounded-lg transition-colors text-sm sm:text-base ${
-                        selectedSize === size
-                          ? "border-primary text-white"
-                          : errors.size
-                            ? "border-red-300 text-gray-700 hover:border-red-400"
-                            : "border-gray-300 text-gray-700 hover:border-gray-400"
-                      }`}
-                      style={selectedSize === size ? { backgroundColor: "#761A24" } : {}}
-                    >
-                      {size}
-                    </button>
-                  ))}
-                </div>
-                {errors.size && <p className="text-red-500 text-xs sm:text-sm mt-1">Please select a size</p>}
-              </div>
-            )}
-            {/* Color Selection */}
-            {product.colors && product.colors.length > 0 && (
-              <div>
-                <h3 className="text-base sm:text-lg font-semibold mb-3">
-                  Color <span className="text-red-500">*</span>
-                </h3>
-                <div className="flex flex-wrap gap-2">
-                  {product.colors.map((color) => (
-                    <button
-                      key={color}
-                      onClick={() => {
-                        setSelectedColor(color)
-                        setErrors((prev) => ({ ...prev, color: false }))
-                      }}
-                      className={`px-3 py-2 sm:px-4 sm:py-2 border rounded-lg transition-colors text-sm sm:text-base ${
-                        selectedColor === color
-                          ? "border-primary text-white"
-                          : errors.color
-                            ? "border-red-300 text-gray-700 hover:border-red-400"
-                            : "border-gray-300 text-gray-700 hover:border-gray-400"
-                      }`}
-                      style={selectedColor === color ? { backgroundColor: "#761A24" } : {}}
-                    >
-                      {color}
-                    </button>
-                  ))}
-                </div>
-                {errors.color && <p className="text-red-500 text-xs sm:text-sm mt-1">Please select a color</p>}
-              </div>
-            )}
             {/* New Dropdown Selections */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              {/* Stitch Type Dropdown */}
-              {(data?.Stitch || 0) > 0 && (
+              {/* Dress Size Dropdown */}
+              {(Number(data?.Stitch) || 0) > 0 && (
                 <div className="space-y-2">
-                  <Label htmlFor="stitch-type" className="text-sm sm:text-base">
-                    Stitch Type <span className="text-red-500">*</span>
+                  <Label htmlFor="dress-size" className="text-sm sm:text-base">
+                    Dress Size <span className="text-red-500">*</span>
                   </Label>
                   <Select
                     onValueChange={(value) => {
-                      setSelectedStitchType(value)
-                      setErrors((prev) => ({ ...prev, stitchType: false }))
+                      setSelectedDressSize(value)
+                      setErrors((prev) => ({ ...prev, dressSize: false }))
                     }}
                   >
                     <SelectTrigger
-                      id="stitch-type"
-                      className={`text-sm sm:text-base ${errors.stitchType ? "border-red-300" : ""}`}
+                      id="dress-size"
+                      className={`text-sm sm:text-base ${errors.dressSize ? "border-red-300" : ""}`}
                     >
-                      <SelectValue placeholder="Select stitch type" />
+                      <SelectValue placeholder="Select dress size" />
                     </SelectTrigger>
                     <SelectContent>
-                      {stitchTypes.map((type) => (
-                        <SelectItem key={type} value={type} className="text-sm sm:text-base">
-                          {type}
+                      {dressSizes.map((size) => (
+                        <SelectItem key={size} value={size} className="text-sm sm:text-base">
+                          {size}
                         </SelectItem>
                       ))}
                     </SelectContent>
                   </Select>
-                  {errors.stitchType && <p className="text-red-500 text-xs sm:text-sm">Please select a stitch type</p>}
+                  {errors.dressSize && <p className="text-red-500 text-xs sm:text-sm">Please select a dress size</p>}
                 </div>
               )}
-              {/* addon 1 */}
+              {/* Addon 1 Dropdown (Optional) */}
               {makeOptions.length > 0 && (
                 <div className="space-y-2">
                   <Label htmlFor="make-type" className="text-sm sm:text-base">
-                    Addon 1 <span className="text-red-500">*</span>
+                    Addon 1
                   </Label>
                   <Select
                     onValueChange={(value) => {
                       setSelectedMake(value)
-                      setErrors((prev) => ({ ...prev, make: false }))
                     }}
                   >
-                    <SelectTrigger
-                      id="make-type"
-                      className={`text-sm sm:text-base ${errors.make ? "border-red-300" : ""}`}
-                    >
+                    <SelectTrigger id="make-type" className="text-sm sm:text-base">
                       <SelectValue placeholder="Select addon" />
                     </SelectTrigger>
                     <SelectContent>
@@ -538,47 +462,41 @@ const SingleDetails: React.FC = () => {
                       ))}
                     </SelectContent>
                   </Select>
-                  {errors.make && <p className="text-red-500 text-xs sm:text-sm">Please select an addon</p>}
                 </div>
               )}
-              {/* Orna Dropdown */}
-              {(data?.Orna || 0) > 0 && (
+              {/* Addon 2 Dropdown (Optional) */}
+              {ornaOptions.length > 0 && ( // Only render if there are options
                 <div className="space-y-2">
                   <Label htmlFor="orna-type" className="text-sm sm:text-base">
-                    Addon 2 <span className="text-red-500">*</span>
+                    Addon 2
                   </Label>
                   <Select
                     onValueChange={(value) => {
                       setSelectedOrna(value)
-                      setErrors((prev) => ({ ...prev, orna: false }))
                     }}
                   >
-                    <SelectTrigger
-                      id="orna-type"
-                      className={`text-sm sm:text-base ${errors.orna ? "border-red-300" : ""}`}
-                    >
+                    <SelectTrigger id="orna-type" className="text-sm sm:text-base">
                       <SelectValue placeholder="Select addon 2" />
                     </SelectTrigger>
                     <SelectContent>
-                      {orna.map((ornaItem) => (
+                      {ornaOptions.map((ornaItem) => (
                         <SelectItem key={ornaItem} value={ornaItem} className="text-sm sm:text-base">
                           {ornaItem}
                         </SelectItem>
                       ))}
                     </SelectContent>
                   </Select>
-                  {errors.orna && <p className="text-red-500 text-xs sm:text-sm">Please select addon 2</p>}
                 </div>
               )}
             </div>
             {/* Selected Options Display */}
-            {(selectedStitchType || selectedMake || selectedOrna) && (
+            {(selectedDressSize || selectedMake || selectedOrna) && (
               <div className="bg-gray-50 p-3 sm:p-4 rounded-lg">
                 <h4 className="text-xs sm:text-sm font-medium text-gray-700 mb-2">Selected Options:</h4>
                 <div className="flex flex-wrap gap-2">
-                  {selectedStitchType && (
+                  {selectedDressSize && (
                     <Badge variant="outline" className="bg-white text-xs sm:text-sm">
-                      Stitch: {selectedStitchType}
+                      Dress Size: {selectedDressSize}
                     </Badge>
                   )}
                   {selectedMake && (
@@ -627,34 +545,29 @@ const SingleDetails: React.FC = () => {
                   <span className="text-sm sm:text-base text-gray-600">Quantity ({quantity}):</span>
                   <span className="text-sm sm:text-base font-medium">৳{product.price * quantity}</span>
                 </div>
-
                 {/* Addon Prices */}
-                {(getStitchPrice() > 0 || getMakePrice() > 0 || getOrnaPrice() > 0) && (
+                {(getDressSizePrice() > 0 || getMakePrice() > 0 || getOrnaPrice() > 0) && (
                   <>
                     <hr className="border-gray-300" />
                     <div className="text-sm sm:text-base font-medium text-gray-700 mb-2">Addon Charges:</div>
-
-                    {getStitchPrice() > 0 && (
+                    {getDressSizePrice() > 0 && (
                       <div className="flex justify-between items-center pl-4">
-                        <span className="text-xs sm:text-sm text-gray-600">• Stitch Charge:</span>
-                        <span className="text-xs sm:text-sm font-medium">৳{getStitchPrice()}</span>
+                        <span className="text-xs sm:text-sm text-gray-600">• Dress Size Charge:</span>
+                        <span className="text-xs sm:text-sm font-medium">৳{getDressSizePrice()}</span>
                       </div>
                     )}
-
                     {getMakePrice() > 0 && (
                       <div className="flex justify-between items-center pl-4">
                         <span className="text-xs sm:text-sm text-gray-600">• Addon 1 Charge:</span>
                         <span className="text-xs sm:text-sm font-medium">৳{getMakePrice()}</span>
                       </div>
                     )}
-
                     {getOrnaPrice() > 0 && (
                       <div className="flex justify-between items-center pl-4">
                         <span className="text-xs sm:text-sm text-gray-600">• Addon 2 Charge:</span>
                         <span className="text-xs sm:text-sm font-medium">৳{getOrnaPrice()}</span>
                       </div>
                     )}
-
                     <div className="flex justify-between items-center font-medium border-t border-gray-300 pt-2">
                       <span className="text-sm sm:text-base text-gray-700">Addon Total:</span>
                       <span className="text-sm sm:text-base" style={{ color: "#761A24" }}>
@@ -663,14 +576,12 @@ const SingleDetails: React.FC = () => {
                     </div>
                   </>
                 )}
-
                 {/* Delivery Charge */}
                 <hr className="border-gray-300" />
                 <div className="flex justify-between items-center">
                   <span className="text-sm sm:text-base text-gray-600">Delivery Charge:</span>
                   <span className="text-sm sm:text-base font-medium">৳{deliveryCharge}</span>
                 </div>
-
                 <hr className="border-gray-300" />
                 {/* Total Calculation */}
                 <div className="flex justify-between items-center text-base sm:text-lg font-bold">
@@ -715,11 +626,11 @@ const SingleDetails: React.FC = () => {
             </div>
           </div>
         </div>
+        {/* Size component inclusion */}
         <div>
-          <Size></Size>
+          <Size />
         </div>
       </div>
-
       <Footer />
       <Only_Sm_Show />
     </>
