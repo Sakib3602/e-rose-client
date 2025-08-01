@@ -14,6 +14,8 @@ import { useParams } from "react-router-dom"
 import { useQuery } from "@tanstack/react-query"
 import useAxiosPub from "@/components/Axios/useAxiosPub"
 
+import Size from "./Size"
+
 interface ProductData {
   name: string
   price: number
@@ -713,7 +715,11 @@ const SingleDetails: React.FC = () => {
             </div>
           </div>
         </div>
+        <div>
+          <Size></Size>
+        </div>
       </div>
+
       <Footer />
       <Only_Sm_Show />
     </>
