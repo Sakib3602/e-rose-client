@@ -8,6 +8,7 @@ import Nav from "./components/Nav/Nav";
 import Only_Sm_Show from "./components/Nav/Only_Sm_Show";
 import { useContext } from "react";
 import { AuthContext } from "./components/loginRegistration_work/AuthProvider/AuthProvider";
+import { toast } from "react-toastify";
 
 function App() {
   const auth = useContext(AuthContext);
@@ -16,13 +17,20 @@ function App() {
     throw new Error("AuthContext must be used inside AuthProvider");
   }
 
-  const { person } = auth;
+  const { person,out } = auth;
+  const x = ()=>{
+    out()
+    .then(()=>{
+      toast.success("log out done")
+    })
+  }
   return (
     <>
       <div className=" bg-[#761A24] h-8 w-full flex items-center justify-center md:justify-between lg:justify-between text-white pop400 ">
         {/* <h1 className="">Flat 10% discount</h1> */}
         {person ? (
-          <h1 className="md:mx-4 lg:mx-4">Phone : +880 1923 4567 123</h1>
+          <h1 onClick={x} className="md:mx-4 lg:mx-4 cursor-pointer">Log out</h1>
+          
         ) : (
           <Link to={"/register"}>
             <h1 className="md:mx-4 lg:mx-4">Free Login / Registration</h1>

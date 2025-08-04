@@ -1,7 +1,7 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
-import { Link } from "react-router-dom"
+import { Link } from "react-router-dom";
 import {
   Card,
   CardContent,
@@ -21,44 +21,75 @@ import Only_Sm_Show from "@/components/Nav/Only_Sm_Show";
 import { useContext } from "react";
 import { AuthContext } from "./AuthProvider/AuthProvider";
 import { toast } from "react-toastify";
+import useAxiosPub from "../Axios/useAxiosPub";
+import { useMutation } from "@tanstack/react-query";
 
 // ✅ Form field types
 type Inputs = {
   email: string;
   password: string;
- 
- 
 };
 
 export default function Login() {
   // const {person,SignNow} = useContext(AuthContext);
-  
-  
-const auth = useContext(AuthContext);
+
+  const auth = useContext(AuthContext);
 
   if (!auth) {
     throw new Error("AuthContext must be used within an AuthProvider");
   }
 
-  const { person, SignNow} = auth;
-  console.log(person,"login")
+  const { person, SignNow, GoogleS } = auth;
+  console.log(person, "login");
+  interface userDatam {
+    email: string | null;
+    password: string;
+    role: string;
+  }
+  const xx = () => {
+    GoogleS()
+      .then((result) => {
+        const use = {
+          email : result.user.email,
+          password : "sign_with_google_no_pass",
+          role : "user"
+        }
+        
+         MutationUp.mutate(use);
+        toast.success(`Logged in`);
+      })
+      .catch((error) => {
+        console.error(error);
+        toast.error("Login failed");
+      });
+  };
+
   const {
     register,
     handleSubmit,
-
     formState: { errors },
   } = useForm<Inputs>();
 
-  // ✅ On submit handler with confirm password check
-  const onSubmit: SubmitHandler<Inputs> = (data) => {
-   
-    console.log("Submitted Data:", data);
-    SignNow(data?.email,data?.password)
-    .then(()=>{
-      toast.success("Loged in Done")
+  const axiosPublic = useAxiosPub();
 
-    })
+  const onSubmit: SubmitHandler<Inputs> = (data) => {
+    const use = {
+      email: data?.email,
+      password: data?.password,
+      role: "user",
+    };
+    MutationUp.mutate(use);
+    SignNow(data?.email, data?.password).then(() => {
+      toast.success("Loged in Done");
+    });
   };
+
+  const MutationUp = useMutation({
+    mutationFn: async (b: userDatam) => {
+      const res = await axiosPublic.post("/user", b);
+      return res.data;
+    },
+  });
 
   return (
     <>
@@ -87,10 +118,6 @@ const auth = useContext(AuthContext);
           </CardHeader>
 
           <CardContent className="space-y-6">
-           
-
-           
-
             {/* Registration Form */}
             <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
               {/* Email Field */}
@@ -131,9 +158,6 @@ const auth = useContext(AuthContext);
                 )}
               </div>
 
-           
-              
-
               {/* Submit Button */}
               <Button
                 type="submit"
@@ -146,20 +170,19 @@ const auth = useContext(AuthContext);
 
             {/*  Link */}
             <Link to={"/register"}>
-            
-            <div className="text-center text-sm text-gray-600">
-              haven't an account?{" "}
-              <a
-                href="#"
-                className="font-medium underline"
-                style={{ color: "#761A24" }}
-              >
-                Sign up here
-              </a>
-            </div>
+              <div className="text-center text-sm text-gray-600">
+                haven't an account?{" "}
+                <a
+                  href="#"
+                  className="font-medium underline"
+                  style={{ color: "#761A24" }}
+                >
+                  Sign up here
+                </a>
+              </div>
             </Link>
 
-             {/* Divider */}
+            {/* Divider */}
             <div className="relative mt-4">
               <div className="absolute inset-0 flex items-center">
                 <Separator className="w-full" />
@@ -170,8 +193,9 @@ const auth = useContext(AuthContext);
                 </span>
               </div>
             </div>
-             {/* Google Login Button */}
+            {/* Google Login Button */}
             <Button
+              onClick={xx}
               type="button"
               variant="outline"
               className="w-full bg-transparent"
@@ -197,9 +221,7 @@ const auth = useContext(AuthContext);
               Continue with Google
             </Button>
           </CardContent>
-          
         </Card>
-        
       </div>
       <Footer />
       <Only_Sm_Show></Only_Sm_Show>

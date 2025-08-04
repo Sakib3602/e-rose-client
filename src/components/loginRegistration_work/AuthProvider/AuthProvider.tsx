@@ -2,54 +2,55 @@ import {
   createUserWithEmailAndPassword,
   onAuthStateChanged,
   signInWithEmailAndPassword,
+  signInWithPopup,
   signOut,
+  GoogleAuthProvider,
+  type User,
+  type UserCredential,
 } from "firebase/auth";
-import type { User } from "firebase/auth"; // ✅ correct way to import types
-
 import React, { createContext, useEffect, useState, type ReactNode } from "react";
 import { auth } from "../firebase.init";
 
+const Googleprovider = new GoogleAuthProvider();
 
-// Step 1: Define what the AuthContext will provide
 interface AuthContextType {
   person: User | null;
   loading: boolean;
-  creatPerson: (email: string, password: string) => Promise<any>;
+  creatPerson: (email: string, password: string) => Promise<UserCredential>;
   out: () => Promise<void>;
-  SignNow: (email: string, password: string) => Promise<any>;
+  SignNow: (email: string, password: string) => Promise<UserCredential>;
+  GoogleS: () => Promise<UserCredential>; // ✅ added
 }
 
-// Step 2: Create the context with types
 export const AuthContext = createContext<AuthContextType | null>(null);
 
-// Step 3: Define the props type for your AuthProvider
 interface AuthProviderProps {
   children: ReactNode;
 }
 
-// Step 4: AuthProvider component
 const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const [person, setPerson] = useState<User | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
 
-  // Create a new user
   const creatPerson = (email: string, password: string) => {
     setLoading(true);
     return createUserWithEmailAndPassword(auth, email, password);
   };
 
-  // Login existing user
   const SignNow = (email: string, password: string) => {
     setLoading(true);
     return signInWithEmailAndPassword(auth, email, password);
   };
 
-  // Logout
+  const GoogleS = () => {
+    setLoading(true);
+    return signInWithPopup(auth, Googleprovider);
+  };
+
   const out = () => {
     return signOut(auth);
   };
 
-  // Watch for auth state changes
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (user) => {
       setPerson(user);
@@ -59,13 +60,13 @@ const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     return () => unsubscribe();
   }, []);
 
-  // The value passed to the context
   const info: AuthContextType = {
     person,
     loading,
     creatPerson,
     out,
     SignNow,
+    GoogleS,
   };
 
   return <AuthContext.Provider value={info}>{children}</AuthContext.Provider>;
