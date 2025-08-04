@@ -23,6 +23,7 @@ import useAxiosSec from "@/components/Axios/useAxiosSec";
 interface ProductFormData {
   name: string;
   price: string;
+  Hprice : string,
   description: string;
   category: string;
   brand: string;
@@ -31,6 +32,7 @@ interface ProductFormData {
   Sticth_Pent : string,
   Un_Sticth_Pent : string,
   Orna : string,
+  Inner: string,
   Extra: string;
   sizes: string[];
   colors: string[];
@@ -45,6 +47,7 @@ const ProductForm: React.FC = () => {
   const [formData, setFormData] = useState<ProductFormData>({
     name: "",
     price: "",
+    Hprice: "",
     description: "",
     category: "",
     brand: "",
@@ -54,6 +57,7 @@ const ProductForm: React.FC = () => {
     Sticth_Pent: "",
     Un_Sticth_Pent: "",
     Orna : "",
+    Inner : "",
     sizes: [],
     colors: [],
     material: "",
@@ -206,11 +210,13 @@ const ProductForm: React.FC = () => {
       };
       mutationUp.mutate(dataAll);
       setL(false);
-      console.log(dataAll);
+      // toast.success("Item Added !")
+      // console.log(dataAll);
 
       setFormData({
         name: "",
         price: "",
+        Hprice : "",
         description: "",
         category: "",
         brand: "",
@@ -220,6 +226,7 @@ const ProductForm: React.FC = () => {
         Sticth_Pent : "",
         Un_Sticth_Pent : "",
         Orna: "",
+        Inner: "",
         sizes: [],
         colors: [],
         material: "",
@@ -247,7 +254,7 @@ const ProductForm: React.FC = () => {
       return res.data;
     },
     onSuccess: () => {
-      toast("Item Added");
+      toast("Item Added !");
     },
   });
 
@@ -282,6 +289,17 @@ const ProductForm: React.FC = () => {
                 placeholder="0.00"
                 value={formData.price}
                 onChange={(e) => handleInputChange("price", e.target.value)}
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="price">Highest Price *</Label>
+              <Input
+                id="Hprice"
+                required
+                type="number"
+                placeholder="0.00"
+                value={formData.Hprice}
+                onChange={(e) => handleInputChange("Hprice", e.target.value)}
               />
             </div>
 
@@ -364,6 +382,16 @@ const ProductForm: React.FC = () => {
                 placeholder="Orna price here...."
                 value={formData?.Orna}
                 onChange={(e) => handleInputChange("Orna", e.target.value)}
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="Orna">Inner Price</Label>
+              <Input
+                id="Inner"
+                type="number"
+                placeholder="Inner price here...."
+                value={formData?.Inner}
+                onChange={(e) => handleInputChange("Inner", e.target.value)}
               />
             </div>
             

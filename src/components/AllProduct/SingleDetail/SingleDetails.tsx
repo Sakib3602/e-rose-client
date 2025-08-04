@@ -13,7 +13,6 @@ import Only_Sm_Show from "@/components/Nav/Only_Sm_Show"
 import { useParams } from "react-router-dom"
 import { useQuery } from "@tanstack/react-query"
 import useAxiosPub from "@/components/Axios/useAxiosPub"
-import Size from "./Size" // Assuming Size component is still needed elsewhere
 
 interface ProductData {
   name: string
@@ -38,6 +37,8 @@ interface ApiResponse extends ProductData {
   Stitch?: number // Optional, as it's checked with > 0
   Sticth_Pent?: number // Optional, as it's used in template literal
   Orna?: number // Optional, as it's checked with > 0
+  Inner?: number // Added inner to ApiResponse
+  Un_Sticth_Pent?:number
 }
 
 const ImageMagnifier: React.FC<{ src: string; alt: string }> = ({ src, alt }) => {
@@ -109,6 +110,7 @@ const SingleDetails: React.FC = () => {
   const [selectedMake, setSelectedMake] = useState("")
   const [quantity, setQuantity] = useState(1)
   const [selectedOrna, setSelectedOrna] = useState("")
+  const [selectedInner, setSelectedInner] = useState("")
   const [errors, setErrors] = useState({
     dressSize: false,
   })
@@ -131,8 +133,6 @@ const SingleDetails: React.FC = () => {
       setProduct(data)
     }
   }, [data])
-
-  console.log(data)
 
   // Show loading state
   if (isLoading) {
@@ -179,12 +179,26 @@ const SingleDetails: React.FC = () => {
     return match ? Number.parseInt(match[1]) : 0
   }
 
-  // Correctly construct makeOptions and ornaOptions with prices as ADDONS
+  // Correctly construct makeOptions with prices as ADDONS
   const makeOptions = [
-    "Non-Stitched-Pent", // Option with no addon price
-    ...(data?.Sticth_Pent && Number(data.Sticth_Pent) > 0 ? [`Stitch Pent ৳${Number(data.Sticth_Pent)}`] : []),
+    // Conditional "Non-Stitched-Pent" with price from Un_Stitch_Pent or no price
+    ...(data?.Un_Sticth_Pent && Number(data.Un_Sticth_Pent) > 0
+      ? [`Non-Stitched-Pent ৳${Number(data.Un_Sticth_Pent)}`]
+      : ["Non-Stitched-Pent"]), // Default to no price if Un_Stitch_Pent is not available or 0
+    // Existing Stitched-Pent options
+    ...(data?.Sticth_Pent && Number(data.Sticth_Pent) > 0
+      ? Array.from({ length: 11 }, (_, i) => {
+          const size = 30 + i // generate sizes from 30 to 40
+          // The price here is the ADDON price for the stitched pant
+          return `${data?.name} pajama-${size} ৳${Number(data.Sticth_Pent)}`
+        })
+      : []),
   ]
+
+  console.log(data)
   const ornaOptions = [...(data?.Orna && Number(data.Orna) > 0 ? [`Orna ৳${Number(data.Orna)}`] : [])]
+
+  const innerOptions = [...(data?.Inner && Number(data.Inner) > 0 ? [`Inner ৳${Number(data.Inner)}`] : [])]
 
   // Calculate addon prices
   const getDressSizePrice = (): number => {
@@ -196,25 +210,31 @@ const SingleDetails: React.FC = () => {
   }
 
   const getMakePrice = (): number => {
-    if (!selectedMake) return 0
-    if (selectedMake.includes("Stitch Pent")) {
-      // extractPrice already returns a number, but explicitly convert for safety
-      return Number(extractPrice(selectedMake))
+    if (!selectedMake) {
+      return 0
     }
-    return 0
+    // Now, extractPrice will correctly handle "Non-Stitched-Pent ৳X" or "Non-Stitched-Pent"
+    return Number(extractPrice(selectedMake))
   }
 
   const getOrnaPrice = (): number => {
     if (!selectedOrna) return 0
     if (selectedOrna.includes("Orna")) {
-      // extractPrice already returns a number, but explicitly convert for safety
       return Number(extractPrice(selectedOrna))
     }
     return 0
   }
 
+  const getInnerPrice = (): number => {
+    if (!selectedInner) return 0
+    if (selectedInner.includes("Inner")) {
+      return Number(extractPrice(selectedInner))
+    }
+    return 0
+  }
+
   // Calculate totals
-  const addonTotal = getDressSizePrice() + getMakePrice() + getOrnaPrice()
+  const addonTotal = getDressSizePrice() + getMakePrice() + getOrnaPrice() + getInnerPrice()
   const deliveryCharge = 0 // Delivery charge is 0 as per current implementation.
   // If you need it to be dynamic (e.g., ৳400), please provide the conditions for when it should apply.
   const subtotal = product.price * quantity + addonTotal
@@ -235,11 +255,13 @@ const SingleDetails: React.FC = () => {
         dressSize: selectedDressSize,
         make: selectedMake,
         orna: selectedOrna,
+        inner: selectedInner, // Include selectedInner in form data
         quantity: quantity,
         basePrice: product.price * quantity,
         dressSizePrice: getDressSizePrice(),
         makePrice: getMakePrice(),
         ornaPrice: getOrnaPrice(),
+        innerPrice: getInnerPrice(), // Include innerPrice in form data
         addonTotal: addonTotal,
         subtotal: subtotal,
         deliveryCharge: deliveryCharge,
@@ -259,11 +281,13 @@ const SingleDetails: React.FC = () => {
         dressSize: selectedDressSize,
         make: selectedMake,
         orna: selectedOrna,
+        inner: selectedInner, // Include selectedInner in form data
         quantity: quantity,
         basePrice: product.price * quantity,
         dressSizePrice: getDressSizePrice(),
         makePrice: getMakePrice(),
         ornaPrice: getOrnaPrice(),
+        innerPrice: getInnerPrice(), // Include innerPrice in form data
         addonTotal: addonTotal,
         subtotal: subtotal,
         deliveryCharge: deliveryCharge,
@@ -305,9 +329,9 @@ const SingleDetails: React.FC = () => {
       <div
         style={{
           backgroundImage: `
-          radial-gradient(circle at 1px 1px, rgba(0,0,0,0.08) 1px, transparent 0),
-          radial-gradient(circle at 2px 2px, rgba(0,0,0,0.05) 1px, transparent 0)
-        `,
+        radial-gradient(circle at 1px 1px, rgba(0,0,0,0.08) 1px, transparent 0),
+        radial-gradient(circle at 2px 2px, rgba(0,0,0,0.05) 1px, transparent 0)
+      `,
           backgroundSize: "20px 20px, 40px 40px",
         }}
         className="max-w-7xl mx-auto p-4 sm:p-6"
@@ -476,7 +500,7 @@ const SingleDetails: React.FC = () => {
                     }}
                   >
                     <SelectTrigger id="orna-type" className="text-sm sm:text-base">
-                      <SelectValue placeholder="Select addon 2" />
+                      <SelectValue placeholder="Select Orna" />
                     </SelectTrigger>
                     <SelectContent>
                       {ornaOptions.map((ornaItem) => (
@@ -488,9 +512,33 @@ const SingleDetails: React.FC = () => {
                   </Select>
                 </div>
               )}
+              {/* Addon 3 Dropdown (Optional) */}
+              {innerOptions.length > 0 && ( // Only render if there are options
+                <div className="space-y-2">
+                  <Label htmlFor="inner-type" className="text-sm sm:text-base">
+                    Addon 3
+                  </Label>
+                  <Select
+                    onValueChange={(value) => {
+                      setSelectedInner(value)
+                    }}
+                  >
+                    <SelectTrigger id="inner-type" className="text-sm sm:text-base">
+                      <SelectValue placeholder="Select inner" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {innerOptions.map((innerItem) => (
+                        <SelectItem key={innerItem} value={innerItem} className="text-sm sm:text-base">
+                          {innerItem}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+              )}
             </div>
             {/* Selected Options Display */}
-            {(selectedDressSize || selectedMake || selectedOrna) && (
+            {(selectedDressSize || selectedMake || selectedOrna || selectedInner) && (
               <div className="bg-gray-50 p-3 sm:p-4 rounded-lg">
                 <h4 className="text-xs sm:text-sm font-medium text-gray-700 mb-2">Selected Options:</h4>
                 <div className="flex flex-wrap gap-2">
@@ -507,6 +555,11 @@ const SingleDetails: React.FC = () => {
                   {selectedOrna && (
                     <Badge variant="outline" className="bg-white text-xs sm:text-sm">
                       Addon 2: {selectedOrna}
+                    </Badge>
+                  )}
+                  {selectedInner && (
+                    <Badge variant="outline" className="bg-white text-xs sm:text-sm">
+                      Addon 3: {selectedInner}
                     </Badge>
                   )}
                 </div>
@@ -546,7 +599,7 @@ const SingleDetails: React.FC = () => {
                   <span className="text-sm sm:text-base font-medium">৳{product.price * quantity}</span>
                 </div>
                 {/* Addon Prices */}
-                {(getDressSizePrice() > 0 || getMakePrice() > 0 || getOrnaPrice() > 0) && (
+                {(getDressSizePrice() > 0 || getMakePrice() > 0 || getOrnaPrice() > 0 || getInnerPrice() > 0) && (
                   <>
                     <hr className="border-gray-300" />
                     <div className="text-sm sm:text-base font-medium text-gray-700 mb-2">Addon Charges:</div>
@@ -566,6 +619,12 @@ const SingleDetails: React.FC = () => {
                       <div className="flex justify-between items-center pl-4">
                         <span className="text-xs sm:text-sm text-gray-600">• Addon 2 Charge:</span>
                         <span className="text-xs sm:text-sm font-medium">৳{getOrnaPrice()}</span>
+                      </div>
+                    )}
+                    {getInnerPrice() > 0 && (
+                      <div className="flex justify-between items-center pl-4">
+                        <span className="text-xs sm:text-sm text-gray-600">• Addon 3 Charge:</span>
+                        <span className="text-xs sm:text-sm font-medium">৳{getInnerPrice()}</span>
                       </div>
                     )}
                     <div className="flex justify-between items-center font-medium border-t border-gray-300 pt-2">
@@ -625,10 +684,6 @@ const SingleDetails: React.FC = () => {
               </div>
             </div>
           </div>
-        </div>
-        {/* Size component inclusion */}
-        <div>
-          <Size />
         </div>
       </div>
       <Footer />
