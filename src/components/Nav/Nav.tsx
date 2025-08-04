@@ -7,7 +7,7 @@ import {
   Package,
   Home,
   Grid3X3,
-  Heart
+  Heart,
 } from "lucide-react";
 import { useContext, useState } from "react";
 
@@ -20,18 +20,18 @@ import { useQuery } from "@tanstack/react-query";
 
 export default function Nav() {
   const [isOpen, setIsOpen] = useState(false);
-  const auth = useContext(AuthContext)
-  if(!auth)  throw new Error("AuthContext must be used within an AuthProvider");
-   const { person} = auth;
-  console.log("nav", person)
-  const axiosSec = useAxiosSec()
-      const {data} = useQuery({
-        queryKey : ["userData"],
-        queryFn : async()=>{
-            const res = await axiosSec.get(`/user/${person?.email}`)
-            return res.data;
-        }
-      })
+  const auth = useContext(AuthContext);
+  if (!auth) throw new Error("AuthContext must be used within an AuthProvider");
+  const { person } = auth;
+  console.log("nav", person);
+  const axiosSec = useAxiosSec();
+  const { data } = useQuery({
+    queryKey: ["userData"],
+    queryFn: async () => {
+      const res = await axiosSec.get(`/user/${person?.email}`);
+      return res.data;
+    },
+  });
 
   const navigationItems = [
     { name: "Home", href: "/", icon: Home },
@@ -40,14 +40,16 @@ export default function Nav() {
     { name: "Order", href: "/order", icon: Package },
     { name: "Wish List", href: "/wish", icon: Heart },
     { name: "Reviews", href: "/review", icon: Star },
-     ...(data?.role === "admin"
-    ? [{ name: "Dashboard", href: "/dashbord", icon: Star }]
-    : []),
+    ...(data?.role === "admin"
+      ? [{ name: "Dashboard", href: "/dashbord", icon: Star }]
+      : []),
   ];
 
   const handleLinkClick = () => {
     setIsOpen(false);
   };
+  //  const [isOpend, setIsOpend] = useState(false);
+
 
   return (
     <header className=" sticky top-0 z-50 w-full border-b border-border/40 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
@@ -93,7 +95,7 @@ export default function Nav() {
               <span className="sr-only">Toggle navigation menu</span>
             </Button>
           </SheetTrigger>
-         
+
           <SheetContent
             side="right"
             className="w-[220px] sm:w-[200px] border-l border-border/40"
@@ -129,13 +131,10 @@ export default function Nav() {
                     </a>
                   );
                 })}
-                
               </nav>
             </div>
           </SheetContent>
-          
         </Sheet>
-        
       </div>
     </header>
   );
