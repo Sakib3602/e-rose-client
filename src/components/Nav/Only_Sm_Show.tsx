@@ -109,9 +109,7 @@ export default function Only_Sm_Show({ cartCount = 3 }: BottomNavProps) {
     }
   }
 
-  // const handleLinkClick = () => {
-  //   setIsOpen(false)
-  // }
+  
 
   return (
     <>
@@ -211,7 +209,7 @@ export default function Only_Sm_Show({ cartCount = 3 }: BottomNavProps) {
                     className="rounded-md object-cover"
                   />
                   <div className="flex-1 grid gap-0.5">
-                    <h3 className="font-medium text-sm">{item.name}</h3>
+                    <h3 className="font-medium text-sm">mata</h3>
                     <p className="text-gray-500 text-xs">${item.price}</p>
                   </div>
                 </div>
