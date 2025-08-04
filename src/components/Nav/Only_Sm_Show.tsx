@@ -1,16 +1,44 @@
 "use client"
-
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { Badge } from "@/components/ui/badge"
 import { Home, ShoppingCart, Heart, User } from "lucide-react"
+import { Link } from "react-router-dom"
 
 interface BottomNavProps {
   cartCount?: number
-  wishlistCount?: number
 }
 
-export default function Only_Sm_Show({ cartCount = 3, wishlistCount = 5 }: BottomNavProps) {
+interface WishlistItem {
+  _id: string // Using _id as the primary identifier
+  name: string
+  price: string
+  Hprice?: string // Optional original price
+  image: string
+}
+
+export default function Only_Sm_Show({ cartCount = 3 }: BottomNavProps) {
   const [activeTab, setActiveTab] = useState("shop")
+  const [wishlistItemsCount, setWishlistItemsCount] = useState(0) 
+
+  // Function to update wishlist count from localStorage
+  const updateWishlistCount = () => {
+    const storedWishlist = localStorage.getItem("wishList")
+    const currentWishlist: WishlistItem[] = storedWishlist ? JSON.parse(storedWishlist) : []
+    setWishlistItemsCount(currentWishlist.length)
+  }
+
+  useEffect(() => {
+    
+    updateWishlistCount()
+
+    // Listen for custom event from Tranding component or any other component updating wishlist
+    window.addEventListener("wishlistUpdated", updateWishlistCount)
+
+    // Cleanup event listener on component unmount
+    return () => {
+      window.removeEventListener("wishlistUpdated", updateWishlistCount)
+    }
+  }, []) // Empty dependency array means this runs once on mount and cleans up on unmount
 
   const navItems = [
     {
@@ -31,8 +59,8 @@ export default function Only_Sm_Show({ cartCount = 3, wishlistCount = 5 }: Botto
       id: "wishlist",
       icon: Heart,
       label: "Wishlist",
-      href: "/wishlist",
-      count: wishlistCount,
+      href: "/wish",
+      count: wishlistItemsCount, // Use the state variable here
     },
     {
       id: "account",
@@ -46,7 +74,7 @@ export default function Only_Sm_Show({ cartCount = 3, wishlistCount = 5 }: Botto
   const handleNavClick = (id: string, href: string, label: string) => {
     setActiveTab(id)
     console.log(`Navigating to ${href} - ${label}`)
-    // Add your navigation logic here
+    // Add your navigation logic here (e.g., using useRouter from Next.js)
   }
 
   return (
@@ -57,8 +85,9 @@ export default function Only_Sm_Show({ cartCount = 3, wishlistCount = 5 }: Botto
           {navItems.map((item) => {
             const Icon = item.icon
             const isActive = activeTab === item.id
-
             return (
+              <Link to={item?.href}>
+               
               <button
                 key={item.id}
                 onClick={() => handleNavClick(item.id, item.href, item.label)}
@@ -73,14 +102,15 @@ export default function Only_Sm_Show({ cartCount = 3, wishlistCount = 5 }: Botto
                       color: isActive ? "#761A24" : "#6b7280",
                     }}
                   />
-                  {item.count && item.count > 0 && (
-                    <Badge
-                      className="absolute -top-2 -right-2 h-4 w-4 p-0 flex items-center justify-center text-xs min-w-4"
-                      style={{ backgroundColor: "#761A24", color: "white" }}
-                    >
-                      {item.count > 99 ? "99+" : item.count}
-                    </Badge>
-                  )}
+                  {item.count !== null &&
+                    item.count > 0 && ( // Check for null explicitly
+                      <Badge
+                        className="absolute -top-2 -right-2 h-3 w-3 p-0 flex items-center justify-center text-xs"
+                        style={{ backgroundColor: "#761A24", color: "white" }}
+                      >
+                       
+                      </Badge>
+                    )}
                 </div>
                 <span
                   className={`text-xs font-medium transition-colors ${isActive ? "font-semibold" : ""}`}
@@ -91,11 +121,12 @@ export default function Only_Sm_Show({ cartCount = 3, wishlistCount = 5 }: Botto
                   {item.label}
                 </span>
               </button>
+            
+              </Link>
             )
           })}
         </div>
       </div>
-
       {/* Spacer to prevent content from being hidden behind bottom nav */}
       <div className="h-16"></div>
     </div>

@@ -7,7 +7,7 @@ import {
   Package,
   Home,
   Grid3X3,
-  
+  Heart
 } from "lucide-react";
 import { useContext, useState } from "react";
 
@@ -38,6 +38,7 @@ export default function Nav() {
     { name: "All Products", href: "/allproduct", icon: Grid3X3 },
     { name: "Cart", href: "/cart", icon: ShoppingCart },
     { name: "Order", href: "/order", icon: Package },
+    { name: "Wish List", href: "/wish", icon: Heart },
     { name: "Reviews", href: "/review", icon: Star },
      ...(data?.role === "admin"
     ? [{ name: "Dashboard", href: "/dashbord", icon: Star }]

@@ -23,6 +23,8 @@ export default function WishlistSection() {
     setWish(currentWishlist)
   }, [])
 
+  
+
   const handleRemoveItem = (_id: string) => {
     const updatedWishlist = wish.filter((item) => item._id !== _id)
     setWish(updatedWishlist)

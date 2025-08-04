@@ -6,6 +6,7 @@ import { Heart, ChevronLeft, ChevronRight } from "lucide-react"
 import { useQuery } from "@tanstack/react-query"
 import useAxiosPub from "../Axios/useAxiosPub"
 import { Link } from "react-router-dom"
+import { toast } from "react-toastify"
 
 interface Product {
   _id: string // Changed to _id for consistency with API mapping
@@ -76,6 +77,9 @@ export default function Tranding() {
 
   const maxIndex = Math.max(0, products.length - itemsPerView)
 
+  const p =()=>{
+    toast.success("item added to the wishlist")
+  }
   // Reset currentIndex if it exceeds maxIndex after screen resize
   useEffect(() => {
     if (currentIndex > maxIndex) {
@@ -146,14 +150,14 @@ export default function Tranding() {
     const exists = wishList.some((item) => item._id === productToAdd._id)
 
     if (exists) {
-      // Remove item
+      
       wishList = wishList.filter((item) => item._id !== productToAdd._id)
     } else {
       // Add item
       wishList.push(productToAdd)
     }
     localStorage.setItem("wishList", JSON.stringify(wishList))
-    setWishTrigger((prev) => prev + 1) // Trigger re-render to update wishlist icon state
+    setWishTrigger((prev) => prev + 1) 
   }
 
   if (isLoading)
@@ -220,6 +224,7 @@ export default function Tranding() {
                       <div className="absolute top-2 sm:top-4 right-2 sm:right-4 flex flex-col gap-1 sm:gap-2">
                         <button
                           onClick={(e) => {
+                            p()
                             e.preventDefault() // Prevent Link navigation when clicking wishlist
                             saveWish(product) // Pass the whole product object
                           }}
