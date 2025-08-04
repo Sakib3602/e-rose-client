@@ -1,56 +1,75 @@
-"use client"
-import type React from "react"
-import { useEffect, useState } from "react"
-import { Card, CardContent } from "@/components/ui/card"
-import { Badge } from "@/components/ui/badge"
-import { Button } from "@/components/ui/button"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { Label } from "@/components/ui/label"
-import { ChevronLeft, ChevronRight, BaggageClaim, ShoppingCart, Car, RotateCcw, Loader2 } from "lucide-react"
-import Nav from "@/components/Nav/Nav"
-import Footer from "@/components/Footer/Footer"
-import Only_Sm_Show from "@/components/Nav/Only_Sm_Show"
-import { useParams } from "react-router-dom"
-import { useQuery } from "@tanstack/react-query"
-import useAxiosPub from "@/components/Axios/useAxiosPub"
+"use client";
+import type React from "react";
+import { useEffect, useState } from "react";
+import { Card, CardContent } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Label } from "@/components/ui/label";
+import {
+  ChevronLeft,
+  ChevronRight,
+  BaggageClaim,
+  ShoppingCart,
+  Car,
+  RotateCcw,
+  Loader2,
+} from "lucide-react";
+import Nav from "@/components/Nav/Nav";
+import Footer from "@/components/Footer/Footer";
+import Only_Sm_Show from "@/components/Nav/Only_Sm_Show";
+import { useParams } from "react-router-dom";
+import { useQuery } from "@tanstack/react-query";
+import useAxiosPub from "@/components/Axios/useAxiosPub";
+import { toast } from "react-toastify";
 
 interface ProductData {
-  name: string
-  price: number
-  description: string
-  category: string
-  brand: string
-  stock: number
-  sizes: string[] // Still in interface, but not used in component
-  colors: string[] // Still in interface, but not used in component
-  material: string
-  gender: string
-  season: string
-  pic1: string
-  pic2: string
-  rating: number
-  reviews: number
+  name: string;
+  _id: string;
+  price: number;
+  description: string;
+  category: string;
+  brand: string;
+  stock: number;
+  sizes: string[]; // Still in interface, but not used in component
+  colors: string[]; // Still in interface, but not used in component
+  material: string;
+  gender: string;
+  season: string;
+  pic1: string;
+  pic2: string;
+  rating: number;
+  reviews: number;
 }
 
 // Define a new interface for the full API response data, including addon details
 interface ApiResponse extends ProductData {
-  Stitch?: number // Optional, as it's checked with > 0
-  Sticth_Pent?: number // Optional, as it's used in template literal
-  Orna?: number // Optional, as it's checked with > 0
-  Inner?: number // Added inner to ApiResponse
-  Un_Sticth_Pent?:number
+  Stitch?: number; // Optional, as it's checked with > 0
+  Sticth_Pent?: number; // Optional, as it's used in template literal
+  Orna?: number; // Optional, as it's checked with > 0
+  Inner?: number; // Added inner to ApiResponse
+  Un_Sticth_Pent?: number;
 }
 
-const ImageMagnifier: React.FC<{ src: string; alt: string }> = ({ src, alt }) => {
-  const [isHovered, setIsHovered] = useState(false)
-  const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 })
+const ImageMagnifier: React.FC<{ src: string; alt: string }> = ({
+  src,
+  alt,
+}) => {
+  const [isHovered, setIsHovered] = useState(false);
+  const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
 
   const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
-    const rect = e.currentTarget.getBoundingClientRect()
-    const x = ((e.clientX - rect.left) / rect.width) * 100
-    const y = ((e.clientY - rect.top) / rect.height) * 100
-    setMousePosition({ x, y })
-  }
+    const rect = e.currentTarget.getBoundingClientRect();
+    const x = ((e.clientX - rect.left) / rect.width) * 100;
+    const y = ((e.clientY - rect.top) / rect.height) * 100;
+    setMousePosition({ x, y });
+  };
 
   return (
     <div
@@ -101,54 +120,116 @@ const ImageMagnifier: React.FC<{ src: string; alt: string }> = ({ src, alt }) =>
         </div>
       )}
     </div>
-  )
-}
+  );
+};
 
 const SingleDetails: React.FC = () => {
-  const [currentImageIndex, setCurrentImageIndex] = useState(0)
-  const [selectedDressSize, setSelectedDressSize] = useState("")
-  const [selectedMake, setSelectedMake] = useState("")
-  const [quantity, setQuantity] = useState(1)
-  const [selectedOrna, setSelectedOrna] = useState("")
-  const [selectedInner, setSelectedInner] = useState("")
+  const [currentImageIndex, setCurrentImageIndex] = useState(0);
+  const [selectedDressSize, setSelectedDressSize] = useState("");
+  const [selectedMake, setSelectedMake] = useState("");
+  const [quantity, setQuantity] = useState(1);
+  const [selectedOrna, setSelectedOrna] = useState("");
+  const [selectedInner, setSelectedInner] = useState("");
   const [errors, setErrors] = useState({
     dressSize: false,
-  })
+  });
 
-  const params = useParams()
-  const [product, setProduct] = useState<ProductData | null>(null)
-  const axisPub = useAxiosPub()
+  const params = useParams();
+  const [product, setProduct] = useState<ProductData | null>(null);
+  const axisPub = useAxiosPub();
 
   const { data, isLoading, error } = useQuery<ApiResponse>({
     queryKey: ["allBabySingle", params?.id],
     queryFn: async () => {
-      const res = await axisPub.get(`/allData/${params?.id}`)
-      return res.data
+      const res = await axisPub.get(`/allData/${params?.id}`);
+      return res.data;
     },
     enabled: !!params?.id,
-  })
+  });
 
   useEffect(() => {
     if (data) {
-      setProduct(data)
+      setProduct(data);
     }
-  }, [data])
+  }, [data]);
 
   // Show loading state
   if (isLoading) {
     return (
       <>
         <Nav />
-        <div className="max-w-7xl mx-auto p-4 sm:p-6 flex items-center justify-center min-h-[60vh]">
-          <div className="flex items-center space-x-2">
-            <Loader2 className="h-6 w-6 animate-spin" />
-            <span className="text-sm sm:text-base">Loading product details...</span>
+        <div className="max-w-7xl mx-auto p-4 animate-pulse">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            {/* Left: Image and thumbnails */}
+            <div className="space-y-4">
+              <div className="w-full aspect-square bg-gray-300 rounded-md" />
+
+              <div className="flex space-x-2 overflow-x-auto">
+                {[...Array(4)].map((_, i) => (
+                  <div
+                    key={i}
+                    className="w-16 h-16 sm:w-20 sm:h-20 bg-gray-300 rounded-md"
+                  />
+                ))}
+              </div>
+            </div>
+
+            {/* Right: Product Info */}
+            <div className="space-y-4">
+              {/* Title and price */}
+              <div className="space-y-2">
+                <div className="w-1/3 h-4 bg-gray-300 rounded" />
+                <div className="w-3/4 h-6 bg-gray-300 rounded" />
+                <div className="w-1/4 h-4 bg-gray-300 rounded" />
+              </div>
+
+              {/* Description */}
+              <div className="space-y-2 mt-4">
+                <div className="w-2/3 h-4 bg-gray-300 rounded" />
+                <div className="w-full h-20 bg-gray-300 rounded" />
+              </div>
+
+              {/* Specs Grid */}
+              <div className="grid grid-cols-2 gap-4 mt-4">
+                {[...Array(4)].map((_, i) => (
+                  <div key={i} className="space-y-1">
+                    <div className="w-1/3 h-3 bg-gray-300 rounded" />
+                    <div className="w-2/3 h-4 bg-gray-300 rounded" />
+                  </div>
+                ))}
+              </div>
+
+              {/* Dropdowns */}
+              <div className="grid grid-cols-2 gap-4 mt-4">
+                {[...Array(3)].map((_, i) => (
+                  <div key={i} className="space-y-2">
+                    <div className="w-1/3 h-3 bg-gray-300 rounded" />
+                    <div className="w-full h-10 bg-gray-300 rounded" />
+                  </div>
+                ))}
+              </div>
+
+              {/* Quantity section */}
+              <div className="mt-4">
+                <div className="w-1/4 h-4 bg-gray-300 rounded mb-2" />
+                <div className="flex items-center space-x-4">
+                  <div className="w-10 h-10 bg-gray-300 rounded-md" />
+                  <div className="w-10 h-10 bg-gray-300 rounded-md" />
+                  <div className="w-10 h-10 bg-gray-300 rounded-md" />
+                </div>
+              </div>
+
+              {/* Add to cart button */}
+              <div className="mt-6">
+                <div className="w-1/2 h-12 bg-gray-300 rounded-lg" />
+              </div>
+            </div>
           </div>
         </div>
         <Footer />
         <Only_Sm_Show />
       </>
-    )
+    );
   }
 
   // Show error state or if product data is not available
@@ -158,7 +239,9 @@ const SingleDetails: React.FC = () => {
         <Nav />
         <div className="max-w-7xl mx-auto p-4 sm:p-6 flex items-center justify-center min-h-[60vh]">
           <div className="text-center px-4">
-            <h2 className="text-xl sm:text-2xl font-bold text-gray-900 mb-2">Product Not Found</h2>
+            <h2 className="text-xl sm:text-2xl font-bold text-gray-900 mb-2">
+              Product Not Found
+            </h2>
             <p className="text-sm sm:text-base text-gray-600">
               The product you're looking for doesn't exist or has been removed.
             </p>
@@ -167,17 +250,22 @@ const SingleDetails: React.FC = () => {
         <Footer />
         <Only_Sm_Show />
       </>
-    )
+    );
   }
 
   // Dropdown options - defined here after product and data are guaranteed to be available
-  const dressSizes = ["UnStitched", ...Array.from({ length: (48 - 30) / 2 + 1 }, (_, i) => (30 + i * 2).toString())]
+  const dressSizes = [
+    "UnStitched",
+    ...Array.from({ length: (48 - 30) / 2 + 1 }, (_, i) =>
+      (30 + i * 2).toString()
+    ),
+  ];
 
   // Function to extract price from selection string
   const extractPrice = (selection: string): number => {
-    const match = selection.match(/৳(\d+)/)
-    return match ? Number.parseInt(match[1]) : 0
-  }
+    const match = selection.match(/৳(\d+)/);
+    return match ? Number.parseInt(match[1]) : 0;
+  };
 
   // Correctly construct makeOptions with prices as ADDONS
   const makeOptions = [
@@ -188,91 +276,123 @@ const SingleDetails: React.FC = () => {
     // Existing Stitched-Pent options
     ...(data?.Sticth_Pent && Number(data.Sticth_Pent) > 0
       ? Array.from({ length: 11 }, (_, i) => {
-          const size = 30 + i // generate sizes from 30 to 40
+          const size = 30 + i; // generate sizes from 30 to 40
           // The price here is the ADDON price for the stitched pant
-          return `${data?.name} pajama-${size} ৳${Number(data.Sticth_Pent)}`
+          return `${data?.name} pajama-${size} ৳${Number(data.Sticth_Pent)}`;
         })
       : []),
-  ]
+  ];
 
-  console.log(data)
-  const ornaOptions = [...(data?.Orna && Number(data.Orna) > 0 ? [`Orna ৳${Number(data.Orna)}`] : [])]
+  console.log(data);
+  const ornaOptions = [
+    ...(data?.Orna && Number(data.Orna) > 0
+      ? [`Orna ৳${Number(data.Orna)}`]
+      : []),
+  ];
 
-  const innerOptions = [...(data?.Inner && Number(data.Inner) > 0 ? [`Inner ৳${Number(data.Inner)}`] : [])]
+  const innerOptions = [
+    ...(data?.Inner && Number(data.Inner) > 0
+      ? [`Inner ৳${Number(data.Inner)}`]
+      : []),
+  ];
 
   // Calculate addon prices
   const getDressSizePrice = (): number => {
     if (!selectedDressSize || selectedDressSize === "UnStitched") {
-      return 0
+      return 0;
     }
     // Ensure data.Stitch is treated as a number
-    return Number(data?.Stitch || 0)
-  }
+    return Number(data?.Stitch || 0);
+  };
 
   const getMakePrice = (): number => {
     if (!selectedMake) {
-      return 0
+      return 0;
     }
     // Now, extractPrice will correctly handle "Non-Stitched-Pent ৳X" or "Non-Stitched-Pent"
-    return Number(extractPrice(selectedMake))
-  }
+    return Number(extractPrice(selectedMake));
+  };
 
   const getOrnaPrice = (): number => {
-    if (!selectedOrna) return 0
+    if (!selectedOrna) return 0;
     if (selectedOrna.includes("Orna")) {
-      return Number(extractPrice(selectedOrna))
+      return Number(extractPrice(selectedOrna));
     }
-    return 0
-  }
+    return 0;
+  };
 
   const getInnerPrice = (): number => {
-    if (!selectedInner) return 0
+    if (!selectedInner) return 0;
     if (selectedInner.includes("Inner")) {
-      return Number(extractPrice(selectedInner))
+      return Number(extractPrice(selectedInner));
     }
-    return 0
-  }
+    return 0;
+  };
 
   // Calculate totals
-  const addonTotal = getDressSizePrice() + getMakePrice() + getOrnaPrice() + getInnerPrice()
-  const deliveryCharge = 0 // Delivery charge is 0 as per current implementation.
+  const addonTotal =
+    getDressSizePrice() + getMakePrice() + getOrnaPrice() + getInnerPrice();
+  const deliveryCharge = 0; // Delivery charge is 0 as per current implementation.
   // If you need it to be dynamic (e.g., ৳400), please provide the conditions for when it should apply.
-  const subtotal = product.price * quantity + addonTotal
-  const grandTotal = subtotal + deliveryCharge
+  const subtotal = product.price * quantity + addonTotal;
+  const grandTotal = subtotal + deliveryCharge;
 
   const validateForm = () => {
     const newErrors = {
       dressSize: (Number(data?.Stitch) || 0) > 0 && !selectedDressSize, // Dress size is required if Stitch addon exists
-    }
-    setErrors(newErrors)
-    return !Object.values(newErrors).some((error) => error)
-  }
+    };
+    setErrors(newErrors);
+    return !Object.values(newErrors).some((error) => error);
+  };
 
-  const handleAddToCart = () => {
-    if (validateForm()) {
-      const formData = {
-        product: product.name,
-        dressSize: selectedDressSize,
-        make: selectedMake,
-        orna: selectedOrna,
-        inner: selectedInner, // Include selectedInner in form data
-        quantity: quantity,
-        basePrice: product.price * quantity,
-        dressSizePrice: getDressSizePrice(),
-        makePrice: getMakePrice(),
-        ornaPrice: getOrnaPrice(),
-        innerPrice: getInnerPrice(), // Include innerPrice in form data
-        addonTotal: addonTotal,
-        subtotal: subtotal,
-        deliveryCharge: deliveryCharge,
-        totalPrice: grandTotal,
-      }
-      console.log("Add to Cart - Form Data:", formData)
-      // Add to cart logic here
-    } else {
-      console.log("Form validation failed - please fill all required fields")
+const handleAddToCart = () => {
+  if (validateForm()) {
+    const formData = {
+      _id: product?._id,
+      product: product.name,
+      dressSize: selectedDressSize,
+      make: selectedMake,
+      orna: selectedOrna,
+      inner: selectedInner,
+      quantity: quantity,
+      basePrice: product.price * quantity,
+      dressSizePrice: getDressSizePrice(),
+      makePrice: getMakePrice(),
+      ornaPrice: getOrnaPrice(),
+      innerPrice: getInnerPrice(),
+      addonTotal: addonTotal,
+      subtotal: subtotal,
+      deliveryCharge: deliveryCharge,
+      totalPrice: grandTotal,
+    };
+
+    console.log("Add to Cart - Form Data:", formData);
+    const cartData = localStorage.getItem("cart");
+
+    let CartIf: typeof formData[] = [];
+
+    try {
+      const parsed = JSON.parse(cartData || "[]");
+      CartIf = Array.isArray(parsed) ? parsed : [];
+    } catch {
+      CartIf = [];
     }
+    const exists = CartIf.find((item) => item._id === formData._id);
+    if (exists) {
+      CartIf = CartIf.filter((item) => item._id !== formData._id);
+    }
+
+   
+    CartIf.push(formData);
+    localStorage.setItem("cart", JSON.stringify(CartIf));
+
+    toast.success("Item Added To The Cart.");
+  } else {
+    console.log("Form validation failed - please fill all required fields");
   }
+};
+
+
 
   const handleOrderNow = () => {
     if (validateForm()) {
@@ -292,36 +412,39 @@ const SingleDetails: React.FC = () => {
         subtotal: subtotal,
         deliveryCharge: deliveryCharge,
         totalPrice: grandTotal,
-      }
-      console.log("Order Now - Form Data:", formData)
+      };
+      console.log("Order Now - Form Data:", formData);
       // Order now logic here
     } else {
-      console.log("Form validation failed - please fill all required fields")
+      console.log("Form validation failed - please fill all required fields");
     }
-  }
+  };
 
-  const images = [product.pic1, product.pic2].filter(Boolean)
+  const images = [product.pic1, product.pic2].filter(Boolean);
 
   const nextImage = () => {
-    setCurrentImageIndex((prev) => (prev + 1) % images.length)
-  }
+    setCurrentImageIndex((prev) => (prev + 1) % images.length);
+  };
 
   const prevImage = () => {
-    setCurrentImageIndex((prev) => (prev - 1 + images.length) % images.length)
-  }
+    setCurrentImageIndex((prev) => (prev - 1 + images.length) % images.length);
+  };
 
   const goToImage = (index: number) => {
-    setCurrentImageIndex(index)
-  }
+    setCurrentImageIndex(index);
+  };
 
   const getStockStatus = (stock: number) => {
-    if (stock > 50) return { text: "In Stock", color: "bg-green-100 text-green-800" }
-    if (stock > 10) return { text: "Low Stock", color: "bg-yellow-100 text-yellow-800" }
-    if (stock > 0) return { text: "Few Left", color: "bg-orange-100 text-orange-800" }
-    return { text: "Out of Stock", color: "bg-red-100 text-red-800" }
-  }
+    if (stock > 50)
+      return { text: "In Stock", color: "bg-green-100 text-green-800" };
+    if (stock > 10)
+      return { text: "Low Stock", color: "bg-yellow-100 text-yellow-800" };
+    if (stock > 0)
+      return { text: "Few Left", color: "bg-orange-100 text-orange-800" };
+    return { text: "Out of Stock", color: "bg-red-100 text-red-800" };
+  };
 
-  const stockStatus = getStockStatus(product.stock)
+  const stockStatus = getStockStatus(product.stock);
 
   return (
     <>
@@ -375,9 +498,15 @@ const SingleDetails: React.FC = () => {
                     key={index}
                     onClick={() => goToImage(index)}
                     className={`relative w-16 h-16 sm:w-20 sm:h-20 rounded-lg overflow-hidden border-2 transition-all flex-shrink-0 ${
-                      currentImageIndex === index ? "border-primary" : "border-gray-200 hover:border-gray-300"
+                      currentImageIndex === index
+                        ? "border-primary"
+                        : "border-gray-200 hover:border-gray-300"
                     }`}
-                    style={currentImageIndex === index ? { borderColor: "#761A24" } : {}}
+                    style={
+                      currentImageIndex === index
+                        ? { borderColor: "#761A24" }
+                        : {}
+                    }
                   >
                     <img
                       src={image || "/placeholder.svg"}
@@ -397,18 +526,29 @@ const SingleDetails: React.FC = () => {
                 <Badge variant="secondary" className="text-xs sm:text-sm">
                   {product.category}
                 </Badge>
-                <Badge className={`${stockStatus.color} text-xs sm:text-sm`}>{stockStatus.text}</Badge>
+                <Badge className={`${stockStatus.color} text-xs sm:text-sm`}>
+                  {stockStatus.text}
+                </Badge>
               </div>
-              <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-2">{product.name}</h1>
-              <p className="text-sm sm:text-base text-gray-600 mb-2">by {product.brand}</p>
-              <div className="text-2xl sm:text-3xl font-bold text-primary mb-4" style={{ color: "#761A24" }}>
+              <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-2">
+                {product.name}
+              </h1>
+              <p className="text-sm sm:text-base text-gray-600 mb-2">
+                by {product.brand}
+              </p>
+              <div
+                className="text-2xl sm:text-3xl font-bold text-primary mb-4"
+                style={{ color: "#761A24" }}
+              >
                 ৳{product.price}
               </div>
             </div>
             {/* Product Details */}
             <div className="space-y-4">
               <div>
-                <h3 className="text-base sm:text-lg font-semibold mb-2">Description</h3>
+                <h3 className="text-base sm:text-lg font-semibold mb-2">
+                  Description
+                </h3>
                 <p className="text-sm sm:text-base text-gray-600 leading-relaxed whitespace-pre-line">
                   {product.description}
                 </p>
@@ -416,20 +556,36 @@ const SingleDetails: React.FC = () => {
               {/* Product Specifications */}
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
                 <div>
-                  <span className="text-xs sm:text-sm font-medium text-gray-500">Material:</span>
-                  <p className="text-sm sm:text-base text-gray-900">{product.material}</p>
+                  <span className="text-xs sm:text-sm font-medium text-gray-500">
+                    Material:
+                  </span>
+                  <p className="text-sm sm:text-base text-gray-900">
+                    {product.material}
+                  </p>
                 </div>
                 <div>
-                  <span className="text-xs sm:text-sm font-medium text-gray-500">Gender:</span>
-                  <p className="text-sm sm:text-base text-gray-900">{product.gender}</p>
+                  <span className="text-xs sm:text-sm font-medium text-gray-500">
+                    Gender:
+                  </span>
+                  <p className="text-sm sm:text-base text-gray-900">
+                    {product.gender}
+                  </p>
                 </div>
                 <div>
-                  <span className="text-xs sm:text-sm font-medium text-gray-500">Season:</span>
-                  <p className="text-sm sm:text-base text-gray-900">{product?.season}</p>
+                  <span className="text-xs sm:text-sm font-medium text-gray-500">
+                    Season:
+                  </span>
+                  <p className="text-sm sm:text-base text-gray-900">
+                    {product?.season}
+                  </p>
                 </div>
                 <div>
-                  <span className="text-xs sm:text-sm font-medium text-gray-500">Stock:</span>
-                  <p className="text-sm sm:text-base text-gray-900">{product.stock} units</p>
+                  <span className="text-xs sm:text-sm font-medium text-gray-500">
+                    Stock:
+                  </span>
+                  <p className="text-sm sm:text-base text-gray-900">
+                    {product.stock} units
+                  </p>
                 </div>
               </div>
             </div>
@@ -443,25 +599,35 @@ const SingleDetails: React.FC = () => {
                   </Label>
                   <Select
                     onValueChange={(value) => {
-                      setSelectedDressSize(value)
-                      setErrors((prev) => ({ ...prev, dressSize: false }))
+                      setSelectedDressSize(value);
+                      setErrors((prev) => ({ ...prev, dressSize: false }));
                     }}
                   >
                     <SelectTrigger
                       id="dress-size"
-                      className={`text-sm sm:text-base ${errors.dressSize ? "border-red-300" : ""}`}
+                      className={`text-sm sm:text-base ${
+                        errors.dressSize ? "border-red-300" : ""
+                      }`}
                     >
                       <SelectValue placeholder="Select dress size" />
                     </SelectTrigger>
                     <SelectContent>
                       {dressSizes.map((size) => (
-                        <SelectItem key={size} value={size} className="text-sm sm:text-base">
+                        <SelectItem
+                          key={size}
+                          value={size}
+                          className="text-sm sm:text-base"
+                        >
                           {size}
                         </SelectItem>
                       ))}
                     </SelectContent>
                   </Select>
-                  {errors.dressSize && <p className="text-red-500 text-xs sm:text-sm">Please select a dress size</p>}
+                  {errors.dressSize && (
+                    <p className="text-red-500 text-xs sm:text-sm">
+                      Please select a dress size
+                    </p>
+                  )}
                 </div>
               )}
               {/* Addon 1 Dropdown (Optional) */}
@@ -472,15 +638,22 @@ const SingleDetails: React.FC = () => {
                   </Label>
                   <Select
                     onValueChange={(value) => {
-                      setSelectedMake(value)
+                      setSelectedMake(value);
                     }}
                   >
-                    <SelectTrigger id="make-type" className="text-sm sm:text-base">
+                    <SelectTrigger
+                      id="make-type"
+                      className="text-sm sm:text-base"
+                    >
                       <SelectValue placeholder="Select addon" />
                     </SelectTrigger>
                     <SelectContent>
                       {makeOptions.map((make) => (
-                        <SelectItem key={make} value={make} className="text-sm sm:text-base">
+                        <SelectItem
+                          key={make}
+                          value={make}
+                          className="text-sm sm:text-base"
+                        >
                           {make}
                         </SelectItem>
                       ))}
@@ -496,15 +669,22 @@ const SingleDetails: React.FC = () => {
                   </Label>
                   <Select
                     onValueChange={(value) => {
-                      setSelectedOrna(value)
+                      setSelectedOrna(value);
                     }}
                   >
-                    <SelectTrigger id="orna-type" className="text-sm sm:text-base">
+                    <SelectTrigger
+                      id="orna-type"
+                      className="text-sm sm:text-base"
+                    >
                       <SelectValue placeholder="Select Orna" />
                     </SelectTrigger>
                     <SelectContent>
                       {ornaOptions.map((ornaItem) => (
-                        <SelectItem key={ornaItem} value={ornaItem} className="text-sm sm:text-base">
+                        <SelectItem
+                          key={ornaItem}
+                          value={ornaItem}
+                          className="text-sm sm:text-base"
+                        >
                           {ornaItem}
                         </SelectItem>
                       ))}
@@ -520,15 +700,22 @@ const SingleDetails: React.FC = () => {
                   </Label>
                   <Select
                     onValueChange={(value) => {
-                      setSelectedInner(value)
+                      setSelectedInner(value);
                     }}
                   >
-                    <SelectTrigger id="inner-type" className="text-sm sm:text-base">
+                    <SelectTrigger
+                      id="inner-type"
+                      className="text-sm sm:text-base"
+                    >
                       <SelectValue placeholder="Select inner" />
                     </SelectTrigger>
                     <SelectContent>
                       {innerOptions.map((innerItem) => (
-                        <SelectItem key={innerItem} value={innerItem} className="text-sm sm:text-base">
+                        <SelectItem
+                          key={innerItem}
+                          value={innerItem}
+                          className="text-sm sm:text-base"
+                        >
                           {innerItem}
                         </SelectItem>
                       ))}
@@ -538,27 +725,44 @@ const SingleDetails: React.FC = () => {
               )}
             </div>
             {/* Selected Options Display */}
-            {(selectedDressSize || selectedMake || selectedOrna || selectedInner) && (
+            {(selectedDressSize ||
+              selectedMake ||
+              selectedOrna ||
+              selectedInner) && (
               <div className="bg-gray-50 p-3 sm:p-4 rounded-lg">
-                <h4 className="text-xs sm:text-sm font-medium text-gray-700 mb-2">Selected Options:</h4>
+                <h4 className="text-xs sm:text-sm font-medium text-gray-700 mb-2">
+                  Selected Options:
+                </h4>
                 <div className="flex flex-wrap gap-2">
                   {selectedDressSize && (
-                    <Badge variant="outline" className="bg-white text-xs sm:text-sm">
+                    <Badge
+                      variant="outline"
+                      className="bg-white text-xs sm:text-sm"
+                    >
                       Dress Size: {selectedDressSize}
                     </Badge>
                   )}
                   {selectedMake && (
-                    <Badge variant="outline" className="bg-white text-xs sm:text-sm">
+                    <Badge
+                      variant="outline"
+                      className="bg-white text-xs sm:text-sm"
+                    >
                       Addon 1: {selectedMake}
                     </Badge>
                   )}
                   {selectedOrna && (
-                    <Badge variant="outline" className="bg-white text-xs sm:text-sm">
+                    <Badge
+                      variant="outline"
+                      className="bg-white text-xs sm:text-sm"
+                    >
                       Addon 2: {selectedOrna}
                     </Badge>
                   )}
                   {selectedInner && (
-                    <Badge variant="outline" className="bg-white text-xs sm:text-sm">
+                    <Badge
+                      variant="outline"
+                      className="bg-white text-xs sm:text-sm"
+                    >
                       Addon 3: {selectedInner}
                     </Badge>
                   )}
@@ -567,7 +771,9 @@ const SingleDetails: React.FC = () => {
             )}
             {/* Quantity */}
             <div>
-              <h3 className="text-base sm:text-lg font-semibold mb-3">Quantity</h3>
+              <h3 className="text-base sm:text-lg font-semibold mb-3">
+                Quantity
+              </h3>
               <div className="flex items-center space-x-3">
                 <button
                   onClick={() => setQuantity(Math.max(1, quantity - 1))}
@@ -575,7 +781,9 @@ const SingleDetails: React.FC = () => {
                 >
                   -
                 </button>
-                <span className="text-base sm:text-lg font-medium w-8 sm:w-12 text-center">{quantity}</span>
+                <span className="text-base sm:text-lg font-medium w-8 sm:w-12 text-center">
+                  {quantity}
+                </span>
                 <button
                   onClick={() => setQuantity(quantity + 1)}
                   className="w-8 h-8 sm:w-10 sm:h-10 border border-gray-300 rounded-lg flex items-center justify-center hover:bg-gray-50 text-sm sm:text-base"
@@ -586,50 +794,86 @@ const SingleDetails: React.FC = () => {
             </div>
             {/* Price Breakdown Section */}
             <div className="bg-gradient-to-r from-gray-50 to-gray-100 p-3 sm:p-4 rounded-lg border">
-              <h3 className="text-base sm:text-lg font-semibold mb-3 text-gray-900">Price Breakdown</h3>
+              <h3 className="text-base sm:text-lg font-semibold mb-3 text-gray-900">
+                Price Breakdown
+              </h3>
               <div className="space-y-2 sm:space-y-3">
                 {/* Base Price */}
                 <div className="flex justify-between items-center">
-                  <span className="text-sm sm:text-base text-gray-600">Base Price:</span>
-                  <span className="text-sm sm:text-base font-medium">৳{product.price}</span>
+                  <span className="text-sm sm:text-base text-gray-600">
+                    Base Price:
+                  </span>
+                  <span className="text-sm sm:text-base font-medium">
+                    ৳{product.price}
+                  </span>
                 </div>
                 {/* Quantity Calculation */}
                 <div className="flex justify-between items-center">
-                  <span className="text-sm sm:text-base text-gray-600">Quantity ({quantity}):</span>
-                  <span className="text-sm sm:text-base font-medium">৳{product.price * quantity}</span>
+                  <span className="text-sm sm:text-base text-gray-600">
+                    Quantity ({quantity}):
+                  </span>
+                  <span className="text-sm sm:text-base font-medium">
+                    ৳{product.price * quantity}
+                  </span>
                 </div>
                 {/* Addon Prices */}
-                {(getDressSizePrice() > 0 || getMakePrice() > 0 || getOrnaPrice() > 0 || getInnerPrice() > 0) && (
+                {(getDressSizePrice() > 0 ||
+                  getMakePrice() > 0 ||
+                  getOrnaPrice() > 0 ||
+                  getInnerPrice() > 0) && (
                   <>
                     <hr className="border-gray-300" />
-                    <div className="text-sm sm:text-base font-medium text-gray-700 mb-2">Addon Charges:</div>
+                    <div className="text-sm sm:text-base font-medium text-gray-700 mb-2">
+                      Addon Charges:
+                    </div>
                     {getDressSizePrice() > 0 && (
                       <div className="flex justify-between items-center pl-4">
-                        <span className="text-xs sm:text-sm text-gray-600">• Dress Size Charge:</span>
-                        <span className="text-xs sm:text-sm font-medium">৳{getDressSizePrice()}</span>
+                        <span className="text-xs sm:text-sm text-gray-600">
+                          • Dress Size Charge:
+                        </span>
+                        <span className="text-xs sm:text-sm font-medium">
+                          ৳{getDressSizePrice()}
+                        </span>
                       </div>
                     )}
                     {getMakePrice() > 0 && (
                       <div className="flex justify-between items-center pl-4">
-                        <span className="text-xs sm:text-sm text-gray-600">• Addon 1 Charge:</span>
-                        <span className="text-xs sm:text-sm font-medium">৳{getMakePrice()}</span>
+                        <span className="text-xs sm:text-sm text-gray-600">
+                          • Addon 1 Charge:
+                        </span>
+                        <span className="text-xs sm:text-sm font-medium">
+                          ৳{getMakePrice()}
+                        </span>
                       </div>
                     )}
                     {getOrnaPrice() > 0 && (
                       <div className="flex justify-between items-center pl-4">
-                        <span className="text-xs sm:text-sm text-gray-600">• Addon 2 Charge:</span>
-                        <span className="text-xs sm:text-sm font-medium">৳{getOrnaPrice()}</span>
+                        <span className="text-xs sm:text-sm text-gray-600">
+                          • Addon 2 Charge:
+                        </span>
+                        <span className="text-xs sm:text-sm font-medium">
+                          ৳{getOrnaPrice()}
+                        </span>
                       </div>
                     )}
                     {getInnerPrice() > 0 && (
                       <div className="flex justify-between items-center pl-4">
-                        <span className="text-xs sm:text-sm text-gray-600">• Addon 3 Charge:</span>
-                        <span className="text-xs sm:text-sm font-medium">৳{getInnerPrice()}</span>
+                        <span className="text-xs sm:text-sm text-gray-600">
+                          • Addon 3 Charge:
+                        </span>
+                        <span className="text-xs sm:text-sm font-medium">
+                          ৳{getInnerPrice()}
+                        </span>
                       </div>
                     )}
                     <div className="flex justify-between items-center font-medium border-t border-gray-300 pt-2">
-                      <span className="text-sm sm:text-base text-gray-700">Addon Total:</span>
-                      <span className="text-sm sm:text-base" style={{ color: "#761A24" }}>
+                      <span className="text-sm sm:text-base text-gray-700">
+                        Addon Total:
+                      </span>
+                      <span
+                        className="text-sm sm:text-base"
+                        style={{ color: "#761A24" }}
+                      >
                         ৳{addonTotal}
                       </span>
                     </div>
@@ -638,8 +882,12 @@ const SingleDetails: React.FC = () => {
                 {/* Delivery Charge */}
                 <hr className="border-gray-300" />
                 <div className="flex justify-between items-center">
-                  <span className="text-sm sm:text-base text-gray-600">Delivery Charge:</span>
-                  <span className="text-sm sm:text-base font-medium">৳{deliveryCharge}</span>
+                  <span className="text-sm sm:text-base text-gray-600">
+                    Delivery Charge:
+                  </span>
+                  <span className="text-sm sm:text-base font-medium">
+                    ৳{deliveryCharge}
+                  </span>
                 </div>
                 <hr className="border-gray-300" />
                 {/* Total Calculation */}
@@ -675,11 +923,15 @@ const SingleDetails: React.FC = () => {
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
                 <div className="flex items-center space-x-2">
                   <RotateCcw className="h-4 w-4 sm:h-5 sm:w-5 text-gray-400" />
-                  <span className="text-xs sm:text-sm text-gray-600">4-Day Returns</span>
+                  <span className="text-xs sm:text-sm text-gray-600">
+                    4-Day Returns
+                  </span>
                 </div>
                 <div className="flex items-center space-x-2">
                   <Car className="h-4 w-4 sm:h-5 sm:w-5 text-gray-400" />
-                  <span className="text-xs sm:text-sm text-gray-600">Free Home Delevary</span>
+                  <span className="text-xs sm:text-sm text-gray-600">
+                    Free Home Delevary
+                  </span>
                 </div>
               </div>
             </div>
@@ -689,7 +941,7 @@ const SingleDetails: React.FC = () => {
       <Footer />
       <Only_Sm_Show />
     </>
-  )
-}
+  );
+};
 
-export default SingleDetails
+export default SingleDetails;

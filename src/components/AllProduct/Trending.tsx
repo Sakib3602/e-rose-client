@@ -9,11 +9,11 @@ import { Link } from "react-router-dom"
 import { toast } from "react-toastify"
 
 interface Product {
-  _id: string // Changed to _id for consistency with API mapping
+  _id: string 
   name: string
   price: string
-  Hprice: string // Original price for strikethrough
-  image: string // Now directly using 'image' for the URL
+  Hprice: string 
+  image: string 
 }
 
 export default function Tranding() {
@@ -22,13 +22,13 @@ export default function Tranding() {
     queryKey: ["top"],
     queryFn: async () => {
       const res = await axiosPublic.get("/allData")
-      // Map the fetched data to match the Product interface
+     
       return res.data.map((item: any) => ({
-        _id: item._id, // Use _id as the unique identifier
+        _id: item._id, 
         name: item.name,
         price: item.price,
         Hprice: item.Hprice,
-        image: item.pic1, // Mapping item.pic1 to the 'image' property
+        image: item.pic1, 
       }))
     },
   })
@@ -38,9 +38,7 @@ export default function Tranding() {
   const [currentIndex, setCurrentIndex] = useState(0)
   const [isHovered, setIsHovered] = useState(false)
   const [wishlistedItems, setWishlistedItems] = useState<Set<string>>(new Set())
-  // This state is not directly used for rendering, but for triggering re-renders
-  // when localStorage changes. It's better to re-read from localStorage in useEffect
-  // or use a global state management for real-time updates across components.
+ 
   const [wishTrigger, setWishTrigger] = useState(0)
 
   const [itemsPerView, setItemsPerView] = useState(3)
@@ -48,20 +46,20 @@ export default function Tranding() {
   const [touchEnd, setTouchEnd] = useState(0)
   const intervalRef = useRef<NodeJS.Timeout | null>(null)
 
-  // Initialize wishlistedItems from localStorage on component mount
+  
   useEffect(() => {
     const storedWishlist = localStorage.getItem("wishList")
     if (storedWishlist) {
       const parsedWishlist: Product[] = JSON.parse(storedWishlist)
       setWishlistedItems(new Set(parsedWishlist.map((item) => item._id)))
     }
-  }, [wishTrigger]) // Re-run when wishTrigger changes
+  }, [wishTrigger])
 
   // Responsive breakpoints
   const updateItemsPerView = () => {
     const width = window.innerWidth
     if (width < 640) {
-      setItemsPerView(1) // Mobile
+      setItemsPerView(1) 
     } else if (width < 1024) {
       setItemsPerView(2) // Tablet
     } else {

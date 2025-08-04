@@ -5,6 +5,7 @@ import { XCircle } from "lucide-react"
 import Nav from "../Nav/Nav"
 import Footer from "../Footer/Footer"
 import Only_Sm_Show from "../Nav/Only_Sm_Show"
+import { Link } from "react-router-dom"
 
 interface WishlistItem {
   _id: string // Using _id as the primary identifier
@@ -23,7 +24,7 @@ export default function WishlistSection() {
     setWish(currentWishlist)
   }, [])
 
-  
+
 
   const handleRemoveItem = (_id: string) => {
     const updatedWishlist = wish.filter((item) => item._id !== _id)
@@ -46,6 +47,7 @@ export default function WishlistSection() {
           <div className="text-center py-10 text-gray-500">
             <p className="text-lg">Your wishlist is empty.</p>
             <p className="text-sm">Start adding your favorite products!</p>
+            <Link to={"/allproduct"}> <p className="text-sm underline">View Our All Products</p></Link>
           </div>
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
