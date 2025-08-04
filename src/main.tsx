@@ -17,6 +17,7 @@ import SingleDetails from "./components/AllProduct/SingleDetail/SingleDetails.ts
 import { DbProvider } from "./components/ALL_DBWORK/DbContext.tsx";
 import { QueryClientProvider } from "@tanstack/react-query";
 import { QueryClient } from "@tanstack/react-query";
+import PrivateRoute from "./components/DashBord/PrivateRoute/PrivateRoute.tsx";
 
 // ✅ Define the queryClient BEFORE using it
 const queryClient = new QueryClient();
@@ -36,7 +37,7 @@ createRoot(document.getElementById("root")!).render(
           <Route path="allproduct/details/:id" element={<SingleDetails />} />
 
           {/* dashbord */}
-          <Route path="dashbord" element={<DashOut />}>
+          <Route path="dashbord" element={<PrivateRoute><DashOut /></PrivateRoute>}>
             <Route index element={<DashHome></DashHome>} />
             <Route path="allpro" element={<AdminProduct />} />
             <Route path="addItem" element={<AddItem />} />

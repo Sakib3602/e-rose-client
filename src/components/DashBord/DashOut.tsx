@@ -1,5 +1,5 @@
 import type React from "react";
-import { useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
@@ -13,22 +13,42 @@ import {
   Settings,
   Bell,
   Shirt,
-  FilePlus2
+  FilePlus2,
 } from "lucide-react";
-import { Link, NavLink, Outlet } from "react-router-dom";
+import { Link, NavLink, Outlet, useNavigate } from "react-router-dom";
+import { AuthContext } from "../loginRegistration_work/AuthProvider/AuthProvider";
 
 const DashOut: React.FC = () => {
+  const auth = useContext(AuthContext);
+
+  if (!auth) {
+    throw new Error("AuthContext must be used within an AuthProvider");
+  }
+
+  const { person, loading } = auth;
+  const navigate = useNavigate();
+  
+  useEffect(() => {
+  if (!person) {
+    navigate("/login");
+  }
+}, [person, navigate]);
+
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
   const menuItems = [
     { id: "dashboard", label: "Dashboard", icon: Home, loc: "" },
     { id: "products", label: "Products", icon: Package, loc: "allPro" },
     { id: "orders", label: "Orders", icon: ShoppingCart, loc: "order" },
-    { id: "Add Item", label: "Add Item", icon: FilePlus2, loc:"addItem" },
+    { id: "Add Item", label: "Add Item", icon: FilePlus2, loc: "addItem" },
     { id: "customers", label: "Customers", icon: Users },
     { id: "analytics", label: "Analytics", icon: BarChart3 },
     { id: "settings", label: "Settings", icon: Settings },
   ];
+  if (loading) {
+  return <div>Loading...</div>; // or a spinner
+}
+
 
   return (
     <div className="flex h-screen bg-white ">
@@ -40,28 +60,26 @@ const DashOut: React.FC = () => {
       >
         {/* Sidebar Header */}
         <Link to={"/"}>
-        <div className="flex items-center justify-between h-16 px-6 border-b border-gray-200">
-          <div className="flex items-center space-x-3">
-            <div
-              className="w-8 h-8 rounded-lg flex items-center justify-center"
-              style={{ backgroundColor: "#761A24" }}
-            >
-              <Shirt className="w-5 h-5 text-white" />
+          <div className="flex items-center justify-between h-16 px-6 border-b border-gray-200">
+            <div className="flex items-center space-x-3">
+              <div
+                className="w-8 h-8 rounded-lg flex items-center justify-center"
+                style={{ backgroundColor: "#761A24" }}
+              >
+                <Shirt className="w-5 h-5 text-white" />
+              </div>
+              <h1 className="text-xl font-bold text-gray-900">RoseWood</h1>
             </div>
-            <h1 className="text-xl font-bold text-gray-900">RoseWood</h1>
+            <Button
+              variant="ghost"
+              size="sm"
+              className="sm:hidden"
+              onClick={() => setSidebarOpen(false)}
+            >
+              <X className="h-5 w-5" />
+            </Button>
           </div>
-          <Button
-            variant="ghost"
-            size="sm"
-            className="sm:hidden"
-            onClick={() => setSidebarOpen(false)}
-          >
-            <X className="h-5 w-5" />
-          </Button>
-        </div>
         </Link>
-        
-
 
         {/* Navigation Menu */}
         <nav className="mt-6 px-3">

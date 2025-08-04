@@ -15,6 +15,8 @@ import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { Link } from "react-router-dom";
 import { AuthContext } from "../loginRegistration_work/AuthProvider/AuthProvider";
+import useAxiosSec from "../Axios/useAxiosSec";
+import { useQuery } from "@tanstack/react-query";
 
 export default function Nav() {
   const [isOpen, setIsOpen] = useState(false);
@@ -22,6 +24,14 @@ export default function Nav() {
   if(!auth)  throw new Error("AuthContext must be used within an AuthProvider");
    const { person} = auth;
   console.log("nav", person)
+  const axiosSec = useAxiosSec()
+      const {data} = useQuery({
+        queryKey : ["userData"],
+        queryFn : async()=>{
+            const res = await axiosSec.get(`/user/${person?.email}`)
+            return res.data;
+        }
+      })
 
   const navigationItems = [
     { name: "Home", href: "/", icon: Home },
@@ -29,7 +39,9 @@ export default function Nav() {
     { name: "Cart", href: "/cart", icon: ShoppingCart },
     { name: "Order", href: "/order", icon: Package },
     { name: "Reviews", href: "/review", icon: Star },
-    { name: "DashBord", href: "/dashbord", icon: Star },
+     ...(data?.role === "admin"
+    ? [{ name: "Dashboard", href: "/dashbord", icon: Star }]
+    : []),
   ];
 
   const handleLinkClick = () => {
