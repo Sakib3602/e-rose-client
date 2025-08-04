@@ -1,103 +1,87 @@
-"use client";
+"use client"
 
-import type React from "react";
-import { useState, useEffect, useRef } from "react";
-import { Heart, ChevronLeft, ChevronRight } from "lucide-react";
-import { useQuery } from "@tanstack/react-query";
-import useAxiosPub from "../Axios/useAxiosPub";
-import { Link } from "react-router-dom";
+import type React from "react"
+import { useState, useEffect, useRef } from "react"
+import { Heart, ChevronLeft, ChevronRight } from "lucide-react"
+import { useQuery } from "@tanstack/react-query"
+import useAxiosPub from "../Axios/useAxiosPub"
+import { Link } from "react-router-dom"
 
 interface Product {
-  _id: string; // Changed to _id for consistency with API mapping
-  name: string;
-  price: string;
-  Hprice: string; // Original price for strikethrough
-  image: string;
-  pic1?: string; // Optional, as it might be used for image
+  _id: string // Changed to _id for consistency with API mapping
+  name: string
+  price: string
+  Hprice: string // Original price for strikethrough
+  image: string // Now directly using 'image' for the URL
 }
 
 export default function Tranding() {
-  const axiosPublic = useAxiosPub();
+  const axiosPublic = useAxiosPub()
   const { data: fetchedProducts = [], isLoading } = useQuery<Product[]>({
     queryKey: ["top"],
     queryFn: async () => {
-      const res = await axiosPublic.get("/allData");
+      const res = await axiosPublic.get("/allData")
       // Map the fetched data to match the Product interface
       return res.data.map((item: any) => ({
         _id: item._id, // Use _id as the unique identifier
         name: item.name,
         price: item.price,
         Hprice: item.Hprice,
-        image: item.pic1, // Using pic1 as the main image
-      }));
+        image: item.pic1, // Mapping item.pic1 to the 'image' property
+      }))
     },
-  });
+  })
 
-  const products = fetchedProducts;
+  const products = fetchedProducts
 
-  const [currentIndex, setCurrentIndex] = useState(0);
-  const [isHovered, setIsHovered] = useState(false);
-  const [wishlistedItems, setWishlistedItems] = useState<Set<string>>(
-    new Set()
-  );
-  const [wish, setWish] = useState<Product>();
-  const [itemsPerView, setItemsPerView] = useState(3);
-  const [touchStart, setTouchStart] = useState(0);
-  const [touchEnd, setTouchEnd] = useState(0);
-  const intervalRef = useRef<NodeJS.Timeout | null>(null);
+  const [currentIndex, setCurrentIndex] = useState(0)
+  const [isHovered, setIsHovered] = useState(false)
+  const [wishlistedItems, setWishlistedItems] = useState<Set<string>>(new Set())
+  // This state is not directly used for rendering, but for triggering re-renders
+  // when localStorage changes. It's better to re-read from localStorage in useEffect
+  // or use a global state management for real-time updates across components.
+  const [wishTrigger, setWishTrigger] = useState(0)
+
+  const [itemsPerView, setItemsPerView] = useState(3)
+  const [touchStart, setTouchStart] = useState(0)
+  const [touchEnd, setTouchEnd] = useState(0)
+  const intervalRef = useRef<NodeJS.Timeout | null>(null)
+
+  // Initialize wishlistedItems from localStorage on component mount
+  useEffect(() => {
+    const storedWishlist = localStorage.getItem("wishList")
+    if (storedWishlist) {
+      const parsedWishlist: Product[] = JSON.parse(storedWishlist)
+      setWishlistedItems(new Set(parsedWishlist.map((item) => item._id)))
+    }
+  }, [wishTrigger]) // Re-run when wishTrigger changes
 
   // Responsive breakpoints
   const updateItemsPerView = () => {
-    const width = window.innerWidth;
+    const width = window.innerWidth
     if (width < 640) {
-      setItemsPerView(1); // Mobile
+      setItemsPerView(1) // Mobile
     } else if (width < 1024) {
-      setItemsPerView(2); // Tablet
+      setItemsPerView(2) // Tablet
     } else {
-      setItemsPerView(3); // Desktop
+      setItemsPerView(3) // Desktop
     }
-  };
-
-  useEffect(() => {
-    updateItemsPerView();
-    window.addEventListener("resize", updateItemsPerView);
-    return () => window.removeEventListener("resize", updateItemsPerView);
-  }, []);
-
- const saveWish = (x: Product) => {
-  const wishData: Product = {
-    name: x?.name,
-    price: x?.price,
-    Hprice: x?.Hprice,
-    _id: x?._id,
-    image: x?.pic1 || "wd",
-  };
-
-  const stored = localStorage.getItem("wishList");
-  let wishList: Product[] = stored ? JSON.parse(stored) : [];
-
-  const exists = wishList.some((item) => item._id === wishData._id);
-  if (exists) {
-    // Remove item
-    wishList = wishList.filter((item) => item._id !== wishData._id);
-  } else {
-    // Add item
-    wishList.push(wishData);
   }
 
-  localStorage.setItem("wishList", JSON.stringify(wishList));
-  setWish(wishData);
-};
+  useEffect(() => {
+    updateItemsPerView()
+    window.addEventListener("resize", updateItemsPerView)
+    return () => window.removeEventListener("resize", updateItemsPerView)
+  }, [])
 
-
-  const maxIndex = Math.max(0, products.length - itemsPerView);
+  const maxIndex = Math.max(0, products.length - itemsPerView)
 
   // Reset currentIndex if it exceeds maxIndex after screen resize
   useEffect(() => {
     if (currentIndex > maxIndex) {
-      setCurrentIndex(maxIndex);
+      setCurrentIndex(maxIndex)
     }
-  }, [currentIndex, maxIndex]);
+  }, [currentIndex, maxIndex])
 
   // Auto-play functionality
   useEffect(() => {
@@ -105,67 +89,72 @@ export default function Tranding() {
       intervalRef.current = setInterval(() => {
         setCurrentIndex((prevIndex) => {
           if (prevIndex >= maxIndex) {
-            return 0;
+            return 0
           }
-          return prevIndex + 1;
-        });
-      }, 3000);
+          return prevIndex + 1
+        })
+      }, 3000)
     } else {
       if (intervalRef.current) {
-        clearInterval(intervalRef.current);
+        clearInterval(intervalRef.current)
       }
     }
     return () => {
       if (intervalRef.current) {
-        clearInterval(intervalRef.current);
+        clearInterval(intervalRef.current)
       }
-    };
-  }, [isHovered, maxIndex]);
+    }
+  }, [isHovered, maxIndex])
 
   const goToSlide = (index: number) => {
-    setCurrentIndex(Math.min(Math.max(0, index), maxIndex));
-  };
+    setCurrentIndex(Math.min(Math.max(0, index), maxIndex))
+  }
 
   const goToPrevious = () => {
-    setCurrentIndex((prevIndex) => (prevIndex <= 0 ? maxIndex : prevIndex - 1));
-  };
+    setCurrentIndex((prevIndex) => (prevIndex <= 0 ? maxIndex : prevIndex - 1))
+  }
 
   const goToNext = () => {
-    setCurrentIndex((prevIndex) => (prevIndex >= maxIndex ? 0 : prevIndex + 1));
-  };
+    setCurrentIndex((prevIndex) => (prevIndex >= maxIndex ? 0 : prevIndex + 1))
+  }
 
   // Touch handlers for mobile swipe
   const handleTouchStart = (e: React.TouchEvent) => {
-    setTouchStart(e.targetTouches[0].clientX);
-  };
+    setTouchStart(e.targetTouches[0].clientX)
+  }
 
   const handleTouchMove = (e: React.TouchEvent) => {
-    setTouchEnd(e.targetTouches[0].clientX);
-  };
+    setTouchEnd(e.targetTouches[0].clientX)
+  }
 
   const handleTouchEnd = () => {
-    if (!touchStart || !touchEnd) return;
-    const distance = touchStart - touchEnd;
-    const isLeftSwipe = distance > 50;
-    const isRightSwipe = distance < -50;
+    if (!touchStart || !touchEnd) return
+    const distance = touchStart - touchEnd
+    const isLeftSwipe = distance > 50
+    const isRightSwipe = distance < -50
     if (isLeftSwipe) {
-      goToNext();
+      goToNext()
     } else if (isRightSwipe) {
-      goToPrevious();
+      goToPrevious()
     }
-  };
+  }
 
-  const toggleWishlist = (productId: string) => {
-    setWishlistedItems((prev) => {
-      const newSet = new Set(prev);
-      if (newSet.has(productId)) {
-        newSet.delete(productId);
-      } else {
-        newSet.add(productId);
-      }
-      return newSet;
-    });
-  };
+  const saveWish = (productToAdd: Product) => {
+    const stored = localStorage.getItem("wishList")
+    let wishList: Product[] = stored ? JSON.parse(stored) : []
+
+    const exists = wishList.some((item) => item._id === productToAdd._id)
+
+    if (exists) {
+      // Remove item
+      wishList = wishList.filter((item) => item._id !== productToAdd._id)
+    } else {
+      // Add item
+      wishList.push(productToAdd)
+    }
+    localStorage.setItem("wishList", JSON.stringify(wishList))
+    setWishTrigger((prev) => prev + 1) // Trigger re-render to update wishlist icon state
+  }
 
   if (isLoading)
     return (
@@ -184,20 +173,16 @@ export default function Tranding() {
           ))}
         </div>
       </div>
-    );
+    )
 
   return (
     <div className="w-full max-w-7xl mx-auto p-3 sm:p-4 lg:p-6">
       <div className="text-center mb-6 sm:mb-8">
-        <h2
-          className="text-2xl sm:text-3xl lg:text-4xl mb-2 pop600"
-          style={{ color: "#761A24" }}
-        >
+        <h2 className="text-2xl sm:text-3xl lg:text-4xl mb-2 pop600" style={{ color: "#761A24" }}>
           Top Products
         </h2>
         <p className="text-gray-600 text-sm sm:text-base lg:text-lg px-4 pop400">
-          Discover our handpicked selection of premium products crafted for
-          excellence
+          Discover our handpicked selection of premium products crafted for excellence
         </p>
       </div>
       <div
@@ -235,9 +220,8 @@ export default function Tranding() {
                       <div className="absolute top-2 sm:top-4 right-2 sm:right-4 flex flex-col gap-1 sm:gap-2">
                         <button
                           onClick={(e) => {
-                            e.preventDefault(); // Prevent Link navigation when clicking wishlist
-                            saveWish(product);
-                            toggleWishlist(product._id);
+                            e.preventDefault() // Prevent Link navigation when clicking wishlist
+                            saveWish(product) // Pass the whole product object
                           }}
                           className={`p-1.5 sm:p-2 rounded-full backdrop-blur-sm transition-all duration-300 hover:scale-110 ${
                             wishlistedItems.has(product._id)
@@ -248,9 +232,7 @@ export default function Tranding() {
                           <Heart
                             size={16}
                             className={`sm:w-[18px] sm:h-[18px] ${
-                              wishlistedItems.has(product._id)
-                                ? "fill-current"
-                                : ""
+                              wishlistedItems.has(product._id) ? "fill-current" : ""
                             }`}
                           />
                         </button>
@@ -264,15 +246,10 @@ export default function Tranding() {
                     </h3>
                     <div className="flex items-center pop400 justify-center gap-2">
                       {product.Hprice && product.Hprice !== product.price && (
-                        <span className="text-sm pop600">
-                          ৳ {product.Hprice}
-                        </span>
+                        <span className="text-sm text-gray-500 pop400">৳ {product.Hprice}</span>
                       )}
                       <span> - </span>
-                      <span
-                        className="text-sm pop600"
-                        style={{ color: "#761A24" }}
-                      >
+                      <span className="text-sm pop400" style={{ color: "#761A24" }}>
                         ৳ {product.price}
                       </span>
                     </div>
@@ -287,35 +264,29 @@ export default function Tranding() {
           onClick={goToPrevious}
           className="absolute left-1 sm:left-2 lg:left-4 top-1/2 -translate-y-1/2 p-1.5 sm:p-2 lg:p-3 rounded-full bg-white shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-110 z-10"
           onMouseEnter={(e) => {
-            e.currentTarget.style.backgroundColor = "#761A24";
-            e.currentTarget.style.color = "white";
+            e.currentTarget.style.backgroundColor = "#761A24"
+            e.currentTarget.style.color = "white"
           }}
           onMouseLeave={(e) => {
-            e.currentTarget.style.backgroundColor = "white";
-            e.currentTarget.style.color = "#374151";
+            e.currentTarget.style.backgroundColor = "white"
+            e.currentTarget.style.color = "#374151"
           }}
         >
-          <ChevronLeft
-            size={16}
-            className="sm:w-5 sm:h-5 lg:w-6 lg:h-6 text-gray-700"
-          />
+          <ChevronLeft size={16} className="sm:w-5 sm:h-5 lg:w-6 lg:h-6 text-gray-700" />
         </button>
         <button
           onClick={goToNext}
           className="absolute right-1 sm:right-2 lg:right-4 top-1/2 -translate-y-1/2 p-1.5 sm:p-2 lg:p-3 rounded-full bg-white shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-110 z-10"
           onMouseEnter={(e) => {
-            e.currentTarget.style.backgroundColor = "#761A24";
-            e.currentTarget.style.color = "white";
+            e.currentTarget.style.backgroundColor = "#761A24"
+            e.currentTarget.style.color = "white"
           }}
           onMouseLeave={(e) => {
-            e.currentTarget.style.backgroundColor = "white";
-            e.currentTarget.style.color = "#374151";
+            e.currentTarget.style.backgroundColor = "white"
+            e.currentTarget.style.color = "#374151"
           }}
         >
-          <ChevronRight
-            size={16}
-            className="sm:w-5 sm:h-5 lg:w-6 lg:h-6 text-gray-700"
-          />
+          <ChevronRight size={16} className="sm:w-5 sm:h-5 lg:w-6 lg:h-6 text-gray-700" />
         </button>
       </div>
       {/* Dots indicator */}
@@ -325,9 +296,7 @@ export default function Tranding() {
             key={index}
             onClick={() => goToSlide(index)}
             className={`w-2 h-2 sm:w-3 sm:h-3 rounded-full transition-all duration-300 ${
-              currentIndex === index
-                ? "scale-125"
-                : "bg-gray-300 hover:bg-gray-400"
+              currentIndex === index ? "scale-125" : "bg-gray-300 hover:bg-gray-400"
             }`}
             style={{
               backgroundColor: currentIndex === index ? "#761A24" : undefined,
@@ -336,5 +305,5 @@ export default function Tranding() {
         ))}
       </div>
     </div>
-  );
+  )
 }
