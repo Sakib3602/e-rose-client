@@ -1,4 +1,4 @@
-import { Link,useLocation } from "react-router-dom";
+import { Link} from "react-router-dom";
 import Regular from "./components/AllProduct/Regular";
 import Tranding from "./components/AllProduct/Trending";
 import FAQ from "./components/FAQ/FAQ";

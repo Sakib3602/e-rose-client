@@ -18,6 +18,7 @@ interface WishlistItem {
 
 interface CartItem {
   id: string 
+  _id: string 
   product: string
   totalPrice: string
   pic1: string

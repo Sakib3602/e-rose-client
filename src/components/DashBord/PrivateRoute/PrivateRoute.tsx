@@ -4,8 +4,10 @@ import { useQuery } from "@tanstack/react-query";
 import { useContext } from "react";
 import { Navigate, useLocation } from "react-router-dom";
 
-
-const PrivateRoute = (children: React.ReactNode) => {
+interface PrivateRouteProps {
+  children: React.ReactNode
+}
+const PrivateRoute: React.FC<PrivateRouteProps>  = ({ children }) => {
     const auth = useContext(AuthContext);
      const location = useLocation()
       if (!auth) {

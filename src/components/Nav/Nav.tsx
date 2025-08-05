@@ -1,6 +1,6 @@
 "use client"
 
-import { Menu, ShoppingCart, Star, Package, Home, Grid3X3, Heart, X } from "lucide-react" 
+import { Menu, ShoppingCart, Star,  Home, Grid3X3, Heart, X } from "lucide-react" 
 import { useContext, useState, useEffect } from "react"
 import { Button } from "@/components/ui/button"
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"
@@ -11,16 +11,10 @@ import { AuthContext } from "../loginRegistration_work/AuthProvider/AuthProvider
 import useAxiosSec from "../Axios/useAxiosSec"
 import { useQuery } from "@tanstack/react-query"
 
-interface WishlistItem {
-  _id: string
-  name: string
-  price: string
-  Hprice?: string
-  image: string
-}
 
 interface CartItem {
-  id: string // This ID MUST be unique for each item in the cart
+  _id: string
+  id: string
   product: string
   totalPrice: string
   pic1: string
@@ -72,8 +66,8 @@ export default function Nav() {
   const navigationItems = [
     { name: "Home", href: "/", icon: Home },
     { name: "All Products", href: "/allproduct", icon: Grid3X3 },
-    { name: "Cart", href: "", icon: ShoppingCart }, // This will be handled specially
-    { name: "Order", href: "/order", icon: Package },
+    { name: "Cart", href: "", icon: ShoppingCart }, 
+   
     { name: "Wish List", href: "/wish", icon: Heart },
     { name: "Reviews", href: "/review", icon: Star },
     ...(data?.role === "admin" ? [{ name: "Dashboard", href: "/dashbord", icon: Star }] : []),
