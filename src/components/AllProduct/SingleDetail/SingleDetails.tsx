@@ -19,7 +19,7 @@ import {
   ShoppingCart,
   Car,
   RotateCcw,
-  Loader2,
+
 } from "lucide-react";
 import Nav from "@/components/Nav/Nav";
 import Footer from "@/components/Footer/Footer";
@@ -345,6 +345,8 @@ const SingleDetails: React.FC = () => {
     return !Object.values(newErrors).some((error) => error);
   };
 
+  
+
 const handleAddToCart = () => {
   if (validateForm()) {
     const formData = {
@@ -364,9 +366,10 @@ const handleAddToCart = () => {
       subtotal: subtotal,
       deliveryCharge: deliveryCharge,
       totalPrice: grandTotal,
+      pic1: product?.pic1,
     };
 
-    console.log("Add to Cart - Form Data:", formData);
+    console.log("/Add to Cart - Form Data:", formData);
     const cartData = localStorage.getItem("cart");
 
     let CartIf: typeof formData[] = [];
