@@ -17,7 +17,7 @@ interface WishlistItem {
 }
 
 interface CartItem {
-  id: string // This ID MUST be unique for each item in the cart
+  id: string 
   product: string
   totalPrice: string
   pic1: string
@@ -58,7 +58,7 @@ export default function Only_Sm_Show() {
       window.removeEventListener("wishlistUpdated", updateWishlistCount)
       window.removeEventListener("cartUpdated", updateCartData)
     }
-  }, []) // Empty dependency array to run only once on mount
+  }, []) 
 
   const navItems = [
     {
@@ -109,9 +109,7 @@ export default function Only_Sm_Show() {
   }
 
 const handleRemoveItem = (itemId: string) => {
-  console.log("--- handleRemoveItem called ---");
-  console.log("Attempting to remove item with ID:", itemId);
-  console.log("Current cart before removal:", JSON.parse(JSON.stringify(cartD))); // Deep copy for logging
+
 
   const updatedCart = cartD.filter((item) => {
     const itemIdStr = String(item._id).trim();
@@ -120,9 +118,6 @@ const handleRemoveItem = (itemId: string) => {
     console.log(`Comparing item.id: "${itemIdStr}" with itemId: "${compareId}" → keep: ${shouldKeep}`);
     return shouldKeep;
   });
-
-  console.log("Updated cart after filter:", JSON.parse(JSON.stringify(updatedCart)));
-  console.log("--- End handleRemoveItem ---");
 
   setCartD(updatedCart);
   localStorage.setItem("cart", JSON.stringify(updatedCart));
