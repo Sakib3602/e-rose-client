@@ -220,7 +220,8 @@ const handleRemoveItem = (itemId: string) => {
           <div className="flex-1 overflow-y-auto py-4 px-4 space-y-4">
             {cartD.length > 0 ? (
               cartD.map((item) => (
-                <div key={item.id} className="flex items-center gap-4 relative">
+                 <Link to={`/allproduct/details/${item?._id}`} >
+                <div key={item.id} className="flex items-center mt-2 gap-4 relative">
                   <img
                     src={item.pic1 || "/placeholder.svg"}
                     alt={item.product}
@@ -243,6 +244,7 @@ const handleRemoveItem = (itemId: string) => {
                     <X className="h-4 w-4" />
                   </Button>
                 </div>
+                </Link>
               ))
             ) : (
               <p className="text-center text-gray-500">Your cart is empty.</p>

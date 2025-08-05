@@ -38,6 +38,7 @@ createRoot(document.getElementById("root")!).render(
           <Route path="allproduct" element={<AllProduct />} />
           <Route path="wish" element={<WishlistSection/>} />
           <Route path="cart" element={<Cart></Cart>} />
+          <Route path="order" element={<Orders></Orders>} />
           <Route path="allproduct/details/:id" element={<SingleDetails />} />
 
           {/* dashbord */}

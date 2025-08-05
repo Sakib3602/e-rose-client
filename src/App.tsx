@@ -1,4 +1,4 @@
-import { Link } from "react-router-dom";
+import { Link,useLocation } from "react-router-dom";
 import Regular from "./components/AllProduct/Regular";
 import Tranding from "./components/AllProduct/Trending";
 import FAQ from "./components/FAQ/FAQ";
@@ -11,6 +11,7 @@ import { AuthContext } from "./components/loginRegistration_work/AuthProvider/Au
 import { toast } from "react-toastify";
 
 function App() {
+  
   const auth = useContext(AuthContext);
 
   if (!auth) {
@@ -50,6 +51,7 @@ function App() {
         }}
       >
         <Nav></Nav>
+        {/* <Scroll></Scroll> */}
         <LandingPage></LandingPage>
         <Tranding></Tranding>
         <Regular></Regular>

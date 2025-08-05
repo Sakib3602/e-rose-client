@@ -1,11 +1,11 @@
 "use client"
 
-import { Menu, ShoppingCart, Star, Package, Home, Grid3X3, Heart, X } from "lucide-react" // Added X for remove button
+import { Menu, ShoppingCart, Star, Package, Home, Grid3X3, Heart, X } from "lucide-react" 
 import { useContext, useState, useEffect } from "react"
 import { Button } from "@/components/ui/button"
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"
 import { Link } from "react-router-dom"
-import { Input } from "@/components/ui/input" // Added Input for promo code field
+import { Input } from "@/components/ui/input" 
 import { Badge } from "@/components/ui/badge"
 import { AuthContext } from "../loginRegistration_work/AuthProvider/AuthProvider"
 import useAxiosSec from "../Axios/useAxiosSec"
@@ -221,17 +221,7 @@ export default function Nav() {
                       </div>
                       <span className="relative font-semibold tracking-wide after:absolute after:left-0 after:-bottom-1 after:h-[2px] after:w-0 after:bg-black after:transition-all after:duration-300 group-hover:after:w-full">
                         {item.name}
-                        {cartD.length > 0 && (
-                          <Badge
-                            className="absolute -top-1 -right-2 h-4 w-4 p-0 rounded-full flex items-center justify-center text-xs"
-                            style={{
-                              backgroundColor: "#761A24",
-                              color: "white",
-                            }}
-                          >
-                            {cartD.length}
-                          </Badge>
-                        )}
+                       
                       </span>
                     </Link>
                   )
@@ -260,7 +250,8 @@ export default function Nav() {
           <div className="flex-1 overflow-y-auto py-4 px-4 space-y-4">
             {cartD.length > 0 ? (
               cartD.map((item) => (
-                <div key={item.id} className="flex items-center gap-4 relative">
+                <Link to={`/allproduct/details/${item?._id}`} >
+                <div key={item.id} className="flex items-center mt-2 gap-4 relative">
                   <img
                     src={item.pic1 || "/placeholder.svg"}
                     alt={item.product}
@@ -283,6 +274,8 @@ export default function Nav() {
                     <X className="h-4 w-4" />
                   </Button>
                 </div>
+                
+                </Link>
               ))
             ) : (
               <p className="text-center text-gray-500">Your cart is empty.</p>
@@ -310,9 +303,11 @@ export default function Nav() {
               <span className="text-lg font-semibold">Total:</span>
               <span className="text-lg font-semibold">${calculateTotal()}</span>
             </div>
+            <Link to={"/order"}>
             <Button className="w-full" style={{ backgroundColor: "#761A24", color: "white" }}>
               Checkout
             </Button>
+            </Link>
           </div>
         </SheetContent>
       </Sheet>
