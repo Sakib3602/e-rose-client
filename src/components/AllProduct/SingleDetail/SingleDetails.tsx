@@ -406,13 +406,13 @@ const handleAddToCart = () => {
         dressSize: selectedDressSize,
         make: selectedMake,
         orna: selectedOrna,
-        inner: selectedInner, // Include selectedInner in form data
+        inner: selectedInner, 
         quantity: quantity,
         basePrice: product.price * quantity,
         dressSizePrice: getDressSizePrice(),
         makePrice: getMakePrice(),
         ornaPrice: getOrnaPrice(),
-        innerPrice: getInnerPrice(), // Include innerPrice in form data
+        innerPrice: getInnerPrice(), 
         addonTotal: addonTotal,
         subtotal: subtotal,
         deliveryCharge: deliveryCharge,

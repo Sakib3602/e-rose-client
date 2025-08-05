@@ -272,9 +272,11 @@ const handleRemoveItem = (itemId: string) => {
               <span className="text-lg font-semibold">Total:</span>
               <span className="text-lg font-semibold">${calculateTotal()}</span>
             </div>
+            <Link to={"/order"}>
             <Button className="w-full" style={{ backgroundColor: "#761A24", color: "white" }}>
               Checkout
             </Button>
+            </Link>
           </div>
         </SheetContent>
       </Sheet>
