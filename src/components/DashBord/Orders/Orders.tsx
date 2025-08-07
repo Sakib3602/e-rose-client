@@ -21,6 +21,8 @@ import Nav from "@/components/Nav/Nav";
 import { Link, useNavigate } from "react-router-dom";
 import { useMutation } from "@tanstack/react-query";
 import useAxiosPub from "@/components/Axios/useAxiosPub";
+import moment from "moment";
+
 
 interface CartItem {
   _id: string; // Changed from 'id' to '_id' to match your usage
@@ -44,6 +46,7 @@ interface OrderFormData {
   productDescription: string;
   order: CartItem[];
   totalTaka: number;
+  orderTime : string
 }
 
 export default function Orders() {
@@ -139,6 +142,8 @@ export default function Orders() {
       ...formData,
       order: cartD, // Attach current cart items
       totalTaka: totalTaka, // Attach calculated total
+      orderTime : moment().format('MMMM Do YYYY, h:mm:ss a')
+      
     };
 
     Swal.fire({

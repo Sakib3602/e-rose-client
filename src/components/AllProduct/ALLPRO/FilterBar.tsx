@@ -3,8 +3,13 @@
 import { ChevronDown, Search } from "lucide-react";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
+interface FilterBarProps {
+  asc: boolean;
+  setAsc: React.Dispatch<React.SetStateAction<boolean>>;
+  setSearch: React.Dispatch<React.SetStateAction<string>>;
+}
 
-export default function FilterBar({ asc, setAsc, search, setSearch }) {
+export default function FilterBar({ asc, setAsc, setSearch } : FilterBarProps) {
   const [searchQuery, setSearchQuery] = useState("");
 
   const handleSearch = () => {
@@ -27,7 +32,7 @@ export default function FilterBar({ asc, setAsc, search, setSearch }) {
         <div className="relative w-full sm:max-w-sm">
           <input
             type="text"
-            placeholder="Search products..."
+            placeholder="Search name, category, price..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             className="w-full border border-gray-300 rounded-lg pl-10 pr-10 py-2 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"

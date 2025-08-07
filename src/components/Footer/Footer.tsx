@@ -52,10 +52,9 @@ export default function Footer() {
             <ul className="space-y-3">
               {[
                 "About Us",
-                "Store Locations",
                 "Contact Us",
                 "Size Guide",
-                "Shipping Info",
+              
               ].map((item) => (
                 <li key={item}>
                   <a
