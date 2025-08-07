@@ -1,89 +1,90 @@
-"use client"
+"use client";
 
-import type React from "react"
-import { useState, useEffect, useRef } from "react"
-import { Heart, ChevronLeft, ChevronRight } from "lucide-react"
-import { useQuery } from "@tanstack/react-query"
-import useAxiosPub from "../Axios/useAxiosPub"
-import { Link } from "react-router-dom"
-import { toast } from "react-toastify"
+import type React from "react";
+import { useState, useEffect, useRef } from "react";
+import { Heart, ChevronLeft, ChevronRight } from "lucide-react";
+import { useQuery } from "@tanstack/react-query";
+import useAxiosPub from "../Axios/useAxiosPub";
+import { Link } from "react-router-dom";
+import { toast } from "react-toastify";
 
 interface Product {
-  _id: string 
-  name: string
-  price: string
-  Hprice: string 
-  image: string 
+  _id: string;
+  name: string;
+  price: string;
+  Hprice: string;
+  image: string;
 }
 
 export default function Tranding() {
-  const axiosPublic = useAxiosPub()
+  const axiosPublic = useAxiosPub();
   const { data: fetchedProducts = [], isLoading } = useQuery<Product[]>({
     queryKey: ["top"],
     queryFn: async () => {
-      const res = await axiosPublic.get("/allData")
-     
+      const res = await axiosPublic.get("/allData");
+
       return res.data.map((item: any) => ({
-        _id: item._id, 
+        _id: item._id,
         name: item.name,
         price: item.price,
         Hprice: item.Hprice,
-        image: item.pic1, 
-      }))
+        image: item.pic1,
+      }));
     },
-  })
+  });
 
-  const products = fetchedProducts
+  const products = fetchedProducts;
 
-  const [currentIndex, setCurrentIndex] = useState(0)
-  const [isHovered, setIsHovered] = useState(false)
-  const [wishlistedItems, setWishlistedItems] = useState<Set<string>>(new Set())
- 
-  const [wishTrigger, setWishTrigger] = useState(0)
+  const [currentIndex, setCurrentIndex] = useState(0);
+  const [isHovered, setIsHovered] = useState(false);
+  const [wishlistedItems, setWishlistedItems] = useState<Set<string>>(
+    new Set()
+  );
 
-  const [itemsPerView, setItemsPerView] = useState(3)
-  const [touchStart, setTouchStart] = useState(0)
-  const [touchEnd, setTouchEnd] = useState(0)
-  const intervalRef = useRef<NodeJS.Timeout | null>(null)
+  const [wishTrigger, setWishTrigger] = useState(0);
 
-  
+  const [itemsPerView, setItemsPerView] = useState(3);
+  const [touchStart, setTouchStart] = useState(0);
+  const [touchEnd, setTouchEnd] = useState(0);
+  const intervalRef = useRef<NodeJS.Timeout | null>(null);
+
   useEffect(() => {
-    const storedWishlist = localStorage.getItem("wishList")
+    const storedWishlist = localStorage.getItem("wishList");
     if (storedWishlist) {
-      const parsedWishlist: Product[] = JSON.parse(storedWishlist)
-      setWishlistedItems(new Set(parsedWishlist.map((item) => item._id)))
+      const parsedWishlist: Product[] = JSON.parse(storedWishlist);
+      setWishlistedItems(new Set(parsedWishlist.map((item) => item._id)));
     }
-  }, [wishTrigger])
+  }, [wishTrigger]);
 
   // Responsive breakpoints
   const updateItemsPerView = () => {
-    const width = window.innerWidth
+    const width = window.innerWidth;
     if (width < 640) {
-      setItemsPerView(1) 
+      setItemsPerView(1);
     } else if (width < 1024) {
-      setItemsPerView(2) // Tablet
+      setItemsPerView(2); // Tablet
     } else {
-      setItemsPerView(3) // Desktop
+      setItemsPerView(3); // Desktop
     }
-  }
+  };
 
   useEffect(() => {
-    updateItemsPerView()
-    window.addEventListener("resize", updateItemsPerView)
-    return () => window.removeEventListener("resize", updateItemsPerView)
-  }, [])
+    updateItemsPerView();
+    window.addEventListener("resize", updateItemsPerView);
+    return () => window.removeEventListener("resize", updateItemsPerView);
+  }, []);
 
-  const maxIndex = Math.max(0, products.length - itemsPerView)
+  const maxIndex = Math.max(0, products.length - itemsPerView);
 
-  const p =()=>{
-    toast.success("item added to the wishlist")
-  }
+  const p = () => {
+    toast.success("item added to the wishlist");
+  };
   // Reset currentIndex if it exceeds maxIndex after screen resize
   useEffect(() => {
     if (currentIndex > maxIndex) {
-      setCurrentIndex(maxIndex)
+      setCurrentIndex(maxIndex);
     }
-  }, [currentIndex, maxIndex])
+  }, [currentIndex, maxIndex]);
 
   // Auto-play functionality
   useEffect(() => {
@@ -91,72 +92,71 @@ export default function Tranding() {
       intervalRef.current = setInterval(() => {
         setCurrentIndex((prevIndex) => {
           if (prevIndex >= maxIndex) {
-            return 0
+            return 0;
           }
-          return prevIndex + 1
-        })
-      }, 3000)
+          return prevIndex + 1;
+        });
+      }, 3000);
     } else {
       if (intervalRef.current) {
-        clearInterval(intervalRef.current)
+        clearInterval(intervalRef.current);
       }
     }
     return () => {
       if (intervalRef.current) {
-        clearInterval(intervalRef.current)
+        clearInterval(intervalRef.current);
       }
-    }
-  }, [isHovered, maxIndex])
+    };
+  }, [isHovered, maxIndex]);
 
   const goToSlide = (index: number) => {
-    setCurrentIndex(Math.min(Math.max(0, index), maxIndex))
-  }
+    setCurrentIndex(Math.min(Math.max(0, index), maxIndex));
+  };
 
   const goToPrevious = () => {
-    setCurrentIndex((prevIndex) => (prevIndex <= 0 ? maxIndex : prevIndex - 1))
-  }
+    setCurrentIndex((prevIndex) => (prevIndex <= 0 ? maxIndex : prevIndex - 1));
+  };
 
   const goToNext = () => {
-    setCurrentIndex((prevIndex) => (prevIndex >= maxIndex ? 0 : prevIndex + 1))
-  }
+    setCurrentIndex((prevIndex) => (prevIndex >= maxIndex ? 0 : prevIndex + 1));
+  };
 
   // Touch handlers for mobile swipe
   const handleTouchStart = (e: React.TouchEvent) => {
-    setTouchStart(e.targetTouches[0].clientX)
-  }
+    setTouchStart(e.targetTouches[0].clientX);
+  };
 
   const handleTouchMove = (e: React.TouchEvent) => {
-    setTouchEnd(e.targetTouches[0].clientX)
-  }
+    setTouchEnd(e.targetTouches[0].clientX);
+  };
 
   const handleTouchEnd = () => {
-    if (!touchStart || !touchEnd) return
-    const distance = touchStart - touchEnd
-    const isLeftSwipe = distance > 50
-    const isRightSwipe = distance < -50
+    if (!touchStart || !touchEnd) return;
+    const distance = touchStart - touchEnd;
+    const isLeftSwipe = distance > 50;
+    const isRightSwipe = distance < -50;
     if (isLeftSwipe) {
-      goToNext()
+      goToNext();
     } else if (isRightSwipe) {
-      goToPrevious()
+      goToPrevious();
     }
-  }
+  };
 
   const saveWish = (productToAdd: Product) => {
-    const stored = localStorage.getItem("wishList")
-    let wishList: Product[] = stored ? JSON.parse(stored) : []
+    const stored = localStorage.getItem("wishList");
+    let wishList: Product[] = stored ? JSON.parse(stored) : [];
 
-    const exists = wishList.some((item) => item._id === productToAdd._id)
+    const exists = wishList.some((item) => item._id === productToAdd._id);
 
     if (exists) {
-      
-      wishList = wishList.filter((item) => item._id !== productToAdd._id)
+      wishList = wishList.filter((item) => item._id !== productToAdd._id);
     } else {
       // Add item
-      wishList.push(productToAdd)
+      wishList.push(productToAdd);
     }
-    localStorage.setItem("wishList", JSON.stringify(wishList))
-    setWishTrigger((prev) => prev + 1) 
-  }
+    localStorage.setItem("wishList", JSON.stringify(wishList));
+    setWishTrigger((prev) => prev + 1);
+  };
 
   if (isLoading)
     return (
@@ -175,16 +175,20 @@ export default function Tranding() {
           ))}
         </div>
       </div>
-    )
+    );
 
   return (
     <div className="w-full max-w-7xl mx-auto p-3 sm:p-4 lg:p-6">
       <div className="text-center mb-6 sm:mb-8">
-        <h2 className="text-2xl sm:text-3xl lg:text-4xl mb-2 pop600" style={{ color: "#761A24" }}>
+        <h2
+          className="text-2xl sm:text-3xl lg:text-4xl mb-2 pop600"
+          style={{ color: "#761A24" }}
+        >
           Top Products
         </h2>
         <p className="text-gray-600 text-sm sm:text-base lg:text-lg px-4 pop400">
-          Discover our handpicked selection of premium products crafted for excellence
+          Discover our handpicked selection of premium products crafted for
+          excellence
         </p>
       </div>
       <div
@@ -222,9 +226,9 @@ export default function Tranding() {
                       <div className="absolute top-2 sm:top-4 right-2 sm:right-4 flex flex-col gap-1 sm:gap-2">
                         <button
                           onClick={(e) => {
-                            p()
-                            e.preventDefault() // Prevent Link navigation when clicking wishlist
-                            saveWish(product) // Pass the whole product object
+                            p();
+                            e.preventDefault(); // Prevent Link navigation when clicking wishlist
+                            saveWish(product); // Pass the whole product object
                           }}
                           className={`p-1.5 sm:p-2 rounded-full backdrop-blur-sm transition-all duration-300 hover:scale-110 ${
                             wishlistedItems.has(product._id)
@@ -235,7 +239,9 @@ export default function Tranding() {
                           <Heart
                             size={16}
                             className={`sm:w-[18px] sm:h-[18px] ${
-                              wishlistedItems.has(product._id) ? "fill-current" : ""
+                              wishlistedItems.has(product._id)
+                                ? "fill-current"
+                                : ""
                             }`}
                           />
                         </button>
@@ -249,11 +255,16 @@ export default function Tranding() {
                     </h3>
                     <div className="flex items-center pop400 justify-center gap-2">
                       {product.Hprice && product.Hprice !== product.price && (
-                        <span className="text-sm text-gray-500 pop400">৳ {product.Hprice}</span>
+                        <span className="text-sm text-gray-500 pop400">
+                          ৳ {product.price}
+                        </span>
                       )}
                       <span> - </span>
-                      <span className="text-sm pop400" style={{ color: "#761A24" }}>
-                        ৳ {product.price}
+                      <span
+                        className="text-sm pop400"
+                        style={{ color: "#761A24" }}
+                      >
+                        ৳ {product.Hprice}
                       </span>
                     </div>
                   </div>
@@ -267,29 +278,35 @@ export default function Tranding() {
           onClick={goToPrevious}
           className="absolute left-1 sm:left-2 lg:left-4 top-1/2 -translate-y-1/2 p-1.5 sm:p-2 lg:p-3 rounded-full bg-white shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-110 z-10"
           onMouseEnter={(e) => {
-            e.currentTarget.style.backgroundColor = "#761A24"
-            e.currentTarget.style.color = "white"
+            e.currentTarget.style.backgroundColor = "#761A24";
+            e.currentTarget.style.color = "white";
           }}
           onMouseLeave={(e) => {
-            e.currentTarget.style.backgroundColor = "white"
-            e.currentTarget.style.color = "#374151"
+            e.currentTarget.style.backgroundColor = "white";
+            e.currentTarget.style.color = "#374151";
           }}
         >
-          <ChevronLeft size={16} className="sm:w-5 sm:h-5 lg:w-6 lg:h-6 text-gray-700" />
+          <ChevronLeft
+            size={16}
+            className="sm:w-5 sm:h-5 lg:w-6 lg:h-6 text-gray-700"
+          />
         </button>
         <button
           onClick={goToNext}
           className="absolute right-1 sm:right-2 lg:right-4 top-1/2 -translate-y-1/2 p-1.5 sm:p-2 lg:p-3 rounded-full bg-white shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-110 z-10"
           onMouseEnter={(e) => {
-            e.currentTarget.style.backgroundColor = "#761A24"
-            e.currentTarget.style.color = "white"
+            e.currentTarget.style.backgroundColor = "#761A24";
+            e.currentTarget.style.color = "white";
           }}
           onMouseLeave={(e) => {
-            e.currentTarget.style.backgroundColor = "white"
-            e.currentTarget.style.color = "#374151"
+            e.currentTarget.style.backgroundColor = "white";
+            e.currentTarget.style.color = "#374151";
           }}
         >
-          <ChevronRight size={16} className="sm:w-5 sm:h-5 lg:w-6 lg:h-6 text-gray-700" />
+          <ChevronRight
+            size={16}
+            className="sm:w-5 sm:h-5 lg:w-6 lg:h-6 text-gray-700"
+          />
         </button>
       </div>
       {/* Dots indicator */}
@@ -299,7 +316,9 @@ export default function Tranding() {
             key={index}
             onClick={() => goToSlide(index)}
             className={`w-2 h-2 sm:w-3 sm:h-3 rounded-full transition-all duration-300 ${
-              currentIndex === index ? "scale-125" : "bg-gray-300 hover:bg-gray-400"
+              currentIndex === index
+                ? "scale-125"
+                : "bg-gray-300 hover:bg-gray-400"
             }`}
             style={{
               backgroundColor: currentIndex === index ? "#761A24" : undefined,
@@ -308,5 +327,5 @@ export default function Tranding() {
         ))}
       </div>
     </div>
-  )
+  );
 }

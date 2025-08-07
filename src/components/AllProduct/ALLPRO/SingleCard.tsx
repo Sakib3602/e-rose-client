@@ -1,36 +1,34 @@
-"use client"
+"use client";
 
-import { useState } from "react"
-import { Heart, ShoppingCart } from "lucide-react"
-import { Button } from "@/components/ui/button"
+import { useState } from "react";
+import { Heart } from "lucide-react";
+import { Button } from "@/components/ui/button";
 
 interface Product {
-  id: number
-  name: string
-  price: number
-  originalPrice?: number
-  image: string
-  hoverImage: string
-  category: string
-  isOnSale: boolean
-  discount?: number
+  id: number;
+  name: string;
+  price: number;
+  originalPrice?: number;
+  image: string;
+  hoverImage: string;
+  category: string;
+  isOnSale: boolean;
+  discount?: number;
+  Hprice: number;
 }
 
 interface ProductCardProps {
-  product: Product
+  product: Product;
 }
 
 export default function SingleCard({ product }: ProductCardProps) {
-  const [isHovered, setIsHovered] = useState(false)
-  const [isWishlisted, setIsWishlisted] = useState(false)
+  const [isHovered, setIsHovered] = useState(false);
+  const [isWishlisted, setIsWishlisted] = useState(false);
 
   const handleWishlistToggle = () => {
-    setIsWishlisted(!isWishlisted)
-  }
-
-  const handleAddToCart = () => {
-    console.log("Added to cart:", product.name)
-  }
+    setIsWishlisted(!isWishlisted);
+  };
+  console.log(product, "all");
 
   return (
     <div
@@ -40,8 +38,8 @@ export default function SingleCard({ product }: ProductCardProps) {
     >
       {/* Sale Badge */}
       {product.isOnSale && (
-        <div className="absolute top-3 left-3 z-10 bg-primary text-white px-2 py-1 rounded-full text-xs font-medium">
-          -{product.discount}%
+        <div className="absolute top-3 left-3 z-10 bg-[#761A24] text-white px-2 py-1 rounded-full text-xs font-medium">
+          {product.category}
         </div>
       )}
 
@@ -50,7 +48,7 @@ export default function SingleCard({ product }: ProductCardProps) {
         <img
           src={isHovered ? product.hoverImage : product.image}
           alt={product.name}
-          className="w-full h-full object-cover transition-all duration-500 group-hover:scale-105"
+          className="w-full h-full object-cover transition-all duration-500 group-hover:scale-105 "
         />
 
         {/* Always Visible Icons */}
@@ -59,39 +57,38 @@ export default function SingleCard({ product }: ProductCardProps) {
             size="icon"
             variant="secondary"
             className={`h-9 w-9 rounded-full shadow-lg backdrop-blur-sm transition-colors duration-200 ${
-              isWishlisted ? "bg-primary text-white hover:bg-primary/90" : "bg-white/90 hover:bg-white text-gray-700"
+              isWishlisted
+                ? "bg-primary text-white hover:bg-primary/90"
+                : "bg-white/90 hover:bg-white text-gray-700"
             }`}
             onClick={handleWishlistToggle}
           >
-            <Heart className={`h-4 w-4 transition-all duration-200 ${isWishlisted ? "fill-current" : ""}`} />
-          </Button>
-
-          <Button
-            size="icon"
-            className="h-9 w-9 rounded-full shadow-lg bg-primary hover:bg-primary/90 text-white transition-all duration-200"
-            onClick={handleAddToCart}
-          >
-            <ShoppingCart className="h-4 w-4" />
+            <Heart
+              className={`h-4 w-4 transition-all duration-200 ${
+                isWishlisted ? "fill-current" : ""
+              }`}
+            />
           </Button>
         </div>
       </div>
 
       {/* Product Info */}
-      <div className="p-4">
-        <div className="text-xs text-gray-500 uppercase tracking-wide mb-1">{product.category}</div>
-
-        <h3 className="font-semibold text-base text-gray-900 mb-3 line-clamp-2 group-hover:text-primary transition-colors duration-200">
+      <div className="p-4 text-center">
+        <h3 className="text-sm sm:text-base pop600 lg:text-lg font-semibold text-gray-800 line-clamp-2 mb-1">
           {product.name}
         </h3>
 
         {/* Price */}
-        <div className="flex items-center gap-2">
-          <span className="text-xl font-bold text-primary">${product.price.toFixed(2)}</span>
-          {product.originalPrice && (
-            <span className="text-sm text-gray-500 line-through">${product.originalPrice.toFixed(2)}</span>
-          )}
+        <div className="w-full flex justify-center items-center gap-2 pop400 ">
+          <span className="text-sm text-gray-500 pop400">
+            ৳ {product.price}.00
+          </span>
+          <span> - </span>
+          <span className="text-sm pop400" style={{ color: "#761A24" }}>
+            ৳ {product.Hprice}.00
+          </span>
         </div>
       </div>
     </div>
-  )
+  );
 }
