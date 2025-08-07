@@ -208,15 +208,169 @@ const SingleDetails: React.FC = () => {
   // Sample promo codes - In real app, these would come from your backend
   const availablePromoCodes: PromoCode[] = [
     {
-      code: "SAKIB10",
+      code: "SAKIB",
       discount: 10,
       type: "percentage",
       minAmount: 500,
-      maxDiscount: 100,
+      maxDiscount: 200,
       isActive: true,
     },
-   
+    
   ]
+
+  // Add SweetAlert2 styles on component mount with mobile fixes
+  useEffect(() => {
+    const styleId = "swal-custom-styles"
+    if (!document.getElementById(styleId)) {
+      const style = document.createElement("style")
+      style.id = styleId
+      style.textContent = `
+        /* SweetAlert2 z-index fixes - Higher values for mobile */
+        .swal-container-high-z {
+          z-index: 999999 !important;
+        }
+        
+        .swal2-container {
+          z-index: 999999 !important;
+          position: fixed !important;
+          top: 0 !important;
+          left: 0 !important;
+          right: 0 !important;
+          bottom: 0 !important;
+          width: 100% !important;
+          height: 100% !important;
+        }
+        
+        .swal2-backdrop-show {
+          z-index: 999998 !important;
+        }
+        
+        .swal2-popup {
+          z-index: 999999 !important;
+          font-family: inherit;
+          position: relative !important;
+          margin: auto !important;
+          max-width: 90vw !important;
+          max-height: 90vh !important;
+          overflow-y: auto !important;
+        }
+        
+        /* Ensure Swal appears above Sheet components */
+        .swal2-container.swal2-backdrop-show {
+          z-index: 999999 !important;
+        }
+        
+        /* Mobile specific fixes */
+        @media (max-width: 640px) {
+          .swal2-popup {
+            width: 95vw !important;
+            max-width: 95vw !important;
+            margin: 10px auto !important;
+            font-size: 14px !important;
+          }
+          
+          .swal2-title {
+            font-size: 1.25rem !important;
+            margin-bottom: 1rem !important;
+          }
+          
+          .swal2-content {
+            font-size: 0.9rem !important;
+            margin-bottom: 1rem !important;
+          }
+          
+          .swal2-actions {
+            margin-top: 1rem !important;
+            flex-direction: column !important;
+            gap: 0.5rem !important;
+          }
+          
+          .swal2-confirm,
+          .swal2-cancel {
+            width: 100% !important;
+            margin: 0 !important;
+            padding: 12px 20px !important;
+            font-size: 16px !important;
+            min-height: 44px !important;
+            touch-action: manipulation !important;
+            -webkit-tap-highlight-color: transparent !important;
+          }
+        }
+        
+        /* Custom styling for better appearance */
+        .swal2-title {
+          font-size: 1.5rem;
+          font-weight: 600;
+        }
+        
+        .swal2-content {
+          font-size: 1rem;
+        }
+        
+        .swal2-confirm {
+          background-color: #761a24 !important;
+          border-color: #761a24 !important;
+          border: none !important;
+          border-radius: 6px !important;
+          cursor: pointer !important;
+          touch-action: manipulation !important;
+          -webkit-tap-highlight-color: transparent !important;
+        }
+        
+        .swal2-confirm:hover,
+        .swal2-confirm:focus,
+        .swal2-confirm:active {
+          background-color: #5a1319 !important;
+          border-color: #5a1319 !important;
+          outline: none !important;
+        }
+        
+        .swal2-cancel {
+          background-color: #6b7280 !important;
+          border-color: #6b7280 !important;
+          border: none !important;
+          border-radius: 6px !important;
+          cursor: pointer !important;
+          touch-action: manipulation !important;
+          -webkit-tap-highlight-color: transparent !important;
+        }
+        
+        .swal2-cancel:hover,
+        .swal2-cancel:focus,
+        .swal2-cancel:active {
+          background-color: #4b5563 !important;
+          border-color: #4b5563 !important;
+          outline: none !important;
+        }
+        
+        /* Prevent body scroll when SweetAlert is open */
+        .swal2-shown {
+          overflow: hidden !important;
+        }
+        
+        /* Fix for iOS Safari */
+        .swal2-container {
+          -webkit-overflow-scrolling: touch !important;
+        }
+        
+        /* Ensure buttons are clickable */
+        .swal2-actions button {
+          pointer-events: auto !important;
+          position: relative !important;
+          z-index: 1000000 !important;
+        }
+      `
+      document.head.appendChild(style)
+    }
+
+    // Cleanup function to remove styles when component unmounts
+    return () => {
+      const existingStyle = document.getElementById(styleId)
+      if (existingStyle) {
+        existingStyle.remove()
+      }
+    }
+  }, [])
 
   // Reset order form data when modal opens/productDetailsForModal change
   useEffect(() => {
@@ -306,45 +460,102 @@ const SingleDetails: React.FC = () => {
     return Math.min(discount, subtotalAmount) // Discount can't be more than subtotal
   }
 
-  const handleOrderFormSubmit = (e: React.FormEvent) => {
-    e.preventDefault()
-    if (!productDetailsForModal) {
-      Swal.fire("Error", "No product details available for order.", "error")
-      return
-    }
+const handleOrderFormSubmit = async (e: React.FormEvent) => {
+  e.preventDefault()
 
-    const fullOrderData: OrderSubmissionData = {
-      ...orderFormData,
-      order: [productDetailsForModal],
-      totalTaka: productDetailsForModal.totalPrice,
-      promoCode: appliedPromo?.code,
-      promoDiscount: calculatePromoDiscount(productDetailsForModal.subtotal),
-    }
+  if (!productDetailsForModal) {
+    await Swal.fire({
+      title: "Error",
+      text: "No product details available for order.",
+      icon: "error",
+      confirmButtonColor: "#761A24",
+      customClass: {
+        container: "swal-container-high-z",
+      },
+      heightAuto: false,
+      scrollbarPadding: false,
+    })
+    return
+  }
 
-    Swal.fire({
+  const fullOrderData: OrderSubmissionData = {
+    ...orderFormData,
+    order: [productDetailsForModal],
+    totalTaka: productDetailsForModal.totalPrice,
+    promoCode: appliedPromo?.code,
+    promoDiscount: calculatePromoDiscount(productDetailsForModal.subtotal),
+  }
+
+  try {
+    const result = await Swal.fire({
       title: "Confirm Order?",
       text: "Please review your details before confirming.",
       icon: "info",
       showCancelButton: true,
-      confirmButtonColor: "#3085d6",
-      cancelButtonColor: "#d33",
+      confirmButtonColor: "#761A24",
+      cancelButtonColor: "#6b7280",
       confirmButtonText: "Yes, Place Order!",
-    }).then((result) => {
-      if (result.isConfirmed) {
-        mutation.mutate(fullOrderData, {
-          onSuccess: () => {
-            Swal.fire("Order Placed!", "Your order has been successfully placed. We will contact you soon.", "success")
-            setIsOrderFormOpen(false)
-            setAppliedPromo(null)
-            setPromoCode("")
+      cancelButtonText: "Cancel",
+      customClass: {
+        container: "swal-container-high-z",
+      },
+      backdrop: true,
+      allowOutsideClick: false,
+      allowEscapeKey: false,
+      heightAuto: false,
+      scrollbarPadding: false,
+    })
+
+    if (result.isConfirmed) {
+      try {
+        await mutation.mutateAsync(fullOrderData)
+
+        await Swal.fire({
+          title: "Order Placed!",
+          text: "Your order has been successfully placed. We will contact you soon.",
+          icon: "success",
+          confirmButtonColor: "#761A24",
+          customClass: {
+            container: "swal-container-high-z",
           },
-          onError: (err) => {
-            Swal.fire("Error", `Failed to place order: ${err.message}`, "error")
+          heightAuto: false,
+          scrollbarPadding: false,
+        })
+
+        // Reset states
+        setIsOrderFormOpen(false)
+        setAppliedPromo(null)
+        setPromoCode("")
+      } catch (err: any) {
+        await Swal.fire({
+          title: "Error",
+          text: `Failed to place order: ${err?.message || "Unknown error"}`,
+          icon: "error",
+          confirmButtonColor: "#761A24",
+          customClass: {
+            container: "swal-container-high-z",
           },
+          heightAuto: false,
+          scrollbarPadding: false,
         })
       }
+    }
+  } catch (error) {
+    console.error("Unexpected error:", error)
+    await Swal.fire({
+      title: "Error",
+      text: "Something went wrong. Please try again.",
+      icon: "error",
+      confirmButtonColor: "#761A24",
+      customClass: {
+        container: "swal-container-high-z",
+      },
+      heightAuto: false,
+      scrollbarPadding: false,
     })
   }
+}
+
 
   const params = useParams()
   const [product, setProduct] = useState<ProductData | null>(null)
@@ -906,7 +1117,7 @@ const SingleDetails: React.FC = () => {
                 </div>
               )}
 
-             
+            
             </div>
 
             {/* Price Breakdown Section */}
@@ -1144,7 +1355,7 @@ const SingleDetails: React.FC = () => {
                 <Textarea
                   id="productDescription"
                   placeholder="Any additional notes about the product (e.g., specific color shade, delivery instructions)."
-                 
+                  
                   onChange={handleOrderFormInputChange}
                   rows={3}
                 />

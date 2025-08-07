@@ -1,59 +1,65 @@
 "use client"
 
 import type React from "react"
-
 import { useState, useEffect, useRef } from "react"
-import { Heart, ShoppingCart, ChevronLeft, ChevronRight } from "lucide-react"
+import { Heart, ChevronLeft, ChevronRight } from "lucide-react"
+import { useQuery } from "@tanstack/react-query"
+import useAxiosPub from "../Axios/useAxiosPub"
+import { Link } from "react-router-dom"
+import { toast } from "react-toastify"
 
 interface Product {
-  id: number
+  _id: string 
   name: string
   price: string
-  image: string
+  Hprice: string 
+  image: string 
 }
 
-const products: Product[] = [
-  {
-    id: 1,
-    name: "Paro Lota",
-    price: "$3049",
-    image: "https://scontent.fdac134-1.fna.fbcdn.net/v/t39.30808-6/495567318_122176929212286011_1267074831665120748_n.jpg?_nc_cat=108&ccb=1-7&_nc_sid=833d8c&_nc_ohc=c_BPIxRx4R4Q7kNvwEc1YQ8&_nc_oc=AdlXi4EUFBVcBF48SsuDPxfss4wsBDC0ORse6T80WjpsXRqeee7F359_DikB7WPm2Vc&_nc_zt=23&_nc_ht=scontent.fdac134-1.fna&_nc_gid=lx_uhSEUykehylYnXUZyQw&oh=00_AfRCBqOmzaGsckNmjPywkJgjBpw0xhNasTlnNsxkfjaCrA&oe=688A47EC",
-  },
-  {
-    id: 2,
-    name: "Charo Lota",
-    price: "$8900",
-    image: "https://scontent.fdac134-1.fna.fbcdn.net/v/t39.30808-6/493097603_122175606872286011_4197693293343124226_n.jpg?_nc_cat=107&ccb=1-7&_nc_sid=833d8c&_nc_ohc=_46lXvaCaAwQ7kNvwE_550y&_nc_oc=AdniIZm-fAZLgKcAxEB0MgIu0sCIt77QgEAI-X7et1wxah4bKnA3z-Vh65uCqf4Cp7Y&_nc_zt=23&_nc_ht=scontent.fdac134-1.fna&_nc_gid=jhPpPwsHSqurc4VjfKXwrg&oh=00_AfQ5UQ5xsjAlR9Hyjn60OSAh_DUTdIQNkqO3Yi_6gNKHyg&oe=688A32A4",
-  },
-  {
-    id: 3,
-    name: "karo Lota",
-    price: "$9090",
-    image: "https://scontent.fdac134-1.fna.fbcdn.net/v/t39.30808-6/493017031_122175606932286011_474123576897861874_n.jpg?_nc_cat=110&ccb=1-7&_nc_sid=833d8c&_nc_ohc=dldFZkBgE4IQ7kNvwHZg8V8&_nc_oc=AdmTdyZBwMf6mzkZtJAbbKBGK9xjNmMyXhrtgQ4MF6FUrIT37xL3BJ2_juzkRbpU26g&_nc_zt=23&_nc_ht=scontent.fdac134-1.fna&_nc_gid=3HdzdcekJLF_p1Z5LkZ7hQ&oh=00_AfQTUMsjM_Q3ZuW92x7lVJ6bLu14fyaMHoEScLgSGeO6EA&oe=688A4B5E",
-  },
-  {
-    id: 4,
-    name: "Neru Lota",
-    price: "$1000",
-    image: "https://scontent.fdac134-1.fna.fbcdn.net/v/t39.30808-6/492886146_122175606944286011_6780766559231129298_n.jpg?_nc_cat=102&ccb=1-7&_nc_sid=833d8c&_nc_ohc=Un123NTKNS4Q7kNvwH1mZJf&_nc_oc=AdlzUHr3f2qKcvAjHknbZIMb2w0drGzUR2DhxFJnK_9Gse8reN3qEZvT7xfOl3CiCVA&_nc_zt=23&_nc_ht=scontent.fdac134-1.fna&_nc_gid=ljJBe43MjJEDu8m37Awitw&oh=00_AfTQEv_8TxeY3vWZKYiN9_zskJWgeKSUxLYZx-x4TUEOeg&oe=688A58EC",
-  },
-  
-]
-
 export default function Regular() {
+  const axiosPublic = useAxiosPub()
+  const { data: fetchedProducts = [], isLoading } = useQuery<Product[]>({
+    queryKey: ["top"],
+    queryFn: async () => {
+      const res = await axiosPublic.get("/allData")
+     
+      return res.data.map((item: any) => ({
+        _id: item._id, 
+        name: item.name,
+        price: item.price,
+        Hprice: item.Hprice,
+        image: item.pic1, 
+      }))
+    },
+  })
+
+  const products = fetchedProducts
+
   const [currentIndex, setCurrentIndex] = useState(0)
   const [isHovered, setIsHovered] = useState(false)
-  const [wishlistedItems, setWishlistedItems] = useState<Set<number>>(new Set())
+  const [wishlistedItems, setWishlistedItems] = useState<Set<string>>(new Set())
+ 
+  const [wishTrigger, setWishTrigger] = useState(0)
+
   const [itemsPerView, setItemsPerView] = useState(3)
   const [touchStart, setTouchStart] = useState(0)
   const [touchEnd, setTouchEnd] = useState(0)
   const intervalRef = useRef<NodeJS.Timeout | null>(null)
 
+  
+  useEffect(() => {
+    const storedWishlist = localStorage.getItem("wishList")
+    if (storedWishlist) {
+      const parsedWishlist: Product[] = JSON.parse(storedWishlist)
+      setWishlistedItems(new Set(parsedWishlist.map((item) => item._id)))
+    }
+  }, [wishTrigger])
+
   // Responsive breakpoints
   const updateItemsPerView = () => {
     const width = window.innerWidth
     if (width < 640) {
-      setItemsPerView(1) // Mobile
+      setItemsPerView(1) 
     } else if (width < 1024) {
       setItemsPerView(2) // Tablet
     } else {
@@ -69,6 +75,9 @@ export default function Regular() {
 
   const maxIndex = Math.max(0, products.length - itemsPerView)
 
+  const p =()=>{
+    toast.success("item added to the wishlist")
+  }
   // Reset currentIndex if it exceeds maxIndex after screen resize
   useEffect(() => {
     if (currentIndex > maxIndex) {
@@ -92,7 +101,6 @@ export default function Regular() {
         clearInterval(intervalRef.current)
       }
     }
-
     return () => {
       if (intervalRef.current) {
         clearInterval(intervalRef.current)
@@ -123,11 +131,9 @@ export default function Regular() {
 
   const handleTouchEnd = () => {
     if (!touchStart || !touchEnd) return
-
     const distance = touchStart - touchEnd
     const isLeftSwipe = distance > 50
     const isRightSwipe = distance < -50
-
     if (isLeftSwipe) {
       goToNext()
     } else if (isRightSwipe) {
@@ -135,34 +141,52 @@ export default function Regular() {
     }
   }
 
-  const toggleWishlist = (productId: number) => {
-    setWishlistedItems((prev) => {
-      const newSet = new Set(prev)
-      if (newSet.has(productId)) {
-        newSet.delete(productId)
-      } else {
-        newSet.add(productId)
-      }
-      return newSet
-    })
+  const saveWish = (productToAdd: Product) => {
+    const stored = localStorage.getItem("wishList")
+    let wishList: Product[] = stored ? JSON.parse(stored) : []
+
+    const exists = wishList.some((item) => item._id === productToAdd._id)
+
+    if (exists) {
+      
+      wishList = wishList.filter((item) => item._id !== productToAdd._id)
+    } else {
+      // Add item
+      wishList.push(productToAdd)
+    }
+    localStorage.setItem("wishList", JSON.stringify(wishList))
+    setWishTrigger((prev) => prev + 1) 
   }
 
-  const handleAddToCart = (product: Product) => {
-    console.log("Added to cart:", product)
-    // Add your cart logic here
-  }
+  if (isLoading)
+    return (
+      <div className="flex justify-center items-center w-full max-w-7xl mx-auto p-3 sm:p-4 lg:p-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 gap-4 w-full">
+          {Array.from({ length: itemsPerView }).map((_, i) => (
+            <div key={i} className="py-4 flex-shrink-0 px-2 sm:px-3">
+              <div className="bg-white rounded-xl sm:rounded-2xl shadow-md overflow-hidden animate-pulse">
+                <div className="aspect-[3/4] sm:aspect-[4/5] lg:aspect-[3/4] bg-gray-300" />
+                <div className="p-3 text-center">
+                  <div className="h-4 bg-gray-300 rounded mb-2 w-3/4 mx-auto"></div>
+                  <div className="h-4 bg-gray-300 rounded w-1/2 mx-auto"></div>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    )
 
   return (
     <div className="w-full max-w-7xl mx-auto p-3 sm:p-4 lg:p-6">
       <div className="text-center mb-6 sm:mb-8">
-        <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold mb-2" style={{ color: "#761A24" }}>
-          Featured Products
+        <h2 className="text-2xl sm:text-3xl lg:text-4xl mb-2 pop600" style={{ color: "#761A24" }}>
+          Our Regular Products
         </h2>
-        <p className="text-gray-600 text-sm sm:text-base lg:text-lg px-4">
+        <p className="text-gray-600 text-sm sm:text-base lg:text-lg px-4 pop400">
           Discover our handpicked selection of premium products crafted for excellence
         </p>
       </div>
-
       <div
         className="relative overflow-hidden"
         onMouseEnter={() => setIsHovered(true)}
@@ -179,70 +203,69 @@ export default function Regular() {
           }}
         >
           {products.map((product) => (
-            <div key={product.id} className="py-4 flex-shrink-0 px-2 sm:px-3" style={{ width: `${100 / itemsPerView}%` }}>
-              <div className="bg-white rounded-xl sm:rounded-2xl shadow-lg overflow-hidden hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-1 sm:hover:-translate-y-2 group">
-                {/* Image container with overlay icons */}
-                <div className="relative overflow-hidden">
-                  <img
-                    src={product.image || "/placeholder.svg"}
-                    alt={product.name}
-                    className="w-full h-70 sm:h-80 lg:h-96 object-cover transition-all duration-700 ease-in-out group-hover:scale-110 group-hover:brightness-110 group-hover:contrast-105 group-hover:saturate-110 group-hover:hue-rotate-3"
-                    style={{
-                      filter: "brightness(1) contrast(1) saturate(1) hue-rotate(0deg)",
-                    }}
-                  />
-
-                  {/* Overlay with icons - always visible */}
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/10 via-transparent to-transparent group-hover:from-black/30 group-hover:via-black/5 transition-all duration-700">
-                    <div className="absolute top-2 sm:top-4 right-2 sm:right-4 flex flex-col gap-1 sm:gap-2">
-                      <button
-                        onClick={() => toggleWishlist(product.id)}
-                        className={`p-1.5 sm:p-2 rounded-full backdrop-blur-sm transition-all duration-300 hover:scale-110 ${
-                          wishlistedItems.has(product.id)
-                            ? "bg-red-500 text-white shadow-lg"
-                            : "bg-white bg-opacity-90 text-gray-700 hover:bg-red-500 hover:text-white"
-                        }`}
-                      >
-                        <Heart
-                          size={16}
-                          className={`sm:w-[18px] sm:h-[18px] ${wishlistedItems.has(product.id) ? "fill-current" : ""}`}
-                        />
-                      </button>
-
-                      <button
-                        onClick={() => handleAddToCart(product)}
-                        className="p-1.5 sm:p-2 rounded-full bg-white bg-opacity-90 text-gray-700 backdrop-blur-sm hover:text-white transition-all duration-300 hover:scale-110 shadow-lg"
-                        style={{ backgroundColor: "rgba(255, 255, 255, 0.9)" }}
-                        onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = "#761A24")}
-                        onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = "rgba(255, 255, 255, 0.9)")}
-                      >
-                        <ShoppingCart size={16} className="sm:w-[18px] sm:h-[18px]" />
-                      </button>
+            <div
+              key={product._id} // Use _id as key
+              className="py-4 flex-shrink-0 px-2 sm:px-3"
+              style={{ width: `${100 / itemsPerView}%` }}
+            >
+              <Link to={`allproduct/details/${product._id}`}>
+                <div className="bg-white rounded-xl sm:rounded-2xl shadow-lg overflow-hidden hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-1 sm:hover:-translate-y-2 group">
+                  {/* Image container with overlay icons */}
+                  <div className="relative overflow-hidden aspect-[3/4] sm:aspect-[4/5] lg:aspect-[3/4]">
+                    <img
+                      src={product.image || "/placeholder.svg"}
+                      alt={product.name}
+                      className="w-full h-full object-cover transition-all duration-700 ease-in-out group-hover:scale-110"
+                    />
+                    {/* Overlay with icons */}
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/10 via-transparent to-transparent group-hover:from-black/30 group-hover:via-black/5 transition-all duration-700">
+                      <div className="absolute top-2 sm:top-4 right-2 sm:right-4 flex flex-col gap-1 sm:gap-2">
+                        <button
+                          onClick={(e) => {
+                            p()
+                            e.preventDefault() // Prevent Link navigation when clicking wishlist
+                            saveWish(product) // Pass the whole product object
+                          }}
+                          className={`p-1.5 sm:p-2 rounded-full backdrop-blur-sm transition-all duration-300 hover:scale-110 ${
+                            wishlistedItems.has(product._id)
+                              ? "bg-red-500 text-white shadow-lg"
+                              : "bg-white bg-opacity-90 text-gray-700 hover:bg-red-500 hover:text-white"
+                          }`}
+                        >
+                          <Heart
+                            size={16}
+                            className={`sm:w-[18px] sm:h-[18px] ${
+                              wishlistedItems.has(product._id) ? "fill-current" : ""
+                            }`}
+                          />
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                  {/* Product details */}
+                  <div className="p-3 text-center">
+                    <h3 className="text-sm sm:text-base pop600 lg:text-lg font-semibold text-gray-800 line-clamp-2 mb-1">
+                      {product.name}
+                    </h3>
+                    <div className="flex items-center pop400 justify-center gap-2">
+                      {product.Hprice && product.Hprice !== product.price && (
+                        <span className="text-sm text-gray-500 pop400">৳ {product.Hprice}</span>
+                      )}
+                      <span> - </span>
+                      <span className="text-sm pop400" style={{ color: "#761A24" }}>
+                        ৳ {product.price}
+                      </span>
                     </div>
                   </div>
                 </div>
-
-                {/* Product details */}
-                <div className="p-3 text-center">
-                  <h3 className="text-sm sm:text-base lg:text-lg font-semibold text-gray-800  line-clamp-2">
-                    {product.name}
-                  </h3>
-                  <div className="flex items-center justify-center">
-                    <span className="text-lg sm:text-xl lg:text-2xl font-bold" style={{ color: "#761A24" }}>
-                      {product.price}
-                    </span>
-                  </div>
-                </div>
-              </div>
+              </Link>
             </div>
           ))}
         </div>
-
-        {/* Navigation arrows - Hidden on mobile */}
+        {/* Navigation arrows */}
         <button
           onClick={goToPrevious}
           className="absolute left-1 sm:left-2 lg:left-4 top-1/2 -translate-y-1/2 p-1.5 sm:p-2 lg:p-3 rounded-full bg-white shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-110 z-10"
-          style={{ backgroundColor: "white" }}
           onMouseEnter={(e) => {
             e.currentTarget.style.backgroundColor = "#761A24"
             e.currentTarget.style.color = "white"
@@ -254,11 +277,9 @@ export default function Regular() {
         >
           <ChevronLeft size={16} className="sm:w-5 sm:h-5 lg:w-6 lg:h-6 text-gray-700" />
         </button>
-
         <button
           onClick={goToNext}
           className="absolute right-1 sm:right-2 lg:right-4 top-1/2 -translate-y-1/2 p-1.5 sm:p-2 lg:p-3 rounded-full bg-white shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-110 z-10"
-          style={{ backgroundColor: "white" }}
           onMouseEnter={(e) => {
             e.currentTarget.style.backgroundColor = "#761A24"
             e.currentTarget.style.color = "white"
@@ -271,7 +292,6 @@ export default function Regular() {
           <ChevronRight size={16} className="sm:w-5 sm:h-5 lg:w-6 lg:h-6 text-gray-700" />
         </button>
       </div>
-
       {/* Dots indicator */}
       <div className="flex justify-center mt-4 sm:mt-6 lg:mt-8 gap-1 sm:gap-2">
         {Array.from({ length: maxIndex + 1 }, (_, index) => (

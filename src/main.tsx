@@ -20,6 +20,7 @@ import { QueryClient } from "@tanstack/react-query";
 import PrivateRoute from "./components/DashBord/PrivateRoute/PrivateRoute.tsx";
 import WishlistSection from "./components/Wish/WishListSection.tsx";
 import Cart from "./components/Cart/Cart.tsx";
+import ScrollToTop from "./components/ScrollToTop/ScrollToTop.tsx";
 
 // ✅ Define the queryClient BEFORE using it
 const queryClient = new QueryClient();
@@ -30,6 +31,7 @@ createRoot(document.getElementById("root")!).render(
       <AuthProvider>
         <QueryClientProvider client={queryClient}>
         <DbProvider>
+          <ScrollToTop></ScrollToTop>
         <ToastContainer></ToastContainer>
         <Routes>
           <Route index element={<App />} />
