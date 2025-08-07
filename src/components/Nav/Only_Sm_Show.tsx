@@ -6,7 +6,7 @@ import { Badge } from "@/components/ui/badge"
 import { Home, ShoppingCart, Heart, User, X } from "lucide-react"
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"
 import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
+// import { Input } from "@/components/ui/input"
 
 interface WishlistItem {
   _id: string
@@ -30,9 +30,9 @@ export default function Only_Sm_Show() {
   const [wishlistItemsCount, setWishlistItemsCount] = useState(0)
   const [isOpen, setIsOpen] = useState(false)
   const [cartD, setCartD] = useState<CartItem[]>([])
-  const [promoCode, setPromoCode] = useState("")
+  // const [promoCode, setPromoCode] = useState("")
   const [discountApplied, setDiscountApplied] = useState(false)
-  const [discountMessage, setDiscountMessage] = useState("")
+  // const [discountMessage, setDiscountMessage] = useState("")
 
   const updateWishlistCount = () => {
     const storedWishlist = localStorage.getItem("wishList")
@@ -125,15 +125,15 @@ const handleRemoveItem = (itemId: string) => {
   window.dispatchEvent(new Event("cartUpdated")); 
 };
 
-  const handleApplyPromoCode = () => {
-    if (promoCode.toUpperCase() === "SAKIB") {
-      setDiscountApplied(true)
-      setDiscountMessage("10% discount applied!")
-    } else {
-      setDiscountApplied(false)
-      setDiscountMessage("Invalid promo code.")
-    }
-  }
+  // const handleApplyPromoCode = () => {
+  //   if (promoCode.toUpperCase() === "SAKIB") {
+  //     setDiscountApplied(true)
+  //     setDiscountMessage("10% discount applied!")
+  //   } else {
+  //     setDiscountApplied(false)
+  //     setDiscountMessage("Invalid promo code.")
+  //   }
+  // }
 
   return (
     <>
@@ -252,7 +252,7 @@ const handleRemoveItem = (itemId: string) => {
             )}
           </div>
           <div className="border-t border-border/40 p-4">
-            <div className="mb-4">
+            {/* <div className="mb-4">
               <div className="flex gap-2 mb-2">
                 <Input
                   type="text"
@@ -268,7 +268,7 @@ const handleRemoveItem = (itemId: string) => {
               {discountMessage && (
                 <p className={`text-sm ${discountApplied ? "text-green-600" : "text-red-600"}`}>{discountMessage}</p>
               )}
-            </div>
+            </div> */}
             <div className="flex justify-between items-center mb-4">
               <span className="text-lg font-semibold">Total:</span>
               <span className="text-lg font-semibold">${calculateTotal()}</span>

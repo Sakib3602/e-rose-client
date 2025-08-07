@@ -48,9 +48,9 @@ interface OrderFormData {
 
 export default function Orders() {
   const [cartD, setCartD] = useState<CartItem[]>([]);
-  const [promoCode, setPromoCode] = useState(""); // State for promo code input
+  // const [promoCode, setPromoCode] = useState(""); // State for promo code input
   const [discountApplied, setDiscountApplied] = useState(false); // State for discount status
-  const [discountMessage, setDiscountMessage] = useState(""); // State for discount message
+  // const [discountMessage, setDiscountMessage] = useState(""); // State for discount message
 
   const [formData, setFormData] = useState({
     userNumber: "",
@@ -112,15 +112,15 @@ export default function Orders() {
     ) * (discountApplied ? 0.9 : 1) || 0;
 
   // Promo code application logic
-  const handleApplyPromoCode = () => {
-    if (promoCode.toUpperCase() === "SAKIB") {
-      setDiscountApplied(true);
-      setDiscountMessage("10% discount applied!");
-    } else {
-      setDiscountApplied(false);
-      setDiscountMessage("Invalid promo code.");
-    }
-  };
+  // const handleApplyPromoCode = () => {
+  //   if (promoCode.toUpperCase() === "SAKIB") {
+  //     setDiscountApplied(true);
+  //     setDiscountMessage("10% discount applied!");
+  //   } else {
+  //     setDiscountApplied(false);
+  //     setDiscountMessage("Invalid promo code.");
+  //   }
+  // };
 
   //=============================================================================//
   const navigate = useNavigate();
@@ -173,9 +173,9 @@ export default function Orders() {
       address: "",
       productDescription: "",
     });
-    setPromoCode(""); // Reset promo code input
+    // setPromoCode(""); // Reset promo code input
     setDiscountApplied(false); // Reset discount status
-    setDiscountMessage(""); // Reset discount message
+    // setDiscountMessage(""); // Reset discount message
   };
 
   return (
@@ -229,33 +229,7 @@ export default function Orders() {
             })}
           </div>
           <hr className="my-8 lg:my-10" />
-          {/* Promo Code Section */}
-          <div className="mb-4 sm:col-span-2">
-            <div className="flex gap-2 mb-2">
-              <Input
-                type="text"
-                placeholder="Promo Code"
-                value={promoCode}
-                onChange={(e) => setPromoCode(e.target.value)}
-                className="flex-1"
-              />
-              <Button
-                onClick={handleApplyPromoCode}
-                style={{ backgroundColor: "#761A24", color: "white" }}
-              >
-                Apply
-              </Button>
-            </div>
-            {discountMessage && (
-              <p
-                className={`text-sm ${
-                  discountApplied ? "text-green-600" : "text-red-600"
-                }`}
-              >
-                {discountMessage}
-              </p>
-            )}
-          </div>
+         
           <h1 className="text-2xl pop600 text-[#761A24] text-center">
             Total Price : ৳ {totalTaka.toFixed(2)}
           </h1>

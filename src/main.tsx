@@ -22,39 +22,48 @@ import WishlistSection from "./components/Wish/WishListSection.tsx";
 import Cart from "./components/Cart/Cart.tsx";
 import ScrollToTop from "./components/ScrollToTop/ScrollToTop.tsx";
 
-// ✅ Define the queryClient BEFORE using it
 const queryClient = new QueryClient();
 
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
     <BrowserRouter>
+      <ScrollToTop></ScrollToTop>
       <AuthProvider>
         <QueryClientProvider client={queryClient}>
-        <DbProvider>
-          <ScrollToTop></ScrollToTop>
-        <ToastContainer></ToastContainer>
-        <Routes>
-          <Route index element={<App />} />
-          <Route path="register" element={<Register />} />
-          <Route path="login" element={<Login />} />
-          <Route path="allproduct" element={<AllProduct />} />
-          <Route path="wish" element={<WishlistSection/>} />
-          <Route path="cart" element={<Cart></Cart>} />
-          <Route path="order" element={<Orders></Orders>} />
-          <Route path="allproduct/details/:id" element={<SingleDetails />} />
+          <DbProvider>
+            <ToastContainer></ToastContainer>
+            <Routes>
+              <Route index element={<App />} />
+              <Route path="register" element={<Register />} />
+              <Route path="login" element={<Login />} />
+              <Route path="allproduct" element={<AllProduct />} />
+              <Route path="wish" element={<WishlistSection />} />
+              <Route path="cart" element={<Cart></Cart>} />
+              <Route path="order" element={<Orders></Orders>} />
+              <Route
+                path="allproduct/details/:id"
+                element={<SingleDetails />}
+              />
 
-          {/* dashbord */}
-          <Route path="dashbord" element={<PrivateRoute><DashOut /></PrivateRoute>}>
-            <Route index element={<DashHome></DashHome>} />
-            <Route path="allpro" element={<AdminProduct />} />
-            <Route path="addItem" element={<AddItem />} />
-            <Route path="order" element={<Orders />} />
-          </Route>
+              {/* dashbord */}
+              <Route
+                path="dashbord"
+                element={
+                  <PrivateRoute>
+                    <DashOut />
+                  </PrivateRoute>
+                }
+              >
+                <Route index element={<DashHome></DashHome>} />
+                <Route path="allpro" element={<AdminProduct />} />
+                <Route path="addItem" element={<AddItem />} />
+                <Route path="order" element={<Orders />} />
+              </Route>
 
-          {/* dashbord  end*/}
-        </Routes>
-        </DbProvider>
-         </QueryClientProvider> 
+              {/* dashbord  end*/}
+            </Routes>
+          </DbProvider>
+        </QueryClientProvider>
       </AuthProvider>
     </BrowserRouter>
   </StrictMode>

@@ -5,7 +5,7 @@ import { useContext, useState, useEffect } from "react"
 import { Button } from "@/components/ui/button"
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"
 import { Link } from "react-router-dom"
-import { Input } from "@/components/ui/input" 
+// import { Input } from "@/components/ui/input" 
 import { Badge } from "@/components/ui/badge"
 import { AuthContext } from "../loginRegistration_work/AuthProvider/AuthProvider"
 import useAxiosSec from "../Axios/useAxiosSec"
@@ -25,9 +25,9 @@ export default function Nav() {
   const [isOpen, setIsOpen] = useState(false) // State for main mobile navigation sheet
   const [isCartOpen, setIsCartOpen] = useState(false) // State for the new cart sidebar sheet
   const [cartD, setCartD] = useState<CartItem[]>([]) // State for cart items (using cartD as per previous working version)
-  const [promoCode, setPromoCode] = useState("")
+  // const [promoCode, setPromoCode] = useState("")
   const [discountApplied, setDiscountApplied] = useState(false)
-  const [discountMessage, setDiscountMessage] = useState("")
+  // const [discountMessage, setDiscountMessage] = useState("")
 
   const auth = useContext(AuthContext)
   if (!auth) throw new Error("AuthContext must be used within an AuthProvider")
@@ -109,15 +109,7 @@ export default function Nav() {
     window.dispatchEvent(new Event("cartUpdated")) // Dispatch event to update count in nav bar
   }
 
-  const handleApplyPromoCode = () => {
-    if (promoCode.toUpperCase() === "SAKIB") {
-      setDiscountApplied(true)
-      setDiscountMessage("10% discount applied!")
-    } else {
-      setDiscountApplied(false)
-      setDiscountMessage("Invalid promo code.")
-    }
-  }
+ 
 
   return (
     <header className=" sticky top-0 z-50 w-full border-b border-border/40 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
@@ -276,23 +268,7 @@ export default function Nav() {
             )}
           </div>
           <div className="border-t border-border/40 p-4">
-            <div className="mb-4">
-              <div className="flex gap-2 mb-2">
-                <Input
-                  type="text"
-                  placeholder="Promo Code"
-                  value={promoCode}
-                  onChange={(e) => setPromoCode(e.target.value)}
-                  className="flex-1"
-                />
-                <Button onClick={handleApplyPromoCode} style={{ backgroundColor: "#761A24", color: "white" }}>
-                  Apply
-                </Button>
-              </div>
-              {discountMessage && (
-                <p className={`text-sm ${discountApplied ? "text-green-600" : "text-red-600"}`}>{discountMessage}</p>
-              )}
-            </div>
+           
             <div className="flex justify-between items-center mb-4">
               <span className="text-lg font-semibold">Total:</span>
               <span className="text-lg font-semibold">${calculateTotal()}</span>

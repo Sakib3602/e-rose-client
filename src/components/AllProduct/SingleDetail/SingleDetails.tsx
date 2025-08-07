@@ -209,10 +209,10 @@ const SingleDetails: React.FC = () => {
   const availablePromoCodes: PromoCode[] = [
     {
       code: "SAKIB",
-      discount: 10,
+      discount: 100,
       type: "percentage",
       minAmount: 500,
-      maxDiscount: 200,
+      maxDiscount: 100,
       isActive: true,
     },
     
@@ -1107,7 +1107,7 @@ const handleOrderFormSubmit = async (e: React.FormEvent) => {
                     <span className="text-sm font-medium text-green-800">
                       {appliedPromo.code} -{" "}
                       {appliedPromo.type === "percentage"
-                        ? `${appliedPromo.discount}% OFF`
+                        ? `৳${appliedPromo.discount} OFF`
                         : `৳${appliedPromo.discount} OFF`}
                     </span>
                   </div>
