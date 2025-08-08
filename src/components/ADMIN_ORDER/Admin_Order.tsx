@@ -19,6 +19,7 @@ import {
   User,
   Clock,
   Search,
+  
   MoreVertical,
   CheckCircle,
 } from "lucide-react";
@@ -40,6 +41,7 @@ interface Order {
 interface OrderGroup {
   _id: string;
   order: Order[];
+  name : string,
   orderStatus?: string;
   totalTaka?: number;
   userNumber?: string;
@@ -304,6 +306,10 @@ const Admin_Order = () => {
                           </h4>
                           <div className="space-y-2 text-sm">
                             <div className="flex items-center gap-2 bg-white/10 rounded-lg p-2">
+                              <User className="h-4 w-4 opacity-80" />
+                              <span>{group?.name || "N/A"}</span>
+                            </div>
+                            <div className="flex items-center gap-2 bg-white/10 rounded-lg p-2">
                               <Phone className="h-4 w-4 opacity-80" />
                               <span>{group?.userNumber || "N/A"}</span>
                             </div>
@@ -442,6 +448,12 @@ const Admin_Order = () => {
                               Customer Information
                             </h4>
                             <div className="space-y-3">
+                              <div className="flex items-center gap-3 bg-white/10 rounded-xl p-3">
+                                <User className="h-4 w-4 opacity-80" />
+                                <span className="font-medium">
+                                  {group?.name || "N/A"}
+                                </span>
+                              </div>
                               <div className="flex items-center gap-3 bg-white/10 rounded-xl p-3">
                                 <Phone className="h-4 w-4 opacity-80" />
                                 <span className="font-medium">

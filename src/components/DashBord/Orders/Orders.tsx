@@ -144,7 +144,7 @@ export default function Orders() {
       order: cartD, // Attach current cart items
       totalTaka: totalTaka, // Attach calculated total
       orderTime : moment().format('MMMM Do YYYY, h:mm:ss a'),
-      orderStatus : "watting"
+      orderStatus : "Waiting"
       
     };
 

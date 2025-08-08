@@ -546,7 +546,7 @@ const SingleDetails: React.FC = () => {
       promoCode: appliedPromo?.code,
       promoDiscount: calculatePromoDiscount(productDetailsForModal.subtotal),
        orderTime : moment().format('MMMM Do YYYY, h:mm:ss a'),
-       orderStatus : "watting"
+       orderStatus : "Wating"
     };
 
     try {

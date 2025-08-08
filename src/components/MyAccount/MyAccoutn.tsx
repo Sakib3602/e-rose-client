@@ -36,8 +36,6 @@ export default function Component() {
     avatar: "/placeholder.svg?height=80&width=80",
   };
 
- 
-
   return (
     <>
       <Nav />
@@ -93,7 +91,13 @@ export default function Component() {
                               <span className="font-semibold text-sm sm:text-base">
                                 {group._id}
                               </span>
-                              <Badge className="text-xs sm:text-sm px-2 py-1">
+                              <Badge
+                                className={`text-xs sm:text-sm px-2 py-1 
+    ${group.orderStatus === "Shipped" ? "bg-yellow-500 text-white" : ""}
+    ${group.orderStatus === "Waiting" ? "bg-black text-white" : ""}
+    ${group.orderStatus === "Done" ? "bg-green-600 text-white" : ""}
+  `}
+                              >
                                 {group.orderStatus}
                               </Badge>
                             </div>
@@ -106,7 +110,6 @@ export default function Component() {
                               <span>{group.orderTime}</span>
                             </div>
                             <div className="flex items-center gap-1 text-xs sm:text-sm text-muted-foreground">
-                            
                               <span className="h-3 w-3 sm:h-4 sm:w-4 flex-shrink-0 pop600">
                                 ৳{o.totalPrice}
                               </span>
@@ -124,14 +127,19 @@ export default function Component() {
                             <span className="text-muted-foreground ">
                               Phone :{" "}
                             </span>
-                            <span className="break-words">{group.userNumber}</span>
+                            <span className="break-words">
+                              {group.userNumber}
+                            </span>
                           </div>
                         </div>
                         <div className="text-xs sm:text-sm pop600 mt-4">
-                            <img className="h-[100px] w-[100px]" src={o?.pic1} alt="" />
-                          </div>
+                          <img
+                            className="h-[100px] w-[100px]"
+                            src={o?.pic1}
+                            alt=""
+                          />
+                        </div>
                         <Separator className="mt-4 sm:mt-6" />
-                        
                       </div>
                     ))
                   )}
