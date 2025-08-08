@@ -2,7 +2,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
-import { Package, Calendar, DollarSign } from "lucide-react";
+import { Package, Calendar } from "lucide-react";
 import Footer from "../Footer/Footer";
 import Only_Sm_Show from "../Nav/Only_Sm_Show";
 import Nav from "../Nav/Nav";
@@ -18,41 +18,25 @@ export default function Component() {
     throw new Error("AuthContext must be used within an AuthProvider");
   }
 
-  const { person} = auth;
+  const { person } = auth;
 
-  const axiosPublic = useAxiosPub()
-  const {data } = useQuery({
-    queryKey : ["myaccoutData"],
-    queryFn : async()=>{
-        const res = await axiosPublic.get(`/orderData/${person?.email}`)
-        return res.data
-    }
-  })
-  console.log(data,"my account")
- 
+  const axiosPublic = useAxiosPub();
+  const { data } = useQuery({
+    queryKey: ["myaccoutData"],
+    queryFn: async () => {
+      const res = await axiosPublic.get(`/orderData/${person?.email}`);
+      return res.data;
+    },
+  });
+  console.log(data, "my account");
 
   const user = {
-    name: "Sarah Johnson",
-    email: "sarah.johnson@example.com",
+    name: "Unknown",
+    email: person?.email,
     avatar: "/placeholder.svg?height=80&width=80",
   };
 
-  const orders = [
-    {
-      id: "ORD-001",
-      date: "2024-01-15",
-      status: "Delivered",
-      total: 129.99,
-      items: ["Wireless Headphones", "Phone Case"],
-    },
-    {
-      id: "ORD-002",
-      date: "2024-01-10",
-      status: "Shipped",
-      total: 89.5,
-      items: ["Bluetooth Speaker"],
-    },
-  ];
+ 
 
   return (
     <>
@@ -99,54 +83,64 @@ export default function Component() {
               </CardHeader>
               <CardContent className="px-3 sm:px-6">
                 <div className="space-y-4 sm:space-y-6">
-                  {orders.map((order, index) => (
-                    <div key={order.id}>
-                      <div className="space-y-3">
-                        {/* Order header - always stacked on mobile */}
-                        <div className="flex flex-col xs:flex-row xs:items-center xs:justify-between gap-2">
-                          <div className="flex items-center gap-2 sm:gap-3">
-                            <span className="font-semibold text-sm sm:text-base">
-                              {order.id}
-                            </span>
-                            <Badge className={` text-xs sm:text-sm px-2 py-1`}>
-                              {order.status}
-                            </Badge>
+                  {data?.flatMap((group) =>
+                    group.order.map((o, index) => (
+                      <div key={index}>
+                        <div className="space-y-3">
+                          {/* Order header */}
+                          <div className="flex flex-col xs:flex-row xs:items-center xs:justify-between gap-2">
+                            <div className="flex items-center gap-2 sm:gap-3">
+                              <span className="font-semibold text-sm sm:text-base">
+                                {group._id}
+                              </span>
+                              <Badge className="text-xs sm:text-sm px-2 py-1">
+                                {group.orderStatus}
+                              </Badge>
+                            </div>
                           </div>
-                        </div>
 
-                        {/* Order details - responsive grid */}
-                        <div className="grid grid-cols-1 xs:grid-cols-2 gap-2 sm:gap-4">
-                          <div className="flex items-center gap-1 text-xs sm:text-sm text-muted-foreground">
-                            <Calendar className="h-3 w-3 sm:h-4 sm:w-4 flex-shrink-0" />
-                            <span>
-                              {new Date(order.date).toLocaleDateString()}
-                            </span>
+                          {/* Order details */}
+                          <div className="grid grid-cols-1 xs:grid-cols-2 gap-2 sm:gap-4">
+                            <div className="flex items-center gap-1 text-xs sm:text-sm text-muted-foreground">
+                              <Calendar className="h-3 w-3 sm:h-4 sm:w-4 flex-shrink-0" />
+                              <span>{group.orderTime}</span>
+                            </div>
+                            <div className="flex items-center gap-1 text-xs sm:text-sm text-muted-foreground">
+                            
+                              <span className="h-3 w-3 sm:h-4 sm:w-4 flex-shrink-0 pop600">
+                                ৳{o.totalPrice}
+                              </span>
+                            </div>
                           </div>
-                          <div className="flex items-center gap-1 text-xs sm:text-sm text-muted-foreground">
-                            <DollarSign className="h-3 w-3 sm:h-4 sm:w-4 flex-shrink-0" />
-                            <span className="font-medium">${order.total}</span>
-                          </div>
-                        </div>
 
-                        {/* Items - responsive text */}
-                        <div className="text-xs sm:text-sm">
-                          <span className="text-muted-foreground">Items: </span>
-                          <span className="break-words">
-                            {order.items.join(", ")}
-                          </span>
+                          {/* Items */}
+                          <div className="text-xs sm:text-sm pop600">
+                            <span className="text-muted-foreground ">
+                              Items:{" "}
+                            </span>
+                            <span className="break-words">{o.product}</span>
+                          </div>
+                          <div className="text-xs sm:text-sm pop600">
+                            <span className="text-muted-foreground ">
+                              Phone :{" "}
+                            </span>
+                            <span className="break-words">{group.userNumber}</span>
+                          </div>
                         </div>
-                      </div>
-                      {index < orders.length - 1 && (
+                        <div className="text-xs sm:text-sm pop600 mt-4">
+                            <img className="h-[100px] w-[100px]" src={o?.pic1} alt="" />
+                          </div>
                         <Separator className="mt-4 sm:mt-6" />
-                      )}
-                    </div>
-                  ))}
+                        
+                      </div>
+                    ))
+                  )}
                 </div>
               </CardContent>
             </Card>
 
             {/* Summary Stats - Responsive grid */}
-            <div className="grid grid-cols-1 xs:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
+            {/* <div className="grid grid-cols-1 xs:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
               <Card className="lg:col-span-1">
                 <CardContent className="pt-4 sm:pt-6 pb-4 sm:pb-6">
                   <div className="text-center">
@@ -175,7 +169,7 @@ export default function Component() {
                   </div>
                 </CardContent>
               </Card>
-            </div>
+            </div> */}
           </div>
         </div>
       </div>

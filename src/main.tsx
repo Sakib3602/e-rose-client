@@ -23,6 +23,7 @@ import Cart from "./components/Cart/Cart.tsx";
 import ScrollToTop from "./components/ScrollToTop/ScrollToTop.tsx";
 import MyAccoutn from "./components/MyAccount/MyAccoutn.tsx";
 import PrivateUserRoute from "./components/DashBord/PrivateRoute/PrivateUserRoute.tsx";
+import Admin_Order from "./components/ADMIN_ORDER/Admin_Order.tsx";
 
 const queryClient = new QueryClient();
 
@@ -68,7 +69,7 @@ createRoot(document.getElementById("root")!).render(
                 <Route index element={<DashHome></DashHome>} />
                 <Route path="allpro" element={<AdminProduct />} />
                 <Route path="addItem" element={<AddItem />} />
-                <Route path="order" element={<Orders />} />
+                <Route path="order" element={<Admin_Order />} />
               </Route>
 
               {/* dashbord  end*/}
