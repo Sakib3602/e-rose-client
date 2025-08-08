@@ -77,7 +77,7 @@ export default function Tranding() {
   const maxIndex = Math.max(0, products.length - itemsPerView);
 
   const p = () => {
-    toast.success("item added to the wishlist");
+    toast.success("Operation Done");
   };
   // Reset currentIndex if it exceeds maxIndex after screen resize
   useEffect(() => {

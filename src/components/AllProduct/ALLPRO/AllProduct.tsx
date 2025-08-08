@@ -73,7 +73,7 @@ const results = fuse ? fuse.search(search).map(res => res.item) : products;
         <FilterBar
           asc={asc}
           setAsc={setAsc}
-          search={search}
+          // search={search}
           setSearch={setSearch}
         ></FilterBar>
 

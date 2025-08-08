@@ -19,12 +19,12 @@ export default function LandingPage() {
     {
       src: "https://scontent.fdac134-1.fna.fbcdn.net/v/t39.30808-6/493504469_122178712226286011_8720817429851753926_n.jpg?_nc_cat=106&ccb=1-7&_nc_sid=833d8c&_nc_ohc=Ld0QFLqSa3oQ7kNvwHqFb_n&_nc_oc=AdmXytZQfiWSKhKwi6cr82ro26u7nnGsgjQvLDlUlzZrRHOW58JgXE_WWfOGVFn-zko&_nc_zt=23&_nc_ht=scontent.fdac134-1.fna&_nc_gid=-rv6oEMW3GsLNNmAV1hL_A&oh=00_AfRTovq6zxhkyVpZWR-kwOLsBNNnVsyCpo4i_Pv7R5_d5A&oe=688A4966",
       alt: "Elegant woman in stylish fashion",
-      price: "$29.99",
+      price: "$2790.00",
     },
     {
       src: "https://scontent.fdac134-1.fna.fbcdn.net/v/t39.30808-6/499714380_122180901380286011_337316531027721985_n.jpg?_nc_cat=105&ccb=1-7&_nc_sid=127cfc&_nc_ohc=P6oM2IHmTLUQ7kNvwEQJQgT&_nc_oc=Adlv9lilFE1VB5EfD0fP0jEjPJGqsyezcx0lM5W9C_V6k0YTiR5Kt1EsoX8bt6AxPgE&_nc_zt=23&_nc_ht=scontent.fdac134-1.fna&_nc_gid=lYWYLK2KpVL_h0HLUU-SMA&oh=00_AfSwuk-XNczwemmqAtfCC6_1-RYx9Uweuq2mYCYfVCYNDw&oe=688A48EA",
       alt: "Summer fashion collection",
-      price: "$39.99",
+      price: "$3999.00",
     },
   ];
 

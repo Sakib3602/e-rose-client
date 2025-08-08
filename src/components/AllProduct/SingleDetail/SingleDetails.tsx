@@ -1,6 +1,6 @@
 "use client";
 import type React from "react";
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -41,6 +41,7 @@ import {
 } from "@/components/ui/sheet";
 import Swal from "sweetalert2";
 import CaroselR from "@/components/RelatedC/CaroselR";
+import { AuthContext } from "@/components/loginRegistration_work/AuthProvider/AuthProvider";
 
 // Define interfaces for props and form data
 interface ProductDetailsForOrder {
@@ -78,6 +79,7 @@ interface OrderSubmissionData {
   promoCode?: string;
   promoDiscount?: number;
   orderTime : string
+  orderStatus : string
 }
 
 // Promo code interface
@@ -243,6 +245,15 @@ const SingleDetails: React.FC = () => {
     address: "",
     productDescription: "",
   });
+   const auth = useContext(AuthContext);
+  
+ 
+
+  if (!auth) {
+    throw new Error("AuthContext must be used within an AuthProvider");
+  }
+
+  const { person} = auth;
   const [productDetailsForModal, setProductDetailsForModal] =
     useState<ProductDetailsForOrder | null>(null);
 
@@ -534,7 +545,8 @@ const SingleDetails: React.FC = () => {
       totalTaka: productDetailsForModal.totalPrice,
       promoCode: appliedPromo?.code,
       promoDiscount: calculatePromoDiscount(productDetailsForModal.subtotal),
-       orderTime : moment().format('MMMM Do YYYY, h:mm:ss a')
+       orderTime : moment().format('MMMM Do YYYY, h:mm:ss a'),
+       orderStatus : "watting"
     };
 
     try {

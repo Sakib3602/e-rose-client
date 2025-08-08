@@ -46,7 +46,8 @@ interface OrderFormData {
   productDescription: string;
   order: CartItem[];
   totalTaka: number;
-  orderTime : string
+  orderTime : string;
+  orderStatus : string
 }
 
 export default function Orders() {
@@ -142,7 +143,8 @@ export default function Orders() {
       ...formData,
       order: cartD, // Attach current cart items
       totalTaka: totalTaka, // Attach calculated total
-      orderTime : moment().format('MMMM Do YYYY, h:mm:ss a')
+      orderTime : moment().format('MMMM Do YYYY, h:mm:ss a'),
+      orderStatus : "watting"
       
     };
 

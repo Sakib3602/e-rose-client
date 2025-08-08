@@ -30,9 +30,7 @@ export default function Only_Sm_Show() {
   const [wishlistItemsCount, setWishlistItemsCount] = useState(0);
   const [isOpen, setIsOpen] = useState(false);
   const [cartD, setCartD] = useState<CartItem[]>([]);
-  // const [promoCode, setPromoCode] = useState("")
-  const [discountApplied, setDiscountApplied] = useState(false);
-  // const [discountMessage, setDiscountMessage] = useState("")
+  
 
   const updateWishlistCount = () => {
     const storedWishlist = localStorage.getItem("wishList");
@@ -99,9 +97,9 @@ export default function Only_Sm_Show() {
       (sum, item) => sum + Number.parseFloat(item?.totalPrice || "0"),
       0
     );
-    if (discountApplied) {
-      return (baseTotal * 0.9).toFixed(2); // Apply 10% discount
-    }
+    // if (discountApplied) {
+    //   return (baseTotal * 0.9).toFixed(2); // Apply 10% discount
+    // }
     return baseTotal.toFixed(2);
   };
 

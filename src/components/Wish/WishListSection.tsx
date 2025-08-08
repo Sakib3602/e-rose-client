@@ -8,7 +8,8 @@ import Only_Sm_Show from "../Nav/Only_Sm_Show"
 import { Link } from "react-router-dom"
 
 interface WishlistItem {
-  _id: string // Using _id as the primary identifier
+  _id: string 
+  id: string 
   name: string
   price: string
   Hprice?: string // Optional original price
@@ -52,7 +53,7 @@ export default function WishlistSection() {
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
             {wish?.map((item) => (
-              <Link to={`/allproduct/details/${item?._id}`}>
+              <Link to={`/allproduct/details/${item?._id || item?.id}`}>
               <div
                 key={item._id} // Use _id as key
                 className="bg-white rounded-xl sm:rounded-2xl shadow-lg overflow-hidden hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-1 sm:hover:-translate-y-2 group"

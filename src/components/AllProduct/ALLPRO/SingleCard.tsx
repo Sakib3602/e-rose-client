@@ -1,8 +1,8 @@
 "use client";
-
-import { useState } from "react";
-import { Heart } from "lucide-react";
+import { useState, useEffect } from "react";
+import { Heart } from 'lucide-react';
 import { Button } from "@/components/ui/button";
+import { toast } from "react-toastify";
 
 interface Product {
   id: number;
@@ -25,9 +25,44 @@ export default function SingleCard({ product }: ProductCardProps) {
   const [isHovered, setIsHovered] = useState(false);
   const [isWishlisted, setIsWishlisted] = useState(false);
 
-  const handleWishlistToggle = () => {
-    setIsWishlisted(!isWishlisted);
+  // Initialize wishlist state from localStorage
+  useEffect(() => {
+    try {
+      const wishList = JSON.parse(localStorage.getItem("wishList") || "[]");
+      const isProductWishlisted = wishList.some((item: Product) => item.id === product.id);
+      setIsWishlisted(isProductWishlisted);
+    } catch (error) {
+      console.error("Error reading from localStorage:", error);
+    }
+  }, [product.id]);
+
+  const handleWishlistToggle = (event: React.MouseEvent) => {
+    // Prevent the click from bubbling up to parent elements
+    event.stopPropagation();
+    event.preventDefault();
+    
+    try {
+      const currentWishList = JSON.parse(localStorage.getItem("wishList") || "[]");
+      
+      if (isWishlisted) {
+        // Remove from wishlist
+        const updatedWishList = currentWishList.filter((item: Product) => item.id !== product.id);
+        localStorage.setItem("wishList", JSON.stringify(updatedWishList));
+        setIsWishlisted(false);
+        toast.error("Removed from wishlist!");
+      } else {
+        // Add to wishlist
+        const updatedWishList = [...currentWishList, product];
+        localStorage.setItem("wishList", JSON.stringify(updatedWishList));
+        setIsWishlisted(true);
+        toast.success("Added to wishlist!");
+      }
+    } catch (error) {
+      console.error("Error updating localStorage:", error);
+      alert("Error updating wishlist. Please try again.");
+    }
   };
+
   console.log(product, "all");
 
   return (
@@ -48,9 +83,9 @@ export default function SingleCard({ product }: ProductCardProps) {
         <img
           src={isHovered ? product.hoverImage : product.image}
           alt={product.name}
-          className="w-full h-full object-cover transition-all duration-500 group-hover:scale-105 "
+          className="w-full h-full object-cover transition-all duration-500 group-hover:scale-105"
         />
-
+        
         {/* Always Visible Icons */}
         <div className="absolute top-3 right-3 flex flex-col gap-2">
           <Button
@@ -58,7 +93,7 @@ export default function SingleCard({ product }: ProductCardProps) {
             variant="secondary"
             className={`h-9 w-9 rounded-full shadow-lg backdrop-blur-sm transition-colors duration-200 ${
               isWishlisted
-                ? "bg-primary text-white hover:bg-primary/90"
+                ? "bg-[#761A24] text-white hover:bg-primary/90"
                 : "bg-white/90 hover:bg-white text-gray-700"
             }`}
             onClick={handleWishlistToggle}
@@ -77,9 +112,9 @@ export default function SingleCard({ product }: ProductCardProps) {
         <h3 className="text-sm sm:text-base pop600 lg:text-lg font-semibold text-gray-800 line-clamp-2 mb-1">
           {product.name}
         </h3>
-
+        
         {/* Price */}
-        <div className="w-full flex justify-center items-center gap-2 pop400 ">
+        <div className="w-full flex justify-center items-center gap-2 pop400">
           <span className="text-sm text-gray-500 pop400">
             ৳ {product.price}.00
           </span>

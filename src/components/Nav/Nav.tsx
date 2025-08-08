@@ -127,11 +127,14 @@ export default function Nav() {
       {/* Main header content container */}
       <div className="flex h-16 items-center justify-between px-4 w-full">
         {/* Left side: RoseWood Logo */}
-        <a href="/" className="flex items-center space-x-3 group pop400">
-          <span className="pop600 font-bold text-xl tracking-tight bg-gradient-to-r from-gray-900 to-gray-600 bg-clip-text text-transparent dark:from-white dark:to-gray-300">
+        <p  className="flex items-center space-x-3 group pop400">
+        <Link to={"/"}>
+        <span className="pop600 font-bold text-xl tracking-tight bg-gradient-to-r from-gray-900 to-gray-600 bg-clip-text text-transparent dark:from-white dark:to-gray-300">
             RoseWood
           </span>
-        </a>
+        </Link>
+          
+        </p>
         {/* Right side: Group for Desktop Nav and Mobile Trigger */}
         <div className="flex items-center">
           {/* Enhanced Desktop Navigation */}

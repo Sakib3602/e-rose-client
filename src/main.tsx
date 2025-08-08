@@ -21,6 +21,8 @@ import PrivateRoute from "./components/DashBord/PrivateRoute/PrivateRoute.tsx";
 import WishlistSection from "./components/Wish/WishListSection.tsx";
 import Cart from "./components/Cart/Cart.tsx";
 import ScrollToTop from "./components/ScrollToTop/ScrollToTop.tsx";
+import MyAccoutn from "./components/MyAccount/MyAccoutn.tsx";
+import PrivateUserRoute from "./components/DashBord/PrivateRoute/PrivateUserRoute.tsx";
 
 const queryClient = new QueryClient();
 
@@ -40,6 +42,15 @@ createRoot(document.getElementById("root")!).render(
               <Route path="wish" element={<WishlistSection />} />
               <Route path="cart" element={<Cart></Cart>} />
               <Route path="order" element={<Orders></Orders>} />
+              <Route
+                path="account"
+                element={
+                  <PrivateUserRoute>
+                    <MyAccoutn></MyAccoutn>
+                  </PrivateUserRoute>
+                }
+              />
+
               <Route
                 path="allproduct/details/:id"
                 element={<SingleDetails />}

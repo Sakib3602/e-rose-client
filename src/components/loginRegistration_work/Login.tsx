@@ -1,7 +1,7 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
-import { Link } from "react-router-dom";
+import { Link,  useNavigate } from "react-router-dom";
 import {
   Card,
   CardContent,
@@ -46,17 +46,20 @@ export default function Login() {
     password: string;
     role: string;
   }
+  // const location = useLocation();
+  const navigate = useNavigate();
   const xx = () => {
     GoogleS()
       .then((result) => {
         const use = {
-          email : result.user.email,
-          password : "sign_with_google_no_pass",
-          role : "user"
-        }
-        
-         MutationUp.mutate(use);
-        toast.success(`Logged in`);
+          email: result.user.email,
+          password: "sign_with_google_no_pass",
+          role: "user",
+        };
+
+        MutationUp.mutate(use);
+        navigate("/");
+        toast.success(`Google Logged in`);
       })
       .catch((error) => {
         console.error(error);
@@ -78,10 +81,11 @@ export default function Login() {
       password: data?.password,
       role: "user",
     };
-    MutationUp.mutate(use);
+
     SignNow(data?.email, data?.password).then(() => {
       toast.success("Loged in Done");
     });
+    MutationUp.mutate(use);
   };
 
   const MutationUp = useMutation({
