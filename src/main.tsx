@@ -24,6 +24,8 @@ import ScrollToTop from "./components/ScrollToTop/ScrollToTop.tsx";
 import MyAccoutn from "./components/MyAccount/MyAccoutn.tsx";
 import PrivateUserRoute from "./components/DashBord/PrivateRoute/PrivateUserRoute.tsx";
 import Admin_Order from "./components/ADMIN_ORDER/Admin_Order.tsx";
+import DelevaryDone from "./components/DashBord/DelevaryDone/DelevaryDone.tsx";
+import AcceptedOrders from "./components/DashBord/AcceptedOrders/AcceptedOrders.tsx";
 
 const queryClient = new QueryClient();
 
@@ -70,6 +72,8 @@ createRoot(document.getElementById("root")!).render(
                 <Route path="allpro" element={<AdminProduct />} />
                 <Route path="addItem" element={<AddItem />} />
                 <Route path="order" element={<Admin_Order />} />
+                <Route path="Doneorder" element={<DelevaryDone />} />
+                <Route path="Acceptorder" element={<AcceptedOrders />} />
               </Route>
 
               {/* dashbord  end*/}

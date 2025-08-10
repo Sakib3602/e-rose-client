@@ -1,43 +1,26 @@
-"use client";
-
-import useAxiosSec from "../Axios/useAxiosSec";
-import { useMutation, useQuery } from "@tanstack/react-query";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
+import useAxiosSec from "@/components/Axios/useAxiosSec";
 import { Button } from "@/components/ui/button";
-import { Separator } from "@/components/ui/separator";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Separator } from "@radix-ui/react-separator";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import {
-  Package,
-  MapPin,
-  Phone,
-  Mail,
-  DollarSign,
-  Edit3,
-  Trash2,
-  Eye,
-  ShoppingBag,
-  User,
+  Badge,
   Clock,
-  Search,
+  DollarSign,
+  Eye,
+  Mail,
+  MapPin,
   MoreVertical,
-  CheckCircle,
+  Package,
+  Phone,
+  Search,
+  ShoppingBag,
+  Trash2,
+  User,
 } from "lucide-react";
+import moment from "moment";
 import { toast } from "react-toastify";
 import Swal from "sweetalert2";
-import moment from "moment";
-
-// Type definitions
-interface Order {
-  product: string;
-  pic1?: string;
-  dressSize?: string;
-  quantity?: number;
-  orna?: string;
-  ornaPrice?: number;
-  make?: string;
-  inner?: string;
-  description?: string;
-}
 
 interface OrderGroup {
   _id: string;
@@ -51,79 +34,30 @@ interface OrderGroup {
   district?: string;
   division?: string;
   orderTime?: string;
+  doneDate: string;
+}
+interface Order {
+  product: string;
+  pic1?: string;
+  dressSize?: string;
+  quantity?: number;
+  orna?: string;
+  ornaPrice?: number;
+  make?: string;
+  inner?: string;
+  description?: string;
 }
 interface DeleteOrderParams {
   id: string;
 }
-
 interface UpdateOrderParams {
   id: string;
   status: string;
-  doneDate : string
+  doneDate: string;
 }
 
-const Admin_Order = () => {
+const AcceptedOrders = () => {
   const axiosSec = useAxiosSec();
-
-  const { data, isLoading, refetch } = useQuery<OrderGroup[]>({
-    queryKey: ["adminuserdata"],
-    queryFn: async () => {
-      const res = await axiosSec.get("/ordersAll");
-      return res.data;
-    },
-  });
-
-  const filterData = data?.filter((x)=> x?.orderStatus === "Wating")
- 
-
-  const mutationUp = useMutation<any, Error, UpdateOrderParams>({
-    mutationFn: async ({ id, status,doneDate }: UpdateOrderParams) => {
-      const res = await axiosSec.patch(`/ordersAll/${id}`, { status , doneDate }); 
-      return res.data;
-    },
-    onSuccess: () => {
-      toast.success("Order status updated successfully!");
-      refetch();
-    },
-    onError: () => {
-      toast.error("Failed to update order status");
-    },
-  });
-  // for delete
-  const mutationUpp = useMutation<any, Error, DeleteOrderParams>({
-    mutationFn: async ({ id }) => {
-      const res = await axiosSec.delete(`/ordersAll/${id}`);
-      return res.data;
-    },
-    onSuccess: () => {
-      toast.success("Order Deleted!");
-      refetch();
-    },
-    onError: () => {
-      toast.error("Failed to Delete");
-    },
-  });
-
-  const handleUpdateStatus = (id: string) => {
-    Swal.fire({
-      title: "Are you sure?",
-      text: "You won't be able to revert this!",
-      icon: "warning",
-      showCancelButton: true,
-      confirmButtonColor: "#3085d6",
-      cancelButtonColor: "#d33",
-      confirmButtonText: "Yes, Update it!",
-    }).then((result) => {
-      if (result.isConfirmed) {
-        mutationUp.mutate({ id, status: "Order Accepted", doneDate : "" });
-        Swal.fire({
-          title: "Order Accepted!",
-          text: "Order is accepted, Deliver as soon as possible.",
-          icon: "success",
-        });
-      }
-    });
-  };
   const handleDoneStatus = (id: string) => {
     Swal.fire({
       title: "Are you sure?",
@@ -134,9 +68,9 @@ const Admin_Order = () => {
       cancelButtonColor: "#d33",
       confirmButtonText: "Yes, do it!",
     }).then((result) => {
-      const dateee =  moment().format('MMMM Do YYYY, h:mm:ss a')
+      const dateee = moment().format("MMMM Do YYYY, h:mm:ss a");
       if (result.isConfirmed) {
-        mutationUp.mutate({ id, status: "delevery Done", doneDate : dateee });
+        mutationUp.mutate({ id, status: "delevery Done", doneDate: dateee });
         Swal.fire({
           title: "Congratulations!",
           text: "Order is deleverd succesfully.",
@@ -146,6 +80,43 @@ const Admin_Order = () => {
     });
   };
 
+  const mutationUp = useMutation<any, Error, UpdateOrderParams>({
+    mutationFn: async ({ id, status, doneDate }: UpdateOrderParams) => {
+      const res = await axiosSec.patch(`/ordersAll/${id}`, {
+        status,
+        doneDate,
+      });
+      return res.data;
+    },
+    onSuccess: () => {
+      toast.success("Order status updated successfully!");
+      refetch();
+    },
+    onError: () => {
+      toast.error("Failed to update order status");
+    },
+  });
+
+  const { data, isLoading, refetch } = useQuery<OrderGroup[]>({
+    queryKey: ["adminuserdata"],
+    queryFn: async () => {
+      const res = await axiosSec.get("/ordersAll");
+      return res.data;
+    },
+  });
+  // for delete
+  const mutationUpp = useMutation<any, Error, DeleteOrderParams>({
+    mutationFn: async ({ id }) => {
+      const res = await axiosSec.delete(`/ordersAll/${id}`);
+      return res.data;
+    },
+    onSuccess: () => {
+      refetch();
+    },
+    onError: () => {
+      toast.error("Failed to Delete");
+    },
+  });
   const handleDeleteOrder = (id: string) => {
     Swal.fire({
       title: "Are you sure?",
@@ -166,8 +137,6 @@ const Admin_Order = () => {
       }
     });
   };
-
-
   if (isLoading) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-indigo-50 via-white to-purple-50 flex items-center justify-center p-4">
@@ -204,6 +173,8 @@ const Admin_Order = () => {
     );
   }
 
+  const filterData = data?.filter((x) => x?.orderStatus === "Order Accepted");
+  console.log(filterData, "alll");
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50/30 to-indigo-50/50">
       {/* Floating Background Elements */}
@@ -227,7 +198,7 @@ const Admin_Order = () => {
                   </div>
                   <div>
                     <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold bg-gradient-to-r from-gray-900 via-[#761A24] to-purple-600 bg-clip-text text-transparent">
-                      Order Command Center
+                      Accepted Orders
                     </h1>
                     <p className="text-sm sm:text-base text-gray-600 mt-1">
                       Advanced order management & analytics
@@ -361,6 +332,12 @@ const Admin_Order = () => {
                                 Ordered: {group?.orderTime || "N/A"}
                               </span>
                             </div>
+                            <div className="bg-white/70 col-span-2 rounded-lg p-2">
+                              <Clock className="h-4 w-4" />
+                              <span className="text-gray-600 text-x">
+                                Done Order At: {group?.doneDate || "N/A"}
+                              </span>
+                            </div>
                           </div>
                         </div>
 
@@ -433,16 +410,6 @@ const Admin_Order = () => {
                                 alt="Product"
                                 className="object-cover w-full h-full group-hover:scale-110 transition-transform duration-500"
                               />
-                            </div>
-                            <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-2xl flex items-end justify-center pb-4">
-                              <Button
-                                size="sm"
-                                className="bg-white/90 text-gray-900 hover:bg-white"
-                                onClick={() => handleDoneStatus(group?._id)}
-                              >
-                                <Eye className="h-4 w-4 mr-2" />
-                                View
-                              </Button>
                             </div>
                           </div>
                         </div>
@@ -601,32 +568,12 @@ const Admin_Order = () => {
                     <div className="p-4 sm:p-6">
                       <div className="flex flex-col sm:flex-row gap-3 sm:justify-end">
                         <Button
-                          variant="outline"
-                          className="flex items-center justify-center gap-2 hover:bg-blue-50 border-blue-200 text-blue-700 rounded-xl py-2.5 sm:py-2"
+                          size="sm"
+                          className="bg-green-500 text-white"
                           onClick={() => handleDoneStatus(group?._id)}
                         >
-                          <CheckCircle className="h-4 w-4" />
-                          <span className="font-medium">Mark as Done</span>
-                        </Button>
-                        <Button
-                          className="flex items-center justify-center gap-2 bg-gradient-to-r from-[#761A24] to-purple-600 hover:from-[#8B1E2A] hover:to-purple-700 text-white rounded-xl py-2.5 sm:py-2 shadow-lg"
-                          onClick={() => handleUpdateStatus(group?._id)}
-                          disabled={mutationUp.isPending}
-                        >
-                          <Edit3 className="h-4 w-4" />
-                          <span className="font-medium">
-                            {mutationUp.isPending
-                              ? "Updating..."
-                              : "Update Status"}
-                          </span>
-                        </Button>
-                        <Button
-                          variant="destructive"
-                          className="flex items-center justify-center gap-2 bg-gradient-to-r from-red-500 to-rose-600 hover:from-red-600 hover:to-rose-700 rounded-xl py-2.5 sm:py-2 shadow-lg"
-                          onClick={() => handleDeleteOrder(group?._id)}
-                        >
-                          <Trash2 className="h-4 w-4" />
-                          <span className="font-medium">Delete Order</span>
+                          <Eye className="h-4 w-4 mr-2" />
+                          Done Delevery
                         </Button>
                       </div>
                     </div>
@@ -651,11 +598,12 @@ const Admin_Order = () => {
                   </div>
                   <div className="space-y-2">
                     <h3 className="text-2xl font-bold bg-gradient-to-r from-gray-900 to-gray-600 bg-clip-text text-transparent">
-                      No Orders Found
+                      No Delevary Done Orders Found
                     </h3>
                     <p className="text-gray-500 max-w-md">
-                      There are no orders to display at the moment. Orders will
-                      appear here once customers start placing them.
+                      There are no delevery done orders to display at the
+                      moment. Done Orders will appear here once customers start
+                      placing them.
                     </p>
                   </div>
                   <Button
@@ -674,4 +622,4 @@ const Admin_Order = () => {
   );
 };
 
-export default Admin_Order;
+export default AcceptedOrders;

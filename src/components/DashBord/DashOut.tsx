@@ -8,12 +8,15 @@ import {
   Home,
   Package,
   Users,
-  ShoppingCart,
+  
+  FileCheck,
+  Loader,
   BarChart3,
   Settings,
   Bell,
   Shirt,
   FilePlus2,
+  ListOrdered
 } from "lucide-react";
 import { Link, NavLink, Outlet, useNavigate } from "react-router-dom";
 import { AuthContext } from "../loginRegistration_work/AuthProvider/AuthProvider";
@@ -39,7 +42,9 @@ const DashOut: React.FC = () => {
   const menuItems = [
     { id: "dashboard", label: "Dashboard", icon: Home, loc: "" },
     { id: "products", label: "Products", icon: Package, loc: "allPro" },
-    { id: "orders", label: "Orders", icon: ShoppingCart, loc: "order" },
+    { id: "orders", label: "Watting Orders", icon: Loader, loc: "order" },
+    { id: "orders", label: "Accepted Orders", icon: ListOrdered, loc: "Acceptorder" },
+    { id: "Doneorders", label: "Delevery Done", icon: FileCheck, loc: "Doneorder" },
     { id: "Add Item", label: "Add Item", icon: FilePlus2, loc: "addItem" },
     { id: "customers", label: "Customers", icon: Users },
     { id: "analytics", label: "Analytics", icon: BarChart3 },
