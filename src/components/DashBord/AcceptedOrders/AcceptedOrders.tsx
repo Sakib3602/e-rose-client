@@ -15,7 +15,6 @@ import {
   Phone,
   Search,
   ShoppingBag,
-  Trash2,
   User,
 } from "lucide-react";
 import moment from "moment";
@@ -47,9 +46,7 @@ interface Order {
   inner?: string;
   description?: string;
 }
-interface DeleteOrderParams {
-  id: string;
-}
+
 interface UpdateOrderParams {
   id: string;
   status: string;
@@ -104,39 +101,9 @@ const AcceptedOrders = () => {
       return res.data;
     },
   });
-  // for delete
-  const mutationUpp = useMutation<any, Error, DeleteOrderParams>({
-    mutationFn: async ({ id }) => {
-      const res = await axiosSec.delete(`/ordersAll/${id}`);
-      return res.data;
-    },
-    onSuccess: () => {
-      refetch();
-    },
-    onError: () => {
-      toast.error("Failed to Delete");
-    },
-  });
-  const handleDeleteOrder = (id: string) => {
-    Swal.fire({
-      title: "Are you sure?",
-      text: "Are you to delete this order!",
-      icon: "warning",
-      showCancelButton: true,
-      confirmButtonColor: "#3085d6",
-      cancelButtonColor: "#d33",
-      confirmButtonText: "Yes, delete it!",
-    }).then((result) => {
-      if (result.isConfirmed) {
-        mutationUpp.mutate({ id });
-        Swal.fire({
-          title: "Order Deleted!",
-          text: "Order deleted succesfully.",
-          icon: "success",
-        });
-      }
-    });
-  };
+
+
+  
   if (isLoading) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-indigo-50 via-white to-purple-50 flex items-center justify-center p-4">
@@ -174,7 +141,7 @@ const AcceptedOrders = () => {
   }
 
   const filterData = data?.filter((x) => x?.orderStatus === "Order Accepted");
-  console.log(filterData, "alll");
+  console.log(filterData[0].orderStatus, "alll");
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50/30 to-indigo-50/50">
       {/* Floating Background Elements */}
@@ -249,7 +216,7 @@ const AcceptedOrders = () => {
                       </CardTitle>
                       <div className="flex items-center gap-2 sm:gap-3">
                         <Badge className="px-3 py-1.5 text-xs sm:text-sm font-medium border-0 shadow-lg flex items-center gap-1.5">
-                          {group?.orderStatus || "Pending"}
+                          {group?.orderStatus || "pending"}
                         </Badge>
                         <Button
                           variant="ghost"

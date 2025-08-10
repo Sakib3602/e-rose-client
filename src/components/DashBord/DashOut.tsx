@@ -41,7 +41,7 @@ const DashOut: React.FC = () => {
 
   const menuItems = [
     { id: "dashboard", label: "Dashboard", icon: Home, loc: "" },
-    { id: "products", label: "Products", icon: Package, loc: "allPro" },
+    { id: "products", label: "All Products", icon: Package, loc: "allPro" },
     { id: "orders", label: "Watting Orders", icon: Loader, loc: "order" },
     { id: "orders", label: "Accepted Orders", icon: ListOrdered, loc: "Acceptorder" },
     { id: "Doneorders", label: "Delevery Done", icon: FileCheck, loc: "Doneorder" },
