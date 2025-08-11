@@ -1,6 +1,6 @@
 "use client";
 import type React from "react";
-import {  useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -26,7 +26,7 @@ import {
 import Nav from "@/components/Nav/Nav";
 import Footer from "@/components/Footer/Footer";
 import Only_Sm_Show from "@/components/Nav/Only_Sm_Show";
-import { useParams } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import useAxiosPub from "@/components/Axios/useAxiosPub";
 import { toast } from "react-toastify";
@@ -41,6 +41,7 @@ import {
 } from "@/components/ui/sheet";
 import Swal from "sweetalert2";
 import CaroselR from "@/components/RelatedC/CaroselR";
+import { AuthContext } from "@/components/loginRegistration_work/AuthProvider/AuthProvider";
 // import { AuthContext } from "@/components/loginRegistration_work/AuthProvider/AuthProvider";
 
 // Define interfaces for props and form data
@@ -78,8 +79,8 @@ interface OrderSubmissionData {
   totalTaka: number;
   promoCode?: string;
   promoDiscount?: number;
-  orderTime : string
-  orderStatus : string
+  orderTime: string;
+  orderStatus: string;
 }
 
 // Promo code interface
@@ -226,7 +227,6 @@ const ImageMagnifier: React.FC<{ src: string; alt: string }> = ({
 };
 
 const SingleDetails: React.FC = () => {
-  
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [selectedDressSize, setSelectedDressSize] = useState("");
   const [selectedMake, setSelectedMake] = useState("");
@@ -246,7 +246,7 @@ const SingleDetails: React.FC = () => {
     address: "",
     productDescription: "",
   });
-  
+
   const [productDetailsForModal, setProductDetailsForModal] =
     useState<ProductDetailsForOrder | null>(null);
 
@@ -538,8 +538,8 @@ const SingleDetails: React.FC = () => {
       totalTaka: productDetailsForModal.totalPrice,
       promoCode: appliedPromo?.code,
       promoDiscount: calculatePromoDiscount(productDetailsForModal.subtotal),
-       orderTime : moment().format('MMMM Do YYYY, h:mm:ss a'),
-       orderStatus : "Waiting"
+      orderTime: moment().format("MMMM Do YYYY, h:mm:ss a"),
+      orderStatus: "Waiting",
     };
 
     try {
@@ -625,13 +625,25 @@ const SingleDetails: React.FC = () => {
     enabled: !!params?.id,
   });
 
-  console.log(data?.category,"category")
+  const auth = useContext(AuthContext);
+
+  if (!auth) {
+    throw new Error("AuthContext must be used within an AuthProvider");
+  }
+
+  const { person } = auth;
 
   useEffect(() => {
     if (data) {
       setProduct(data);
     }
   }, [data]);
+  const [showPopup, setShowPopup] = useState(false);
+  useEffect(() => {
+    if (!person) {
+      setShowPopup(true);
+    }
+  }, []);
 
   // Show loading state
   if (isLoading) {
@@ -906,6 +918,55 @@ const SingleDetails: React.FC = () => {
 
   return (
     <>
+      {showPopup && (
+        <div className="fixed inset-0 flex items-center justify-center bg-black/20 backdrop-blur-sm z-50 px-4 sm:px-0">
+          <div className="bg-white rounded-3xl shadow-2xl w-full max-w-lg p-6 sm:p-8 relative animate-fadeIn">
+            <button
+              onClick={() => setShowPopup(false)}
+              className="absolute top-4 right-4 text-gray-400 hover:text-gray-600 transition"
+              aria-label="Close popup"
+            >
+              ✕
+            </button>
+
+            {/* Icon */}
+            <div className="flex justify-center mb-4">
+              <div className="bg-[#FEE2E2] text-[#B91C1C] w-12 h-12 sm:w-14 sm:h-14 flex items-center justify-center rounded-full shadow-md text-xl sm:text-2xl">
+                📦
+              </div>
+            </div>
+
+            {/* Header */}
+            <h2 className="text-xl sm:text-2xl font-bold text-center text-gray-900 mb-3">
+              Track Your Order
+            </h2>
+
+            {/* Message */}
+            <p className="text-center text-sm sm:text-base text-gray-600 mb-8 leading-relaxed">
+              View your order history, real-time updates, and delivery status by
+              logging in. Your information stays private and secure.
+            </p>
+
+            {/* Buttons */}
+            <div className="flex flex-col-reverse sm:flex-row justify-center gap-3 sm:gap-4">
+              <button
+                onClick={() => setShowPopup(false)}
+                className="px-4 py-2.5 sm:px-5 rounded-full bg-gray-200 hover:bg-gray-300 text-gray-800 font-medium transition"
+              >
+                No Thanks
+              </button>
+              <Link
+               className="px-4 py-2.5 text-center sm:px-5 rounded-full bg-[#761A24] text-white hover:bg-[#5a131a] font-medium transition shadow-md hover:shadow-lg"
+                to={"/login"}
+               
+              >
+                Log In
+              </Link>
+            </div>
+          </div>
+        </div>
+      )}
+
       <Nav />
       <div
         style={{
@@ -1651,7 +1712,6 @@ const SingleDetails: React.FC = () => {
           </div>
         </SheetContent>
       </Sheet>
-
     </>
   );
 };
