@@ -9,6 +9,7 @@ import {
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useState, useEffect } from "react";
+import { Link } from "react-router-dom";
 
 export default function LandingPage() {
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
@@ -17,12 +18,12 @@ export default function LandingPage() {
   // Carousel images
   const carouselImages = [
     {
-      src: "https://scontent.fdac134-1.fna.fbcdn.net/v/t39.30808-6/493504469_122178712226286011_8720817429851753926_n.jpg?_nc_cat=106&ccb=1-7&_nc_sid=833d8c&_nc_ohc=Ld0QFLqSa3oQ7kNvwHqFb_n&_nc_oc=AdmXytZQfiWSKhKwi6cr82ro26u7nnGsgjQvLDlUlzZrRHOW58JgXE_WWfOGVFn-zko&_nc_zt=23&_nc_ht=scontent.fdac134-1.fna&_nc_gid=-rv6oEMW3GsLNNmAV1hL_A&oh=00_AfRTovq6zxhkyVpZWR-kwOLsBNNnVsyCpo4i_Pv7R5_d5A&oe=688A4966",
+      src: "https://res.cloudinary.com/dodbmlu3m/image/upload/v1754280265/wo87yeggsma4jzxefize.jpg",
       alt: "Elegant woman in stylish fashion",
       price: "$2790.00",
     },
     {
-      src: "https://scontent.fdac134-1.fna.fbcdn.net/v/t39.30808-6/499714380_122180901380286011_337316531027721985_n.jpg?_nc_cat=105&ccb=1-7&_nc_sid=127cfc&_nc_ohc=P6oM2IHmTLUQ7kNvwEQJQgT&_nc_oc=Adlv9lilFE1VB5EfD0fP0jEjPJGqsyezcx0lM5W9C_V6k0YTiR5Kt1EsoX8bt6AxPgE&_nc_zt=23&_nc_ht=scontent.fdac134-1.fna&_nc_gid=lYWYLK2KpVL_h0HLUU-SMA&oh=00_AfSwuk-XNczwemmqAtfCC6_1-RYx9Uweuq2mYCYfVCYNDw&oe=688A48EA",
+      src: "https://scontent.fdac5-1.fna.fbcdn.net/v/t39.30808-6/530244933_122188822034286011_3011962419045395503_n.jpg?_nc_cat=106&ccb=1-7&_nc_sid=833d8c&_nc_ohc=FxEcp7zYYckQ7kNvwHT_R-1&_nc_oc=AdnfkxoU4p6-g4h26chPAbkXeYbO5jIoGjs4Kqmcfn6pUnb9oy3x-4dhWyEI1AumVgg&_nc_zt=23&_nc_ht=scontent.fdac5-1.fna&_nc_gid=a2HoMookMEEQX8yB7I1rVg&oh=00_AfUvKwxhRBnHl20AvyLayWEvJvR1bRneVmbhlIvJMtA4Jw&oe=689E4289",
       alt: "Summer fashion collection",
       price: "$3999.00",
     },
@@ -128,24 +129,26 @@ export default function LandingPage() {
 
               {/* CTA Buttons */}
               <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
-                <Button
-                  size="lg"
-                  className="text-white px-8 py-4 text-lg font-semibold rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 group border-0"
-                  style={{
-                    background: "linear-gradient(135deg, #761A24, #5a1419)",
-                  }}
-                  onMouseEnter={(e) => {
-                    e.currentTarget.style.background =
-                      "linear-gradient(135deg, #5a1419, #4a1115)";
-                  }}
-                  onMouseLeave={(e) => {
-                    e.currentTarget.style.background =
-                      "linear-gradient(135deg, #761A24, #5a1419)";
-                  }}
-                >
-                  Shop Now
-                  <ArrowRight className="ml-2 h-5 w-5 group-hover:translate-x-1 transition-transform duration-300" />
-                </Button>
+                <Link to={"/allproduct"}>
+                  <Button
+                    size="lg"
+                    className="text-white px-8 py-4 text-lg font-semibold rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 group border-0"
+                    style={{
+                      background: "linear-gradient(135deg, #761A24, #5a1419)",
+                    }}
+                    onMouseEnter={(e) => {
+                      e.currentTarget.style.background =
+                        "linear-gradient(135deg, #5a1419, #4a1115)";
+                    }}
+                    onMouseLeave={(e) => {
+                      e.currentTarget.style.background =
+                        "linear-gradient(135deg, #761A24, #5a1419)";
+                    }}
+                  >
+                    Shop Now
+                    <ArrowRight className="ml-2 h-5 w-5 group-hover:translate-x-1 transition-transform duration-300" />
+                  </Button>
+                </Link>
 
                 <Button
                   variant="outline"
@@ -165,7 +168,7 @@ export default function LandingPage() {
                       "rgba(255, 255, 255, 0.6)";
                   }}
                 >
-                  View Collection
+                  Contact Now
                 </Button>
               </div>
 
@@ -176,7 +179,7 @@ export default function LandingPage() {
                     className="text-2xl lg:text-3xl font-bold drop-shadow-sm"
                     style={{ color: "#761A24" }}
                   >
-                    890+
+                    1190+
                   </div>
                   <div className="text-sm text-gray-600 dark:text-gray-400 font-medium">
                     Happy Customers
@@ -187,7 +190,7 @@ export default function LandingPage() {
                     1000+
                   </div>
                   <div className="text-sm text-gray-600 dark:text-gray-400 font-medium">
-                    Products
+                    On Time Delevary
                   </div>
                 </div>
                 <div className="text-center lg:text-left">
@@ -198,7 +201,7 @@ export default function LandingPage() {
                     4.9★
                   </div>
                   <div className="text-sm text-gray-600 dark:text-gray-400 font-medium">
-                    Rating
+                    Overall Rating
                   </div>
                 </div>
               </div>

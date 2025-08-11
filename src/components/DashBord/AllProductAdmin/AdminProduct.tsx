@@ -33,7 +33,11 @@ const AdminProduct = () => {
 
   }
 
-  const mutationUpp = useMutation({
+  const mutationUpp = useMutation<
+  ResponseType,        
+  Error,               
+  string              
+>({
     mutationFn : async(id)=>{
         const res = await axiosSec.delete(`/allData/${id}`)
         return res.data;

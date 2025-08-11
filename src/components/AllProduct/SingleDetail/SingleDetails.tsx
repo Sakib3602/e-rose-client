@@ -226,6 +226,7 @@ const ImageMagnifier: React.FC<{ src: string; alt: string }> = ({
 };
 
 const SingleDetails: React.FC = () => {
+  
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [selectedDressSize, setSelectedDressSize] = useState("");
   const [selectedMake, setSelectedMake] = useState("");
@@ -538,7 +539,7 @@ const SingleDetails: React.FC = () => {
       promoCode: appliedPromo?.code,
       promoDiscount: calculatePromoDiscount(productDetailsForModal.subtotal),
        orderTime : moment().format('MMMM Do YYYY, h:mm:ss a'),
-       orderStatus : "Wating"
+       orderStatus : "Waiting"
     };
 
     try {

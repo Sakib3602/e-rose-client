@@ -7,12 +7,12 @@ import {
   X,
   Home,
   Package,
-  Users,
+  // Users,
   
   FileCheck,
   Loader,
-  BarChart3,
-  Settings,
+  // BarChart3,
+  // Settings,
   Bell,
   Shirt,
   FilePlus2,
@@ -46,9 +46,9 @@ const DashOut: React.FC = () => {
     { id: "orders", label: "Accepted Orders", icon: ListOrdered, loc: "Acceptorder" },
     { id: "Doneorders", label: "Delevery Done", icon: FileCheck, loc: "Doneorder" },
     { id: "Add Item", label: "Add Item", icon: FilePlus2, loc: "addItem" },
-    { id: "customers", label: "Customers", icon: Users },
-    { id: "analytics", label: "Analytics", icon: BarChart3 },
-    { id: "settings", label: "Settings", icon: Settings },
+    // { id: "customers", label: "Customers", icon: Users },
+    // { id: "analytics", label: "Analytics", icon: BarChart3 },
+    // { id: "settings", label: "Settings", icon: Settings },
   ];
   if (loading) {
   return <div>Loading...</div>; // or a spinner

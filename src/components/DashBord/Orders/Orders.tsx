@@ -2,7 +2,7 @@
 
 import type React from "react";
 import Swal from "sweetalert2";
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -22,6 +22,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { useMutation } from "@tanstack/react-query";
 import useAxiosPub from "@/components/Axios/useAxiosPub";
 import moment from "moment";
+import { AuthContext } from "@/components/loginRegistration_work/AuthProvider/AuthProvider";
 
 
 interface CartItem {
@@ -51,6 +52,13 @@ interface OrderFormData {
 }
 
 export default function Orders() {
+  const auth = useContext(AuthContext);
+    
+      if (!auth) {
+        throw new Error("AuthContext must be used within an AuthProvider");
+      }
+    
+      const { person} = auth;
   const [cartD, setCartD] = useState<CartItem[]>([]);
   // const [promoCode, setPromoCode] = useState(""); // State for promo code input
   const [discountApplied, setDiscountApplied] = useState(false); // State for discount status

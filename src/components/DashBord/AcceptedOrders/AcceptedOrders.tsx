@@ -141,7 +141,7 @@ const AcceptedOrders = () => {
   }
 
   const filterData = data?.filter((x) => x?.orderStatus === "Order Accepted");
-  console.log(filterData[0].orderStatus, "alll");
+ 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50/30 to-indigo-50/50">
       {/* Floating Background Elements */}

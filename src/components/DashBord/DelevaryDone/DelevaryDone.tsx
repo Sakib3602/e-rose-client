@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@radix-ui/react-separator";
 import { useMutation, useQuery } from "@tanstack/react-query";
-import { Badge, Clock, DollarSign, Eye, Mail, MapPin, MoreVertical, Package, Phone, Search, ShoppingBag, Trash2, User } from "lucide-react";
+import { Badge, Clock, DollarSign,  Mail, MapPin, MoreVertical, Package, Phone, Search, ShoppingBag, Trash2, User } from "lucide-react";
 import { toast } from "react-toastify";
 import Swal from "sweetalert2";
 

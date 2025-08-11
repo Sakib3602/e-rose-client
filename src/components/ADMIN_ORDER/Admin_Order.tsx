@@ -73,7 +73,8 @@ const Admin_Order = () => {
     },
   });
 
-  const filterData = data?.filter((x)=> x?.orderStatus === "Wating")
+  const filterData = data?.filter((x)=> x?.orderStatus === "Waiting") 
+  
  
 
   const mutationUp = useMutation<any, Error, UpdateOrderParams>({
