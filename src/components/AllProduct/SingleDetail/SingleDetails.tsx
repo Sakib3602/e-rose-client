@@ -542,38 +542,34 @@ const SingleDetails: React.FC = () => {
       orderStatus: "Waiting",
     };
 
+    // Let user choose payment method: Confirm = Cash On Delivery, Deny = Pay Now
     try {
-      const result = await Swal.fire({
-        title: "Confirm Order?",
-        text: "Please review your details before confirming.",
-        icon: "info",
+      const choice = await Swal.fire({
+        title: "Choose Payment Method",
+        text: "Select Cash On Delivery or Pay Now to proceed.",
+        icon: "question",
+        showDenyButton: true,
         showCancelButton: true,
-        confirmButtonColor: "#761A24",
-        cancelButtonColor: "#6b7280",
-        confirmButtonText: "Yes, Place Order!",
+        confirmButtonText: "💵 Cash On Delivery",
+        denyButtonText: "💳 Pay Now",
         cancelButtonText: "Cancel",
-        customClass: {
-          container: "swal-container-high-z",
-        },
-        backdrop: true,
+        customClass: { container: "swal-container-high-z" },
         allowOutsideClick: false,
-        allowEscapeKey: false,
         heightAuto: false,
-        scrollbarPadding: false,
       });
 
-      if (result.isConfirmed) {
+      // User chose Cash On Delivery
+      if (choice.isConfirmed) {
         try {
+          console.log("Sending COD order ->", fullOrderData);
           await mutation.mutateAsync(fullOrderData);
 
           await Swal.fire({
             title: "Order Placed!",
-            text: "Your order has been successfully placed. We will contact you soon.",
+            text: "Your Cash On Delivery order has been placed. We will contact you soon.",
             icon: "success",
             confirmButtonColor: "#761A24",
-            customClass: {
-              container: "swal-container-high-z",
-            },
+            customClass: { container: "swal-container-high-z" },
             heightAuto: false,
             scrollbarPadding: false,
           });
@@ -583,29 +579,80 @@ const SingleDetails: React.FC = () => {
           setAppliedPromo(null);
           setPromoCode("");
         } catch (err: any) {
+          console.error("COD order failed:", err);
           await Swal.fire({
             title: "Error",
             text: `Failed to place order: ${err?.message || "Unknown error"}`,
             icon: "error",
             confirmButtonColor: "#761A24",
-            customClass: {
-              container: "swal-container-high-z",
-            },
+            customClass: { container: "swal-container-high-z" },
             heightAuto: false,
             scrollbarPadding: false,
           });
         }
+        return;
       }
-    } catch (error) {
-      console.error("Unexpected error:", error);
+
+      // User chose Pay Now
+      if (choice.isDenied) {
+        try {
+          console.log("Initiating online payment with ->", fullOrderData);
+
+          // Call backend to create payment session / URL
+          const res = await axiospub.post("/initialpayment", fullOrderData, {
+            headers: { "Content-Type": "application/json" },
+          });
+
+          console.log("Payment init response:", res?.data);
+
+          const paymentUrl = res?.data?.paymentUrl || res?.data?.redirectUrl;
+
+          if (paymentUrl) {
+            // Redirect user to payment provider
+            window.location.href = paymentUrl;
+            return;
+          }
+
+          // If backend didn't provide a paymentUrl, fallback to creating the order directly
+          await mutation.mutateAsync(fullOrderData);
+
+          await Swal.fire({
+            title: "Order Placed!",
+            text: "Your order has been placed. (No payment URL returned.)",
+            icon: "success",
+            confirmButtonColor: "#761A24",
+            customClass: { container: "swal-container-high-z" },
+            heightAuto: false,
+            scrollbarPadding: false,
+          });
+
+          setIsOrderFormOpen(false);
+          setAppliedPromo(null);
+          setPromoCode("");
+        } catch (err: any) {
+          console.error("Pay Now initiation failed:", err);
+          await Swal.fire({
+            title: "Error",
+            text: `Failed to initiate payment: ${err?.message || "Unknown error"}`,
+            icon: "error",
+            confirmButtonColor: "#761A24",
+            customClass: { container: "swal-container-high-z" },
+            heightAuto: false,
+            scrollbarPadding: false,
+          });
+        }
+        return;
+      }
+
+      // If cancelled, do nothing
+    } catch (outerErr) {
+      console.error("Unexpected error in payment choice:", outerErr);
       await Swal.fire({
         title: "Error",
         text: "Something went wrong. Please try again.",
         icon: "error",
         confirmButtonColor: "#761A24",
-        customClass: {
-          container: "swal-container-high-z",
-        },
+        customClass: { container: "swal-container-high-z" },
         heightAuto: false,
         scrollbarPadding: false,
       });
