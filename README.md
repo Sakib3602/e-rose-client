@@ -1,4 +1,4 @@
-# E-Rose Client
+# RoseWd Client
 
 Live demo: https://rosewd.netlify.app/
 
