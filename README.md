@@ -1,6 +1,6 @@
 # E-Rose Client
 
-Live demo: REPLACE_WITH_YOUR_LIVE_LINK
+Live demo: https://rosewd.netlify.app/
 
 Short description
 
@@ -112,23 +112,12 @@ Notes for backend implementation
 4. Pay Now: client POSTs `/initialpayment` with the order payload. If backend returns a `paymentUrl`, the client uses `window.location.href` to navigate to the external payment page. After payment, backend/webhook should update the order status.
 
 
-**Testing & Debugging**
-
-- Use browser DevTools > Network to verify request payloads and responses for `/order` and `/initialpayment`.
-- Ensure the backend logs the `req.body` to verify the payload shape.
-- If `req.body` is undefined on server, enable JSON body parsing (`express.json()`) and check CORS settings.
-
 
 **Author / Contact**
 
 - GitHub: https://github.com/Sakib3602
 - Repo: https://github.com/Sakib3602/e-rose-client
 
-If you want, I can:
-- Add a `/payment-callback` route skeleton and client logic to handle gateway redirects.
-- Wire loading states and disable modal buttons while requests are in-flight.
-- Replace the `REPLACE_WITH_YOUR_LIVE_LINK` placeholder with your real deployment URL.
 
----
 
 Thank you  let me know which improvements you want next and I will implement them (loading states, callback route, or backend helper examples).
