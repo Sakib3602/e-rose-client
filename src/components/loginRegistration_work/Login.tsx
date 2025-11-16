@@ -84,6 +84,9 @@ export default function Login() {
 
     SignNow(data?.email, data?.password).then(() => {
       toast.success("Loged in Done");
+    }).catch((error) => {
+      console.error(error);
+      toast.error("Login failed");
     });
     MutationUp.mutate(use);
   };

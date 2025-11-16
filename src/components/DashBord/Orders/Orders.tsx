@@ -1,8 +1,8 @@
 "use client";
 
 import type React from "react";
-import Swal from "sweetalert2";
-import { useContext, useEffect, useState } from "react";
+
+import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -22,8 +22,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { useMutation } from "@tanstack/react-query";
 import useAxiosPub from "@/components/Axios/useAxiosPub";
 import moment from "moment";
-import { AuthContext } from "@/components/loginRegistration_work/AuthProvider/AuthProvider";
-
+import { toast } from "react-toastify";
 
 interface CartItem {
   _id: string; // Changed from 'id' to '_id' to match your usage
@@ -47,18 +46,11 @@ interface OrderFormData {
   productDescription: string;
   order: CartItem[];
   totalTaka: number;
-  orderTime : string;
-  orderStatus : string
+  orderTime: string;
 }
 
 export default function Orders() {
-  const auth = useContext(AuthContext);
-    
-      if (!auth) {
-        throw new Error("AuthContext must be used within an AuthProvider");
-      }
-    
-      const { person} = auth;
+  const [isOpen, setIsOpen] = useState(false);
   const [cartD, setCartD] = useState<CartItem[]>([]);
   // const [promoCode, setPromoCode] = useState(""); // State for promo code input
   const [discountApplied, setDiscountApplied] = useState(false); // State for discount status
@@ -114,7 +106,6 @@ export default function Orders() {
     const d: CartItem[] = store ? JSON.parse(store) : [];
     setCartD(d);
   }, []);
-  console.log(cartD, "Oder");
 
   // Calculate total price, applying discount if applicable
   const totalTaka =
@@ -145,40 +136,59 @@ export default function Orders() {
     },
   });
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
+ 
+  const placeOrder = async (isOnline: boolean) => {
     const fullData: OrderFormData = {
       ...formData,
-      order: cartD, // Attach current cart items
-      totalTaka: totalTaka, // Attach calculated total
-      orderTime : moment().format('MMMM Do YYYY, h:mm:ss a'),
-      orderStatus : "Waiting"
-      
+      order: cartD,
+      totalTaka: totalTaka,
+      orderTime: moment().format("MMMM Do YYYY, h:mm:ss a"),
     };
 
-    Swal.fire({
-      title: "Make Order Now.",
-      text: "After Confirming our managers will contact with you.",
-      icon: "info",
-      showCancelButton: true,
-      confirmButtonColor: "#3085d6",
-      cancelButtonColor: "#d33",
-      confirmButtonText: "Yes, order now!",
-    }).then((result) => {
-      if (result.isConfirmed) {
-        mutationUp.mutate(fullData);
-        localStorage.removeItem("cart"); // Clear only the cart from local storage
-        setCartD([]); // Clear cart state immediately
-        navigate("/");
-        Swal.fire({
-          title: "Order Done!",
-          text: "We will contact soon.",
-          icon: "success",
-        });
+    
+    if (isOnline) {
+      try {
+        const res = await axiospub.post("/initialpayment", fullData);
+        console.log(res?.data);
+        const paymentUrl = res?.data?.paymentUrl || res?.data?.redirectUrl;
+
+        if (paymentUrl) {
+        localStorage.removeItem("cart");
+        setCartD([]);
+          window.location.href = paymentUrl;
+          return; 
+        }
+
+        toast.error("Payment URL not received. Please try again.");
+
+       
+      } catch (err) {
+        toast.error("Failed to initiate payment. Please try again.");
+        console.error(err);
       }
+
+      return;
+    }
+
+    // Cash on Delivery flow: create order directly
+    mutationUp.mutate(fullData, {
+      onSuccess: () => {
+        toast.success("Order Placed Successfully (Cash On Delivery).");
+        localStorage.removeItem("cart");
+        setCartD([]);
+        setIsOpen(false);
+        navigate("/");
+      },
+      onError: (err) => {
+        toast.error("Failed to place order. Try again.");
+        setIsOpen(false);
+        console.error(err);
+      },
     });
+
     console.log("Order Form Data:", fullData);
-    // Reset form data, but ensure order is empty after submission
+
+    // Reset form data
     setFormData({
       userNumber: "",
       email: "",
@@ -188,9 +198,13 @@ export default function Orders() {
       address: "",
       productDescription: "",
     });
-    // setPromoCode(""); // Reset promo code input
-    setDiscountApplied(false); // Reset discount status
-    // setDiscountMessage(""); // Reset discount message
+    setDiscountApplied(false);
+  };
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    // Open the payment-method modal and let user choose COD or Pay Now
+    setIsOpen(true);
   };
 
   return (
@@ -244,7 +258,7 @@ export default function Orders() {
             })}
           </div>
           <hr className="my-8 lg:my-10" />
-         
+
           <h1 className="text-2xl pop600 text-[#761A24] text-center">
             Total Price : ৳ {totalTaka.toFixed(2)}
           </h1>
@@ -363,11 +377,54 @@ export default function Orders() {
                 <div className="sm:col-span-2 pop400">
                   <Button
                     type="submit"
-                    className="w-full"
+                    className="w-full cursor-pointer"
                     style={{ backgroundColor: "#761A24", color: "white" }}
                   >
-                    Place Order
+                    Cash On Delevary
                   </Button>
+                  {isOpen && (
+                    <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4">
+                      {/* Modal Content */}
+                      <div className="bg-white rounded-xl shadow-2xl p-8 w-full max-w-md">
+                        <h2 className="text-2xl font-bold text-slate-900 mb-2">
+                          Choose Payment Method
+                        </h2>
+                        <p className="text-slate-600 mb-6">
+                          How would you like to pay for your order?
+                        </p>
+
+                        {/* Cash on Delivery Button */}
+                        <button
+                          onClick={() => {
+                            placeOrder(false);
+                            setIsOpen(false);
+                          }}
+                          className="w-full mb-3 px-6 py-3 border-2 border-slate-300 text-slate-900 font-semibold rounded-lg hover:border-slate-400 hover:bg-slate-50 transition-all"
+                        >
+                          💵 Cash on Delivery
+                        </button>
+
+                        {/* Pay Now Button */}
+                        <button
+                          onClick={() => {
+                            setIsOpen(false);
+                            placeOrder(true);
+                          }}
+                          className="w-full mb-4 px-6 py-3 bg-orange-500 text-white font-semibold rounded-lg hover:bg-orange-600 transition-colors"
+                        >
+                          💳 Pay Now
+                        </button>
+
+                        {/* Close Button */}
+                        <button
+                          onClick={() => setIsOpen(false)}
+                          className="w-full text-slate-600 font-medium hover:text-slate-900 transition-colors"
+                        >
+                          Cancel
+                        </button>
+                      </div>
+                    </div>
+                  )}
                 </div>
               </form>
             </CardContent>

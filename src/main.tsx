@@ -26,6 +26,9 @@ import PrivateUserRoute from "./components/DashBord/PrivateRoute/PrivateUserRout
 import Admin_Order from "./components/ADMIN_ORDER/Admin_Order.tsx";
 import DelevaryDone from "./components/DashBord/DelevaryDone/DelevaryDone.tsx";
 import AcceptedOrders from "./components/DashBord/AcceptedOrders/AcceptedOrders.tsx";
+import Success from "./components/DashBord/Orders/Success/Success.tsx";
+import FailPage from "./components/DashBord/Orders/Failpage/FailPage.tsx";
+import CancelPage from "./components/DashBord/Orders/CanclePage/CanclePage.tsx";
 
 const queryClient = new QueryClient();
 
@@ -45,6 +48,9 @@ createRoot(document.getElementById("root")!).render(
               <Route path="wish" element={<WishlistSection />} />
               <Route path="cart" element={<Cart></Cart>} />
               <Route path="order" element={<Orders></Orders>} />
+              <Route path="success" element={<Success></Success>} />
+              <Route path="fail" element={<FailPage></FailPage>} />
+              <Route path="cancel" element={<CancelPage></CancelPage>} />
               <Route
                 path="account"
                 element={

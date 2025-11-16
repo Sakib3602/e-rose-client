@@ -20,12 +20,12 @@ export default function LandingPage() {
     {
       src: "https://res.cloudinary.com/dodbmlu3m/image/upload/v1754280265/wo87yeggsma4jzxefize.jpg",
       alt: "Elegant woman in stylish fashion",
-      price: "$2790.00",
+      price: "1790.00 ৳",
     },
     {
-      src: "https://scontent.fdac5-1.fna.fbcdn.net/v/t39.30808-6/530244933_122188822034286011_3011962419045395503_n.jpg?_nc_cat=106&ccb=1-7&_nc_sid=833d8c&_nc_ohc=FxEcp7zYYckQ7kNvwHT_R-1&_nc_oc=AdnfkxoU4p6-g4h26chPAbkXeYbO5jIoGjs4Kqmcfn6pUnb9oy3x-4dhWyEI1AumVgg&_nc_zt=23&_nc_ht=scontent.fdac5-1.fna&_nc_gid=a2HoMookMEEQX8yB7I1rVg&oh=00_AfUvKwxhRBnHl20AvyLayWEvJvR1bRneVmbhlIvJMtA4Jw&oe=689E4289",
+      src: "https://res.cloudinary.com/dodbmlu3m/image/upload/v1754280146/zkgks83mdfh6y8n7cmfu.jpg",
       alt: "Summer fashion collection",
-      price: "$3999.00",
+      price: "3999.00 ৳",
     },
   ];
 

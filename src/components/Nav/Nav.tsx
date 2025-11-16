@@ -77,7 +77,7 @@ export default function Nav() {
     { name: "Cart", href: "", icon: ShoppingCart },
 
     { name: "Wish List", href: "/wish", icon: Heart },
-    { name: "Reviews", href: "/review", icon: Star },
+   
     ...(data?.role === "admin"
       ? [{ name: "Dashboard", href: "/dashbord", icon: Star }]
       : []),
